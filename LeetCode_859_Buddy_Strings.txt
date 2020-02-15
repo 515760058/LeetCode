@@ -1,0 +1,31 @@
+class Solution {
+public:
+    bool buddyStrings(string A, string B) {
+        if(A.size() == 0 || B.size() == 0 || A.size() != B.size()){
+            return false;
+        }
+        //统计不同字符的下标
+        vector<int> idx;
+        for(int i = 0; i < A.size(); ++i){
+            if(A[i] != B[i]){
+                idx.push_back(i);
+            }
+        }
+        if(idx.size() == 2){//恰好两个字符不同
+            //交换这两个字符，然后验证A和B是否相等
+            char temp = A[idx[0]];
+            A[idx[0]] = A[idx[1]];
+            A[idx[1]] = temp;
+            return A == B;
+        }
+        if(idx.size() == 0){// A==B的情况下，看A中是否有相同的字符
+            sort(A.begin(), A.end());
+            for(int i = 0; i < A.size() - 1; ++i){
+                if(A[i] == A[i+1]){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
