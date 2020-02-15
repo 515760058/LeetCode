@@ -1,0 +1,81 @@
+class Solution {
+public:
+    string validIPAddress(string IP) {
+        if(isIPv4(IP)){
+            return "IPv4";
+        }
+        if(isIPv6(IP)){
+            return "IPv6";
+        }
+        return "Neither";
+    }
+private:
+    bool isIPv4(string IP){
+        //找到所有的点
+        vector<int> pointIdx;
+        for(int i = 0; i < IP.size(); ++i){
+            if(IP[i] == '.'){
+                pointIdx.push_back(i);
+            }
+        }
+        //判断IP是否由3个点分隔的四个数字
+        if(pointIdx.size() != 3){
+            return false;
+        }
+        //验证每个数字是否有效
+        string str1 = IP.substr(0, pointIdx[0]);
+        string str2 = IP.substr(pointIdx[0]+1, pointIdx[1]-pointIdx[0]-1);
+        string str3 = IP.substr(pointIdx[1]+1, pointIdx[2]-pointIdx[1]-1);
+        string str4 = IP.substr(pointIdx[2]+1);
+        long a = atoi( str1.c_str() );
+        long b = atoi( str2.c_str() );
+        long c = atoi( str3.c_str() );
+        long d = atoi( str4.c_str() );
+        //ip地址中每个数字都是有效的：转变成整数应在[0,255]。再转变回字符串，长度应该相等（非0开头的正数）。
+        if(0<=a && a<=255 && 0<=b && b<=255 && 0<=c && c<=255 && 0<=d && d<=255 &&
+            str1==to_string(a) && str2==to_string(b) && str3==to_string(c) && str4==to_string(d))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    bool isIPv6(string IP){
+        //找到所有的冒号
+        vector<int> pointIdx;
+        for(int i = 0; i < IP.size(); ++i){
+            if(IP[i] == ':'){
+                pointIdx.push_back(i);
+            }
+        }
+        //判断IP是否由7个冒号分隔的八个数字
+        if(pointIdx.size() != 7){
+            return false;
+        }
+        //取每个字符串
+        vector<string> strs;
+        strs.push_back( IP.substr(0, pointIdx[0]) );
+        for(int i=0; i <6; ++i ){
+            strs.push_back( IP.substr(pointIdx[i]+1, pointIdx[i+1]-pointIdx[i]-1) );
+        }
+        strs.push_back( IP.substr(pointIdx[6]+1) );
+        //每个字符串非空, 长度<=4, 字符是0-9和a-f A-F
+        for(string& str : strs){
+            if(str=="" || str.size() > 4 || !isHex(str)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool isHex(string str){
+        for(char c : str){
+            if(('0'<=c && c<='9') || ('a'<=c && c<='f') || ('A'<=c && c<='F')){
+                //do nothing.
+            }else{
+                return false;
+            }
+        }
+        return true;
+    }
+};
