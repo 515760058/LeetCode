@@ -1,0 +1,47 @@
+//并查集   leetcode 684冗余连接1  LeetCode账户合并
+//借鉴了思路：https://leetcode-cn.com/problems/redundant-connection-ii/solution/bing-cha-ji-fen-lei-kao-lu-2ge-die-he-yi-ge-die-de/
+class Solution {
+public:
+    vector<int> findRedundantDirectedConnection(vector<vector<int>>& edges) {
+        //统计每个节点的父节点的数量
+        vector<int> numOfFather(edges.size()+1, 0);
+        for(auto edge : edges){
+            ++numOfFather[edge[1]];
+        }
+        
+        map<int, int> m;//key:子节点v  value:父节点u
+        //初始化
+        for(int i = 1; i <= edges.size(); ++i){
+            m[i] = i;
+        }
+        //合并和查找
+        for(auto edge : edges){
+            if(numOfFather[edge[1]] >= 2){//先跳过多个父节点的情况
+                continue;
+            }
+            if(find(edge[0], m) != find(edge[1], m)){//合并
+                m[edge[1]] = edge[0];
+            }else{//冗余的连接
+                return edge;
+            }
+        }
+        for(auto edge : edges){
+            if(numOfFather[edge[1]] >= 2){//专门处理多个父节点的情况
+                if(find(edge[0], m) != find(edge[1], m)){//合并
+                    m[edge[1]] = edge[0];
+                }else{//冗余的连接
+                    return edge;
+                }
+            }
+        }
+        return {};
+    }
+private:
+    //查找。从m中，递归地查找num的根节点
+    int find(int num, map<int, int>& m){
+        if(m[num] == num){
+            return num;
+        }
+        return find(m[num], m);
+    }
+};
