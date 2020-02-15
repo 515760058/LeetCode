@@ -1,0 +1,24 @@
+//类似于475取暖器，但是又不同
+class Solution {
+public:
+    int maxDistToClosest(vector<int>& seats) {
+        //将有人坐的座位的下标，保存起来
+        vector<int> idx;
+        for(int i = 0; i < seats.size(); ++i){
+            if(seats[i]){
+                idx.push_back(i);
+            }
+        }
+        int res = 0;
+        //头部：假设seat[0]可以坐, 和后一个人的距离
+        res = max(res, idx.front());
+        //尾部：假设seat的最后一个位置可以坐, 和前一个人的距离
+        res = max(res, int(seats.size()-idx.back()-1));
+        //坐在两个人之间(两人的间隔/2)
+        for(int i = 0; i < idx.size() - 1; ++i){
+            int temp = idx[i+1] - idx[i];
+            res = max(res, temp/2);
+        }
+        return res;
+    }
+};
