@@ -1,0 +1,31 @@
+//并查集，  类似题目 leetcode账户合并
+class Solution {
+public:
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        map<int, int> m;//key:num   value:num的父节点
+        //初始化，每个数字的父节点（根节点）都是自身
+        for(int i = 1; i < edges.size(); ++i){
+            m[i] = i;
+        }
+        //合并和查找
+        vector<int> res;
+        for(vector<int>& edge : edges){
+            int root1 = find(edge[0], m);
+            int root2 = find(edge[1], m);
+            if(root1 != root2){//根节点不相等，说明两个数字在不同的集合中
+                m[root1] = root2;//更新根节点的关系（合并两个集合）
+            }else{//冗余的
+                res = edge;
+            }
+        }
+        return res;
+    }
+private:
+    //查找。从m中，递归地查找num的根节点
+    int find(int num, map<int, int>& m){
+        if(m[num] == num){
+            return num;
+        }
+        return find(m[num], m);
+    }
+};
