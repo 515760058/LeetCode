@@ -1,0 +1,29 @@
+/*
+每个房屋，查找离它最近的供暖期
+    分三种情况：1,房子在所有取暖器的左边，即 房子<=所有取暖器
+               2,房子在所有取暖器的右边，即 房子>=所有取暖器
+               3,房子在两个取暖器之间
+*/
+class Solution {
+public:
+    int findRadius(vector<int>& houses, vector<int>& heaters) {
+        //sort(houses.begin(), houses.end());
+        sort(heaters.begin(), heaters.end());
+        int res = 0;
+        for(int house : houses){
+            int radius = 0;
+            auto iter = lower_bound(heaters.begin(), heaters.end(), house);//第一个>=房子的供暖器
+            if(iter == heaters.begin()){//房子<=所有取暖器，使用第一个取暖器
+                radius = heaters.front() - house;
+            }else if(iter == heaters.end()){//房子>=所有取暖器，使用最后一个取暖器
+                radius = house - heaters.back();
+            }else{//比较房子左右两边的取暖器，哪个更近
+                int left = *(iter - 1);
+                int right = *iter;
+                radius = min(house-left, right-house);
+            }
+            res = max(res, radius);
+        }
+        return res;
+    }
+};
