@@ -1,0 +1,55 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+//偶尔超时，看运气。有待改进
+class Solution {
+public:
+    ListNode* removeZeroSumSublists(ListNode* head) {
+        //转换成vector
+        vector<int> vec;
+        ListNode* temp= head;
+        while(temp != NULL){
+            vec.push_back(temp->val);
+            temp = temp->next;
+        }
+        //
+        bool haveDel = true;
+        while(haveDel){
+            haveDel = removeZeroSumSublists(vec);
+        }
+        //还原成链表
+        if(vec.size() == 0){
+            return NULL;
+        }
+        temp = head;
+        for(int i = 0; i < vec.size(); ++i){
+            temp->val = vec[i];
+            if(i == vec.size() - 1){//最后一个
+                temp->next = NULL;
+            }else{
+                temp = temp->next;
+            }
+        }
+        temp->next = NULL;
+        return head;
+    }
+private:
+    //在vec中暴力循环  发现和为0的区间就erase掉
+    bool removeZeroSumSublists(vector<int>& vec){
+        for(int i = 0; i < vec.size(); ++i){
+            for(int j = i; j < vec.size(); ++j){
+                int sum = accumulate(vec.begin()+i, vec.begin()+j+1, 0);
+                if(sum == 0){
+                    vec.erase(vec.begin()+i, vec.begin()+j+1);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
