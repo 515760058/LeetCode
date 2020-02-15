@@ -1,0 +1,50 @@
+//参考并理解别人的解答，双层dfs
+class Solution {
+public:
+    bool pyramidTransition(string bottom, vector<string>& allowed) {
+        unordered_map<string, string> amap; //转换allowed方便查找, key是三元组的头两个字母，val是所有可用字符组成的字符串
+        for(string& str : allowed){
+            amap[str.substr(0,2)].push_back(str.back());
+        }
+        //
+        bool found = false;
+        dfs(amap,bottom,found);
+        return found;
+    }
+
+private:
+    //第一层dfs
+    void dfs(unordered_map<string,string>& amap,string nextBottom, bool& found){
+        if(found || nextBottom.size() == 1){//只要有一个可行的方案，就成功
+            found = true;
+            return;
+        }
+        //strvec里的是上一层各位置的候选字符串
+        vector<string> strvec; // ["AB", "AB", "C"]
+        for(int i = 0; i < nextBottom.size()-1; ++i){
+            string tmp = nextBottom.substr(i, 2);//key
+            if(amap.count(tmp) == 0){
+                return;
+            }
+            strvec.push_back(amap[tmp]);
+        }
+
+        vector<string> nextBottoms;
+        formNextLevel(strvec, nextBottoms, "", 0);//根据当前层strvec,生成上一层的所有可能的nextBottom
+        for(string& nextBottom : nextBottoms){
+            dfs(amap, nextBottom, found);
+        }
+    }
+    //第二层dfs，根据当前层生成上一层的所有可能组成方案
+    void formNextLevel(vector<string>& strvec, vector<string>& nextBottoms, string curr, int p){
+        if(p == strvec.size()){
+            nextBottoms.push_back(curr);
+            return;
+        }
+        for(char& c : strvec[p]){// strvec[p]是一个string，例如“AB”
+            curr.push_back(c);
+            formNextLevel(strvec, nextBottoms, curr, p+1);
+            curr.pop_back();
+        }
+    }
+};
