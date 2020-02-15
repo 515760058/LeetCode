@@ -1,0 +1,38 @@
+// C++互斥量mutex
+//#include <mutex>
+
+/* C++互斥量pthread_mutex_t用法
+pthread_mutex_t lk;
+pthread_mutex_init(&lk, NULL);
+pthread_mutex_lock(&lk);
+pthread_mutex_unlock(&lk);
+*/
+
+class Foo {
+public:
+    Foo() {
+        lk1.lock();
+        lk2.lock();
+    }
+
+    void first(function<void()> printFirst) {
+        printFirst();
+        lk1.unlock();
+    }
+
+    void second(function<void()> printSecond) {
+        lk1.lock();
+        printSecond();
+        //lk1.unklock();
+        lk2.unlock();
+    }
+
+    void third(function<void()> printThird) {
+        lk2.lock();
+        printThird();
+        //lk2.unlock();
+    }
+private:
+    mutex lk1;
+    mutex lk2;
+};
