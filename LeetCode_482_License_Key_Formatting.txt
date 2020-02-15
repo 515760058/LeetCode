@@ -1,0 +1,23 @@
+class Solution {
+public:
+    string licenseKeyFormatting(string S, int K) {
+        transform(S.begin(), S.end(), S.begin(), ::toupper);//小写字母转大写
+        //删去所有的破折号
+        for(auto it=S.begin(); it != S.end(); ++it){
+            if(*it == '-'){
+                S.erase(it);
+                --it;
+            }
+        }
+        //第一个分组的长度
+        int first = S.size() % K;
+        first = first == 0 ? K : first;
+        //第一个分组
+        string res = S.substr(0, first);
+        //后续分组
+        for(int i = first; i < S.size(); i += K){
+            res += "-" + S.substr(i, K);
+        }
+        return res;
+    }
+};
