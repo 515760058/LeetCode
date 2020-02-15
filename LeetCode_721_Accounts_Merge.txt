@@ -1,0 +1,50 @@
+//并查集   同类题目leetcode 685. Redundant Connection II
+class Solution {
+public:
+    vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {
+        map<string, string> m; //key:mail,  value:mail的父节点
+        map<string, string> owner; //key:mail,  value:mali对应的name 
+        //初始化
+        for (vector<string>& account : accounts) {
+            for (int i = 1; i < account.size(); i++){
+                string mail = account[i];
+                m[mail] = mail;//初始时，每个mail的根(父节点)都是它自身
+                owner[mail] = account[0];//初始时，每个mail对应的name
+            }
+        }
+        //union操作，对mail进行合并(将一个人的多个账户都看做“关系对”)
+        for (vector<string>& account : accounts){
+            string root = find(account[1], m);
+            for (int i = 2; i < account.size(); i++){
+                string tempRoot = find(account[i], m);
+                m[tempRoot] = root;
+            }
+        }
+        //把同根的mails，放在集合中
+        map<string, set<string>> mymap;//key:root,  value:该root对应的所有mail集合
+        for (vector<string>& account : accounts) {
+            for (int i = 1; i < account.size(); i++){
+                string root = find(account[i], m);
+                mymap[root].insert(account[i]);
+            }
+        }
+        //转换成vector<vector<string>>格式的结果
+        vector<vector<string>> res;
+        for (auto a : mymap) {
+            vector<string> temp {owner[a.first]};//root对应的name
+            temp.insert(temp.end(), a.second.begin(), a.second.end());//root对应的所有mail
+            res.push_back(temp);//
+        }
+        return res;
+    }
+
+private:
+    //在root中，递归地查找mail的根
+    string find(string mail, map<string, string>& m){
+        if (m[mail] == mail){//该mail的根就是自己
+            return mail;
+        }
+        //递归寻找s的根
+        return find(m[mail], m);
+    }
+};
