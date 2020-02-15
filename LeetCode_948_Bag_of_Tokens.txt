@@ -1,0 +1,35 @@
+/*
+1，先排序
+2，用能量翻小牌，得到分数
+3，能量不够的时候，使用分数翻大牌，得到能量
+4，重复2,3步骤，并记录最大的分数
+*/
+
+class Solution {
+public:
+    int bagOfTokensScore(vector<int>& tokens, int P) {
+        sort(tokens.begin(), tokens.end());
+        int maxScore = 0;
+
+        int score = 0;
+        int left = 0;
+        int right = tokens.size() - 1;
+        while(left <= right){
+            if(P >= tokens[left]){//先用能量翻小牌
+                P -= tokens[left];
+                ++score;
+                maxScore = max(maxScore, score);//记录最大分数
+                ++left;
+            }else{//能量不够时
+                if(score > 0){//用分数换大牌
+                    P += tokens[right];
+                    --score;
+                    --right;
+                }else{//能量不够，也没有分数了，退出
+                    break;
+                }
+            }
+        }
+        return maxScore;
+    }
+};
