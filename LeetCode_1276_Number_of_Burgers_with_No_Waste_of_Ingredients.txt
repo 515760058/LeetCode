@@ -1,0 +1,15 @@
+class Solution {
+public:
+    vector<int> numOfBurgers(int tomatoSlices, int cheeseSlices) {
+        //解二元一次方程
+        int double_x = tomatoSlices - 2*cheeseSlices;
+        if(double_x % 2 == 0){// 2x 是偶数
+            int x = double_x / 2;
+            int y = cheeseSlices - x;
+            if(x >= 0 && y >= 0){//都是非负数
+                return {x, y};
+            }
+        }
+        return {};
+    }
+};
