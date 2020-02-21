@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<string> letterCombinations(string digits) {
+        if(digits == ""){
+            return {};
+        }
+        vector<vector<string>> data = {
+            {},
+            {},
+            {"a", "b", "c"}, // index = 2
+            {"d", "e", "f"},
+            {"g", "h", "i"},
+            {"j", "k", "l"},
+            {"m", "n", "o"},
+            {"p", "q", "r", "s"},
+            {"t", "u", "v"},
+            {"w", "x", "y", "z"},//index = 9
+        };
+
+        vector<string> res;
+        helper(0, "", digits, data, res);
+        return res;
+    }
+
+private:
+    void helper(int start, string temp, string& digits, vector<vector<string>>& data, vector<string>& res){
+        if(temp.size() == digits.size()){//一个组合结果
+            res.push_back(temp);
+            return;
+        }
+        for(int i = start; i < digits.size(); ++i){
+            int index = digits[i] - '0';//转成数字下标
+            for(int j = 0; j < data[index].size(); ++j){//从该数组中拿出一个字母
+                helper(i + 1, temp + data[index][j], digits, data, res);//下一层递归
+            }
+        }
+    }
+};
