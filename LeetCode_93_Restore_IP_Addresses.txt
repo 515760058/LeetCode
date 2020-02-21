@@ -1,0 +1,46 @@
+class Solution { 
+public:
+    vector<string> restoreIpAddresses(string s) {
+        vector<string> res;
+        int len = s.length();
+        if(len > 12 || len < 4){//ip地址字符串的长度最小是4 最大是12
+            return res;
+        }
+        for(int i = 1; i < len; ++i){//i 第一个点的位置
+            for(int j = i + 1; j < len; ++j){ // j 第二个点的位置
+                for(int k = j + 1; k < len; ++k){// k 第三个点的位置
+                    string str = isIP(s, i, j, k);//上述三个点 划分ip地址是否成功
+                    if( str != ""){
+                        res.push_back(str);
+                    }
+                }
+            }
+        }
+        
+        return res;
+    }
+
+private:
+    // 往字符串s中插入三个点，三个点的位置分别是i,j,k  判断是否可以成功划分成一个ip地址
+    string isIP(string& s, int i, int j, int k){
+        //截取每个字段
+        string str1 = s.substr(0, i);
+        string str2 = s.substr(i, j-i);
+        string str3 = s.substr(j, k-j);
+        string str4 = s.substr(k);
+        //每个字段，转成数字
+        long a = atoi( str1.c_str() );
+        long b = atoi( str2.c_str() );
+        long c = atoi( str3.c_str() );
+        long d = atoi( str4.c_str() );
+        //检验数字是否在[0, 255]，  注意0开头的数字是不合法的。
+        if(0<=a && a<=255 && 0<=b && b<=255 && 0<=c && c<=255 && 0<=d && d<=255){
+            string newip = to_string(a) + to_string(b)+ to_string(c)+ to_string(d);
+            if(newip.length() == s.length()){//ip地址中每个数字都是有效的：转变成整数，再转变回去，长度应该相等。
+                //cout << "  a="  << a <<  "  b=" << b << "  c=" << c << "  d=" << d << endl;
+                return str1 + "." + str2 + "." + str3 + "." + str4;
+            }
+        }
+        return "";
+    }
+};
