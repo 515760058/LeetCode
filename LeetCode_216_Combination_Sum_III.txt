@@ -1,0 +1,30 @@
+//回溯法 leetcode 17 22 39 40 93等等
+//类似题目重点复习：39 40
+class Solution {
+public:
+    vector<vector<int>> combinationSum3(int k, int n) {
+        vector<int> candicates = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+        vector<vector<int>> res;
+        vector<int> temp;
+        helper(0, k, n, temp, candicates, res);
+        return res;
+    }
+
+private:
+    //idx：在candicates数组的起始下标（不存在重复的数字）
+    //target：当前的目标和    temp：当前的组合
+    void helper(int idx, int k, int target, vector<int>& temp, vector<int>& candicates, vector<vector<int>>& res){
+        if(target == 0 && temp.size() == k){//一个合法的组合
+            res.push_back(temp);
+            return;
+        }
+        for(int i = idx; i < candicates.size(); ++i){
+            if(target >= candicates[i]){//还可以往下一层
+                temp.push_back(candicates[i]);
+                helper(i+1, k, target-candicates[i], temp, candicates, res);
+                temp.pop_back();
+            }
+        }
+    }
+};
