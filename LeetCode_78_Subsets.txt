@@ -1,0 +1,29 @@
+//回溯法
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> res;
+        vector<int> temp;
+        for(int i = 1; i <= nums.size()-1; ++i){
+            helper(0, i, temp, nums, res);//有i个元素的子集
+        }
+        res.push_back(nums);//nums自身
+        res.push_back({});//空集
+        return res;
+    }
+
+private:
+    //从nums中寻找 “有k个元素的子集”，保存到res中
+    //idx: nums数组中的起始下标     k：目标子集的元素数量   temp:临时集合
+    void helper(int idx, int k, vector<int>& temp, vector<int>& nums, vector<vector<int>>& res){
+        if(temp.size() == k){//k个元素
+            res.push_back(temp);
+            return;
+        }
+        for(int i = idx; i < nums.size(); ++i){
+            temp.push_back(nums[i]);//放入该元素
+            helper(i+1, k, temp, nums, res);//下一层
+            temp.pop_back();//弹出
+        }
+    }
+};
