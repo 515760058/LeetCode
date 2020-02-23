@@ -1,0 +1,27 @@
+//回溯法
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+        vector<string> res;
+        helper(0, n, "", res);//从左括号开始：放入0个左括号，即空字符串
+        return res;
+    }
+
+private:
+    //放入左括号：num++   放入右括号：num--
+    //合法条件： 2*n表示结果字符串的长度，左括号和右括号数量相等
+    void helper(int num, int n, string temp, vector<string>& res){
+        if(temp.size() == 2*n){//长度满足了
+            if(num == 0){//左右括号的数量要相等
+                res.push_back(temp);
+            }
+            return;
+        }
+        if(num < n){//还可以接着放左括号
+            helper(num+1, n, temp+"(", res);
+        }
+        if(num >= 1){//前面左括号有多的，此时可以放对应的右括号
+            helper(num-1, n, temp+")", res);
+        }
+    }
+};
