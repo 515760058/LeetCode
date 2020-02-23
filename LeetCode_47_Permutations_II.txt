@@ -1,0 +1,31 @@
+//回溯法   39 40 216  46 47
+//和46题一样，只是改成了set去重
+class Solution {
+public:
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        vector<bool> visited(nums.size(), false);//每个数字是否使用过
+        set<vector<int>> res;//set去重
+        vector<int> temp;
+        helper(visited, temp, nums, res);//回溯
+
+        vector<vector<int>> finalRes(res.begin(), res.end());//set转vector
+        return finalRes;
+    }
+
+private:
+    void helper(vector<bool>& visited, vector<int>& temp, vector<int>& nums, set<vector<int>>& res){
+        if(temp.size() == nums.size()){//所有数字都有了，合法的排列
+            res.insert(temp);
+            return;
+        }
+        for(int i = 0; i < nums.size(); ++i){
+            if(visited[i] == false){//该数字没被使用过
+                visited[i] = true;
+                temp.push_back(nums[i]);
+                helper(visited, temp, nums, res);//放入该数字，进入下一层
+                temp.pop_back();
+                visited[i] = false;
+            }
+        }
+    }
+};
