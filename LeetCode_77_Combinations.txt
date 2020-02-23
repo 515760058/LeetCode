@@ -1,0 +1,31 @@
+//回溯法
+class Solution {
+public:
+    vector<vector<int>> combine(int n, int k) {
+        //准备数组
+        vector<int> nums(n);
+        for(int i = 0; i < nums.size(); ++i){
+            nums[i] = i + 1; 
+        }
+        //回溯
+        vector<vector<int>> res;
+        vector<int> temp;
+        helper(0, k, temp, nums, res);
+        return res;
+    }
+
+private:
+    //idx：nums数组的起始下标   
+    //temp：一个临时组合    k：临时组合的size是否是k
+    void helper(int idx, int k, vector<int>& temp, vector<int>& nums, vector<vector<int>>& res){
+        if(temp.size() == k){//一个合法的组合
+            res.push_back(temp);
+            return;
+        }
+        for(int i = idx; i < nums.size(); ++i){
+            temp.push_back(nums[i]);//放入这个数
+            helper(i+1, k, temp, nums, res);//下一层
+            temp.pop_back();//弹出
+        }
+    }
+};
