@@ -1,0 +1,29 @@
+//回溯法
+class Solution {
+public:
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        set<vector<int>> res;//使用set, 去除重复的组合
+        vector<int> temp;
+        helper(temp, target, candidates, res);
+
+        vector<vector<int>> finalRes(res.begin(), res.end());//set<vector<int>>转为vector<vector<int>>类型
+        return finalRes;
+    }
+
+private:
+    // temp：当前的数组  target：当前的目标和
+    void helper(vector<int>& temp, int target, vector<int>& candidates, set<vector<int>>& res){
+        if(target == 0){//找到一个合法组合temp
+            vector<int> aa = temp;
+            sort(aa.begin(), aa.end());//排序，放入set中去重
+            res.insert(aa);
+        }
+        for(int i = 0; i < candidates.size(); ++i){
+            if(target >= candidates[i]){//该数字可以放入，进入下一层
+                temp.push_back(candidates[i]);//放入该数字
+                helper(temp, target-candidates[i], candidates, res);//下一层
+                temp.pop_back();//弹出
+            }
+        }
+    }
+};
