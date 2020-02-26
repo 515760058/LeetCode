@@ -1,0 +1,24 @@
+// 单调栈
+// 详细易懂的讲解单调栈 https://leetcode-cn.com/problems/daily-temperatures/solution/javadan-diao-zhan-ni-xu-bian-li-by-hyh-2/
+class Solution {
+public:
+    vector<int> dailyTemperatures(vector<int>& T) {
+        vector<int> res(T.size());
+        vector<int> s; //使用vector代替栈  存放数组的下标
+        for(int i = T.size() - 1; i >=0; --i){//逆序遍历  这样才能知道后续更高的温度下标
+            //弹出栈中更低的温度（下标）
+            while(!s.empty() && T[i] >= T[s.back()]){//栈不为空 && 当前温度 >= 栈中的温度
+                s.pop_back();
+            }
+            //判断当前温度和后面更高温度的距离   此时T[s.back()比当前温度更高
+            if(s.empty()){
+                res[i] = 0;
+            }else{
+                res[i] = s.back() - i;
+            }
+            //当前温度的下标入栈
+            s.push_back(i);
+        }
+        return res;
+    }
+};
