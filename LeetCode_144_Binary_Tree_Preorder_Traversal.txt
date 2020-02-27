@@ -1,0 +1,53 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+class Solution {
+public:
+    //迭代版本
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> res;
+        //使用vec模拟栈
+        vector<TreeNode *> s;//存放节点的指针
+        s.push_back(root);
+        while(!s.empty()){
+            TreeNode * temp = s.back();
+            s.pop_back();
+            if(temp != NULL){
+                res.push_back(temp->val);
+                //注意：栈 要先放入右子树再放左子树，才能先弹出(遍历)左子树再弹出右子树
+                s.push_back(temp->right); 
+                s.push_back(temp->left);
+            }
+        }
+        return res;
+    }
+};
+
+/*
+class Solution {
+public:
+    //递归版本
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> res;
+        helper(root, res);
+        return res;
+    }
+
+private:
+    void helper(TreeNode* root, vector<int>& res){
+        if(root == NULL){
+            return;
+        }
+        res.push_back(root->val);
+        helper(root->left, res);
+        helper(root->right, res);
+    }
+};
+*/
