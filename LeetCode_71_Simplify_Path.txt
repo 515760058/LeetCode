@@ -1,0 +1,36 @@
+class Solution {
+public:
+    string simplifyPath(string path) {
+        //根据'/',把各级目录都找出来
+        vector<string> strs;
+        int start = 0;
+        for(int i = 0; i < path.size(); ++i){
+            if(path[i] == '/'){
+                string temp = path.substr(start+1, i-start-1);//第一个temp，是path自身。
+                strs.push_back(temp);
+                start = i;
+            }
+        }
+        string temp = path.substr(start+1);
+        strs.push_back(temp);
+        //使用vector模拟栈
+        vector<string> sta;
+        for(int i = 1; i < strs.size(); ++i){//跳过第一个
+            if(strs[i] == ".."){
+                if(!sta.empty()){
+                    sta.pop_back();
+                }
+            }else if(strs[i] == "." || strs[i] == ""){//当前目录或者 空目录
+                //nothing
+            }else{
+                sta.push_back(strs[i]);
+            }
+        }
+        //整理结果
+        string res;
+        for(string s : sta){
+            res += "/" + s;
+        }
+        return res == "" ? "/" : res;
+    }
+};
