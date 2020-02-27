@@ -1,0 +1,75 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+/*
+https://leetcode-cn.com/problems/binary-tree-postorder-traversal/solution/shu-de-hou-xu-bian-li-lian-xi-by-di-wu-2/
+解题思路
+  1, 初始两个栈s1,s2
+  2, 栈s1保存根结点
+  3, 栈s1弹出p=s1.top()并将p存入栈s2，p->left先入栈s1，p->right再入栈s1
+  4, 重复步骤3，直至栈s1为空
+  5, 栈s2按序弹出，并存入在容器res中
+  6, 重复步骤5，直至栈s2为空
+  7, 输出容器res
+*/
+class Solution {
+public:
+    //迭代版本
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> res;
+        if(root == NULL){
+            return res;
+        }
+        TreeNode* p = root;
+        vector<TreeNode *> s1, s2;
+        
+        s1.push_back(p);
+        while(!s1.empty()){
+            p = s1.back();
+            s1.pop_back();
+            s2.push_back(p);
+            if(p->left != NULL){
+                s1.push_back(p->left);
+            }
+            if(p->right != NULL){
+                s1.push_back(p->right);
+            }
+        }
+
+        while(!s2.empty()){
+            p=s2.back();
+            s2.pop_back();
+            res.push_back(p->val);
+        }
+        return res;
+    }
+};
+
+/*
+class Solution {
+public:
+    //递归版本
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> res;
+        helper(root, res);
+        return res;
+    }
+
+private:
+    void helper(TreeNode* root, vector<int>& res){
+        if(root == NULL){
+            return;
+        }
+        helper(root->left, res);
+        helper(root->right, res);
+        res.push_back(root->val);
+    }
+};
+*/
