@@ -1,0 +1,26 @@
+//核心点：对于每个位置，如果左右两侧都存在更高（实际找的是最高）的柱子，那这个位置是可以有雨水的
+//做法：对每个位置：在其左侧柱子中找最大值 并在其右侧柱子中找最大值，然后根据左右两侧最值计算雨水量
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        vector<int> left(height.size());
+        vector<int> right(height.size());
+        //每个柱子左边的最大值
+        for(int i = 1; i < height.size(); ++i){
+            left[i] = max(left[i-1], height[i-1]);
+        }
+        //每个柱子右边的最大值
+        for(int i = height.size() - 2; i >= 0; --i){
+            right[i] = max(right[i+1], height[i+1]);
+        }
+        //统计所有的雨水量
+        int totalRain = 0;
+        for(int i = 0; i < height.size(); ++i){
+            int h = min(left[i], right[i]);//低的柱子作为水面高度
+            if(h > height[i]){//水面高度要大于当前位置的高度
+                totalRain += h - height[i];
+            }
+        }
+        return totalRain;
+    }
+};
