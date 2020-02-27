@@ -1,0 +1,24 @@
+class Solution {
+public:
+    bool isValid(string s) {
+        vector<char> sta;
+        for(char c : s){
+            if(c == '(' || c == '{' || c == '['){//左括号直接入栈
+                sta.push_back(c);
+            }else{//右括号，判断栈顶
+                if(sta.empty()){
+                    return false;
+                }
+                if((c == ')' && sta.back() == '(') || 
+                   (c == '}' && sta.back() == '{') || 
+                   (c == ']' && sta.back() == '[') )
+                {
+                    sta.pop_back();
+                }else{
+                    return false;
+                }
+            }
+        }
+        return sta.empty();//栈是否为空（所有的左括号都恰好出栈）
+    }
+};
