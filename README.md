@@ -77,15 +77,7 @@
 
 
 - 结构体/类的比较函数的一般写法：
-1, 在外部实现：
-
-```C++
-    bool less(const A& a1, const A& a2) {
-        return a1 < a2;
-    }
-```
-
-2, 在结构体的内部实现：
+1, 在结构体的内部实现：
 
 ```C++
     struct Person {
@@ -97,6 +89,14 @@
     }
 ```
 
+
+2, 在外部实现：
+
+```C++
+    bool less(const Person& p1, const Person& p2) {
+        return p1.age < p2.age;
+    }
+```
 ### 典型题目
 - 976最大周长三角形
 - 524通过删除字母匹配到字典里最长单词
