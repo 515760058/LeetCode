@@ -1,0 +1,45 @@
+//先按出发点 排序
+//计算第一辆车(最前面的那辆车)，到达目的地的时间，
+//计算第二辆车，到达目的地的时间，并和前面的车相比（能否追上并组成车队）
+//......
+
+struct Car{
+    int distance;//到达目的地的距离
+    int speed;
+    float time;//到达目的地的时间
+};
+//按具体从小到大排序
+bool cmp(const Car& car1, const Car& car2){
+    return car1.distance < car2.distance;//提示：所有车的初始位置各不相同。
+}
+
+class Solution {
+public:
+    int carFleet(int target, vector<int>& position, vector<int>& speed) {
+        if(position.empty()){
+            return 0;
+        }
+        //把数据组合起来
+        vector<Car> car(position.size());
+        for(int i = 0; i < car.size(); ++i){
+            car[i].distance = target - position[i];
+            car[i].speed = speed[i];
+            car[i].time = 0.0;
+        }
+        //按距离排序
+        sort(car.begin(), car.end(), cmp);
+        //统计队伍数量
+        int team = 1;
+        car[0].time = car[0].distance * 1.0 / car[0].speed;//第一辆车
+        for(int i = 1; i < car.size(); ++i){
+            float time = car[i].distance * 1.0 / car[i].speed;
+            if(time > car[i-1].time){//追不上前面的车，新增一个队伍
+                ++team;
+                car[i].time = time;
+            }else{
+                car[i].time = car[i-1].time;//被前车阻挡，使用前车的时间
+            }
+        }
+        return team;
+    }
+};
