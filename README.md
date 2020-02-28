@@ -66,4 +66,44 @@
 
 - 127单词接龙    单词接龙II    433最小基因变化
 
+## 排序
+- C++的写法：
+
+```C++
+    #include <algorithm>
+    std::sort(a.begin(), a.end());   //默认std::less<int>(), 从小到大
+    std::sort(a.begin(), a.end(), std::greater<int>());   //从大到小  #include <functional>
+```
+
+
+- 结构体/类的比较函数的一般写法：
+1, 在外部实现：
+
+```C++
+    bool less(const A& a1, const A& a2) {
+        return a1 < a2;
+    }
+```
+
+2, 在结构体的内部实现：
+
+```C++
+    struct Person {
+        string name;
+        int age;
+        bool operator < (const Person& p) const { //重载小于运算符
+            return age < p.age;
+        }
+    }
+```
+
+### 典型题目
+- 976最大周长三角形
+- 524通过删除字母匹配到字典里最长单词
+- 75颜色分类
+- 767重构字符串
+- 853车队
+- 969煎饼排序
+
+
 
