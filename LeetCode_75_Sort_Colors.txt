@@ -1,0 +1,19 @@
+//统计排序
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        //统计每个数字出现的次数
+        vector<int> freq(3, 0);
+        for(int i = 0; i < nums.size(); ++i){
+            ++freq[nums[i]];
+        }
+        //根据次数，重写nums数组
+        int idx = 0;
+        for(int i = 0; i < freq.size(); ++i){
+            for(int j = 0; j < freq[i]; ++j){
+                nums[idx] = i;
+                ++idx;
+            }
+        }
+    }
+};
