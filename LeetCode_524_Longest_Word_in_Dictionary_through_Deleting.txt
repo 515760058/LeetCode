@@ -1,3 +1,6 @@
+//先对字典d进行排序（先按字符串的长度，再按字典顺序）
+//再对d中的每个字符串判断是否是s的子串
+
 //排序：先按字符串的长度，再按字典顺序
 bool cmp(const string& s1, const string s2){
     if(s1.size() != s2.size()){
