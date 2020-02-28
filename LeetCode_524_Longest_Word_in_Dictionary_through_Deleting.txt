@@ -1,0 +1,40 @@
+//排序：先按字符串的长度，再按字典顺序
+bool cmp(const string& s1, const string s2){
+    if(s1.size() != s2.size()){
+        return s1.size() > s2.size();
+    }
+    return s1 < s2;
+}
+
+class Solution {
+public:
+    string findLongestWord(string s, vector<string>& d) {
+        //排序
+        sort(d.begin(), d.end(), cmp);
+        //判断每个字符串，是否是s的子串
+        for(string& str : d){
+            if(isSubString(s, str)){
+                return str;
+            }
+        }
+        return "";
+    }
+private:
+    //判断str是否是s的子串
+    bool isSubString(string& s, string& str){
+        if(str.size() >= s.size()){
+            return str == s;
+        }
+        int idx = 0;
+        for(int i = 0; i < str.size(); ++i){
+            while(idx < s.size() && s[idx] != str[i]){
+                ++idx;
+            }
+            ++idx;
+            if(idx <= s.size() && i == str.size()-1){
+                return true;
+            }
+        }
+        return false;
+    }
+};
