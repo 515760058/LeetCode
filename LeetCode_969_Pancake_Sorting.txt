@@ -1,0 +1,23 @@
+//按数字处理：
+//  先把最大的数字弄到正确的位置：找到它的下标, 先翻到第一个位置，再翻到最后一个位置
+//  再处理第二大的数字：找到它的下标, 先翻到第一个位置，再翻到倒数第二个位置
+//  .....
+
+class Solution {
+public:
+    vector<int> pancakeSort(vector<int>& A) {
+        vector<int> res;
+        for(int i = A.size(); i > 0; --i){//每次寻找最大的数字i
+            int idx = max_element(A.begin(), A.begin()+i) - A.begin() + 1;//数字i的idx (下标从1开始计算)
+            if(idx != i){//数字i的位置不正确：就先把数字i翻转到第一个数字 然后再把数字i翻转到正确的位置
+                //记录翻转操作
+                res.push_back(idx);
+                res.push_back(i);
+                //对应操作数组
+                reverse(A.begin(), A.begin() + idx);
+                reverse(A.begin(), A.begin() + i);
+            }
+        }
+        return res;
+    }
+};
