@@ -1,0 +1,43 @@
+//判断是否可以重构：统计每个字符的出现次数，当某个字符的出现次数大于字符总数的一半时，必然无法进行重构，返回空字符串
+//重构思路：
+//  出现最多的字符：放在0, 2, 4, 6, 8.....
+//  出现次多的字符接着放: 依次放下去, 直到偶数位置放完了再开始放奇数位置
+
+struct MyStruct{
+    char c;//字符
+    int freq;//出现次数
+};
+//按出现次数 从大到小排序
+bool cmp(const MyStruct& s1, const MyStruct& s2){
+    return s1.freq > s2.freq;
+}
+
+class Solution {
+public:
+    string reorganizeString(string S) {
+        //统计每个字符的出现次数
+        vector<MyStruct> num(26);
+        for(int i = 0; i < S.size(); ++i){
+            num[S[i] - 'a'].c = S[i];
+            num[S[i] - 'a'].freq++;
+        }
+        //按出现次数 从大到小排序
+        sort(num.begin(), num.end(), cmp);
+        //判断是否可以重构
+        if(num[0].freq > (S.size()+1)/2){
+            return "";
+        }
+        //开始重构
+        int idx = 0;//先放偶数位置
+        for(int i = 0; i < num.size(); ++i){
+            for(int j = 0; j < num[i].freq; ++j){
+                S[idx] = num[i].c;
+                idx += 2;
+                if(idx >= S.size()){
+                    idx = 1;//切换到奇数位置
+                }
+            }
+        }
+        return S;
+    }
+};
