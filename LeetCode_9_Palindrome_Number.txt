@@ -1,0 +1,14 @@
+//负数(有负号)不可能是回文数
+//非负数：转成字符串然后判断回文数
+class Solution {
+public:
+    bool isPalindrome(int x) {
+        if(x < 0){
+            return false;
+        }
+        string x1, x2;
+        x1 = x2 = to_string(x);//转成字符串
+        reverse(x1.begin(), x1.end());//翻转x1
+        return x1 == x2;
+    }
+};
