@@ -1,3 +1,5 @@
+//    int num = atoi(str);
+//    string str = to_string(num);
 class Solution {
 public:
 	int myAtoi(string str) {
