@@ -1,0 +1,30 @@
+//对字符串从左到右来，如果当前字符代表的值不小于其右边，就加上该值；否则就减去该值。
+//以此类推到最左边的数，最终得到的结果即是答案
+class Solution {
+public:
+    int romanToInt(string s) {
+        int num = 0;
+        for(int i = 0; i < s.size(); ++i){
+            if(i > 0 && char2int(s[i]) > char2int(s[i-1])){
+                num += ( char2int(s[i]) -2*char2int(s[i-1]) );
+            }else{
+                num += char2int(s[i]);
+            }
+        }
+        return num;
+    }
+
+private:
+    int char2int(char c){
+        switch(c){
+            case 'I': return 1;
+            case 'V': return 5;
+            case 'X': return 10;
+            case 'L': return 50;
+            case 'C': return 100;
+            case 'D': return 500;
+            case 'M': return 1000;
+            default : return 0;
+        }
+    }
+};
