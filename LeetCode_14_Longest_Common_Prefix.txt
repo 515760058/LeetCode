@@ -1,0 +1,23 @@
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {
+        //检验入参
+        if(strs.empty()){
+            return "";
+        }
+        //数组中只有一个字符串，它本身就是最长公共前缀
+        if(strs.size() == 1){
+            return strs[0];
+        }
+        //数组中有多个字符串，先选择第一个str的第i个字母，依次和后续str的第i个字母做对比
+        for(int i = 0; i < strs[0].size(); ++i){//第一个str的第i个字母
+            for(int j = 1; j < strs.size(); ++j){//第j个str的第i个字母
+                if(strs[0][i] != strs[j][i]){//对比不成功，公共子串到此结束
+                    return strs[0].substr(0, i);//截取第一个str的前i个字符
+                }
+            }
+        }
+        //第一个str自身就是最长公共前缀
+        return strs[0];
+    }
+};
