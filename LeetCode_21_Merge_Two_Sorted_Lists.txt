@@ -1,0 +1,54 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+    /*
+    归并排序的链表版本。。。
+    */
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        //存在空链表的情况
+        if(l1==NULL || l2==NULL){
+            return l1 ? l1 : l2;
+        }
+        
+        //两个链表都不为空，以l1为基础，进行归并排序
+        ListNode *temp1=l1, *temp2=l2, *p=NULL, *pre=NULL;//pre始终是temp1的前一个结点
+        while(temp1 && temp2){
+            if(temp1->val > temp2->val){//temp2结点的值小,要把temp2插在temp1前面
+                p = temp2->next;//先保留l2的下一个结点
+                if(temp1 == l1){//temp2要插入到l1的第一个结点之前
+                    temp2->next = temp1;//插入
+                    l1 = temp2;//temp2成为l1的头结点
+                    
+                }else{//temp2插入到中间结点
+                    p = temp2->next;//下一个结点
+                    temp2->next = temp1;//插入
+                    pre->next = temp2;//插入 
+                }
+                pre = temp2;//temp2插入到temp1之前，那么pre就该指向该结点
+                temp2 = p;//temp2指向l2的下一个结点
+            }else{//temp2结点的值大(temp1小)，那么不需要改动temp1，就看下一个temp1
+                pre = temp1;
+                temp1 = temp1->next;
+            }
+        }
+        
+        //当l2还有剩余元素时，把剩余元素都加到l1的末尾
+        // (此时temp1是null，而pre正好就是新l1链表的最后一个结点)
+        if(temp2){
+            pre->next = temp2;
+        }
+        
+        //当l1还有剩余元素时，因为就是以l1为基础排序的，所以剩下的元素本来就在l1中
+        // nothing to do.
+        
+        return l1;
+        
+    }
+};
