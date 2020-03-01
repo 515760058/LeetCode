@@ -1,0 +1,42 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode* head = NULL;// 结果链表的头指针
+        ListNode* tail = NULL;// 结果链表的尾指针
+        int carry = 0;
+        
+        while(l1 || l2){
+            int x = l1 ? l1->val : 0;
+            int y = l2 ? l2->val : 0;
+            int sum = x + y + carry;
+            //进位 与 和
+            carry = sum / 10;
+            sum %= 10;
+            // 保存这个节点
+            ListNode * temp = new ListNode(sum);
+            if(head == NULL){ // 头结点
+                head = temp;
+            }else{ // 非头节点
+                tail->next = temp;
+            }
+            tail = temp;
+            
+            l1 = l1 ? l1->next : NULL;
+            l2 = l2 ? l2->next : NULL;
+        }
+        //最高位(可能)还有一个进位
+        if(carry){
+            ListNode * temp = new ListNode(carry);
+            tail->next = temp;
+        }
+        return head;
+    }
+};
