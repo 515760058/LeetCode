@@ -1,11 +1,12 @@
 //参考leetcode 16题最接近的三数之和
+//leetcode18 四数之和（多指针）
 class Solution {
 public:
     vector<vector<int>> threeSum(vector<int>& nums) {
         vector<vector<int>> s;
         sort(nums.begin(), nums.end());//排序
         for(int i = 0; i < nums.size(); ++i){//这个方法  想起了 从数组中任选三个数字，能组成多少个三角形 那道题
-            if(i != 0 && nums[i-1] == nums[i]){
+            if(i != 0 && nums[i-1] == nums[i]){//相等的数字就pass了
                 continue;
             }
             int left = i+1, right = nums.size()-1;
