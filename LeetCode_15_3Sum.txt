@@ -1,0 +1,61 @@
+//参考leetcode 16题最接近的三数之和
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> s;
+        sort(nums.begin(), nums.end());//排序
+        for(int i = 0; i < nums.size(); ++i){//这个方法  想起了 从数组中任选三个数字，能组成多少个三角形 那道题
+            if(i != 0 && nums[i-1] == nums[i]){
+                continue;
+            }
+            int left = i+1, right = nums.size()-1;
+            while(left < right){
+                if (left != i+1 && nums[left-1] == nums[left]) {
+                    left++;
+                    continue;
+                }
+                int current = nums[i] + nums[left] + nums[right] ;
+                if(current == 0){
+                    s.push_back( {nums[i], nums[left], nums[right]} );//找到了一组答案
+                    --right;
+                    ++left;
+                }else if (current > 0){
+                    --right;
+                }else{
+                    ++left;
+                }
+            }
+        }
+        return s;
+    }
+};
+
+class Solution {
+   //  311/313个通过测试用例   然后超出时间限制了！回溯法有点不行
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        sort(nums.begin(), nums.end());//排序
+        
+        set<vector<int>> res;//使用集合去除重复
+        vector<int> temp;
+        recall(nums, res, temp, 0, 0);
+        
+        vector<vector<int>> fin_res(res.begin(), res.end());//把集合转换成vector
+        return fin_res;
+    }
+private:
+    //target: a+b+c的和
+    void recall(vector<int>& nums, set<vector<int>>& res, vector<int>& temp, int target, int start){
+        if(temp.size() == 3){
+            if(target == temp[0] + temp[1] + temp[2]){
+                res.insert(temp);
+            }
+            return;
+        } 
+        for(int i = start; i < nums.size(); ++i){
+            temp.push_back(nums[i]);
+            recall(nums, res, temp, target, i+1);
+            temp.pop_back();
+        }
+    }
+};
