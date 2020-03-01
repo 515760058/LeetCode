@@ -1,0 +1,98 @@
+//LeetCode15 LeetCode18
+
+//暴力法：
+class Solution {
+public:
+    int threeSumClosest(vector<int>& nums, int target) {
+        int gap = INT_MAX;//间隔
+        int sum; 
+        for(int i = 0; i < nums.size(); ++i){
+            for(int j = i+1; j < nums.size(); ++j){
+                for(int k = j+1; k < nums.size(); ++k){
+                    int temp = nums[i] + nums[j] + nums[k];
+                    if(abs(temp-target) < gap){//间隔更小，则和更接近target
+                        gap = abs(temp - target);
+                        sum = temp;
+                    }
+                }
+            }
+        }
+        return sum;
+    }
+};
+
+
+
+//leetcode上时间很快的解答方案： leetcode15三数之和
+class Solution {
+public:
+    int threeSumClosest(vector<int>& nums, int target) {
+        if(nums.size() <= 3){
+            int result = 0;
+            for(int i = 0; i < nums.size(); i ++){
+                result += nums[i];
+            }
+            return result;
+        }
+
+        sort(nums.begin(), nums.end());
+        int sum = nums[0] + nums[1] + nums[2];
+        for(int i=0; i<nums.size(); ++i){//这个方法  想起了 从数组中任选三个数字，能组成多少个三角形 那道题
+            int left = i+1, right = nums.size()-1;
+            while(left < right){
+                //选中的三个数的和
+                int current = nums[left] + nums[right] + nums[i];
+                
+                if(abs(target - current) < abs(target - sum)){
+                    sum = current;
+                    if(sum == target)
+                        return sum;
+                }
+                
+                if(current > target){
+                    --right;
+                }else{
+                    ++left;
+                }    
+            }
+        }
+        return sum;
+    }
+};
+
+
+/*
+class Solution {
+private:
+    //    三个数可以用三重循环。。。
+    //    但是此题还是用回溯算法：为了适用于更多的数字，也为了练习并熟悉回溯算法。
+    //    但是我写的这个回溯算法很慢
+    
+    //从nums中选k个数字，它们的和sum尽量是target。 deep记录已经选了多少个数字
+    void recall(vector<int>& nums, int k, int start, int target, vector<int>& temp, int& nearestSum){
+        if(temp.size() >= k){
+            int sum = accumulate(temp.begin(), temp.end(), 0);
+            nearestSum = abs(sum-target)<=abs(nearestSum-target) ? sum : nearestSum ;
+            return;
+        }
+        for(int i=start; i<nums.size(); ++i){
+            temp.push_back( nums[i] );
+            recall(nums, k, i+1, target, temp, nearestSum);
+            temp.pop_back();
+        }
+    }
+    
+public:
+    int threeSumClosest(vector<int>& nums, int target) {
+        int k = 3;//三个数
+        int size = nums.size();
+        assert(size >= k);
+        
+        int nearestSum = nums[0] + nums[1] + nums[2];;//最接近target的三个数字的和
+        
+        vector<int> temp;
+        recall(nums, k, 0, target, temp, nearestSum);
+        return nearestSum;
+    }
+};
+*/
