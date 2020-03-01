@@ -1,0 +1,69 @@
+//方法1：先遍历求出长度，再从前往后遍历找到并删除
+//方法2: 双指针。指针A先前进n，然后指针B开始；当A到结尾时，B就正好在待删除的节点的前一个节点
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        //计算链表的长度length
+        ListNode* temp = head;
+        int length = 0;
+        while(temp != NULL){
+            ++length;
+            temp = temp->next;
+        }
+        
+        if(length<n || n<=0){//判断n是否符合条件
+            return head;
+        }
+        if(length == n){//如果是删除头结点
+            head = head->next;
+            return head;
+        }
+        //temp指针先走n-1个结点
+        temp = head;
+        for(int i=0; i<n-1; ++i){
+            temp = temp->next;
+        }
+        //两个指针一起走, 找到待删除节点  和 前一个结点
+        ListNode *node2delete=head,  *pre=NULL;
+        while(temp->next != NULL){
+            temp = temp->next;
+            pre = node2delete;
+            node2delete = node2delete->next;
+        }
+        pre->next = node2delete->next;
+        return head;
+    }
+};
+
+
+
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {   
+        ListNode* dummy = new ListNode(NULL);
+        dummy->next = head;  //添加头节点，便于操作
+        ListNode* slow = dummy;
+		ListNode* fast = dummy;
+        int distance=0;
+        while(fast->next){
+            if(distance < n){//先走快指针
+                fast = fast->next;
+                distance++;
+            }else{//两个指针一起走
+                fast = fast->next;
+                slow = slow->next;
+            }
+        }
+        slow->next = slow->next->next;
+        return dummy->next;
+    }
+};
