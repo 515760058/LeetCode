@@ -1,0 +1,28 @@
+/* 解题思路分析
+    1.定义两个指针，left和right，初始时，指向首部和尾部；
+    2.计算两个指针之间的面积area1 = min(height[left]，height[right])*(right-left)；
+    3.maxArea = Max(maxArea,area1);
+    4.height[left]和height[right]，谁小谁往里面走；
+*/
+
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int start = 0;
+        int end = height.size() - 1;
+        
+        int water = 0;
+        while(start < end){
+            int h = min(height[start], height[end]);
+            int temp = (end - start) * h;
+            water = max(water, temp);
+            
+            if(height[start] < height[end]){
+                ++start;
+            }else{
+                --end;
+            }
+        }
+        return water;
+    }
+};
