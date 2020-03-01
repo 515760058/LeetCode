@@ -1,0 +1,68 @@
+class Solution {
+public:
+    //中心扩展算法  此外还有动态规划
+    string longestPalindrome(string s) {
+        int length = s.length();
+        int sinLen = 0, sinIndex = -1;//单中心的最大长度与对应下标
+        int douLen = 0, douIndex = -1;//双中心的最大长度与对应下标
+        
+        for(int i = 0; i < length; ++i){
+            int len1 = expand(s, i);//以i为单中心的 回文串长度
+            int len2 = expand(s, i, i+1);//以i和i+1为双中心的 回文串长度
+            if(sinLen < len1){
+                sinLen = len1;
+                sinIndex = i;
+            }
+            if(douLen < len2){
+                douLen = len2;
+                douIndex = i;
+            }
+        }
+        //准备返回结果
+        string result;
+        int index;//从s中截取回文子串的起始下标,
+        if(sinLen > douLen){
+            index = sinIndex-(sinLen-1)/2;
+            result = s.substr(index, sinLen);
+        }else{
+            index = douIndex-(douLen/2)+1;
+            result = s.substr(index, douLen);
+        }
+        return result;
+    }
+    
+private:
+    int expand(string s, int center){
+        int length = s.length();
+        // "aba"  b是单中心
+        int len = 1;//这种情况的回文起始长度
+        int left = center-1, right = center+1;
+        while(left >= 0 && right < length){
+            if( s[left] == s[right] ){
+                len += 2;//每次增2
+                --left;
+                ++right;
+            }else{
+                break;
+            }
+        }
+        return len;
+    }
+    
+    int expand(string s, int center1, int center2){
+        int length = s.length();
+        // "abba" 两个b是双中心
+        int len = 0;//这种情况的回文起始长度
+        while(center1 >= 0 && center2 < length){
+            if(s[center1] == s[center2]){
+                len += 2;//每次增2
+                --center1;
+                ++center2;
+            }else{
+                break;
+            }
+        }
+        return len;
+    }
+};
+};
