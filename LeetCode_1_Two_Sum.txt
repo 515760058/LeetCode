@@ -1,0 +1,40 @@
+class Solution {
+public:
+    //使用map
+    vector<int> twoSum(vector<int>& nums, int target) {
+        map<int, int> m;//key：数字   value：数字的下标
+        for(int i = 0; i < nums.size(); ++i){
+            m[nums[i]] = i;
+        }
+        for(int i = 0; i < nums.size(); ++i){
+            int a = target - nums[i];
+            if( m.count(a) && m[a] != i){//不能重复利用这个数组中同样的元素
+                //对两个下标比较一下大小，然后return
+                if (i < m[a]){
+                    return {i, m[a]};
+                }else{
+                    return {m[a], i};
+                }
+            }
+        }
+        return {};
+    }
+};
+
+
+/*
+class Solution {
+public:
+    //暴力法
+    vector<int> twoSum(vector<int>& nums, int target) {
+        for(int i = 0; i < nums.size(); ++i){
+            for(int j = i + 1; j <nums.size(); ++j){
+                if(nums[i] + nums[j] == target){
+                    return {i, j};
+                }
+            }
+        }
+        return {};
+    }
+};
+*/
