@@ -1,0 +1,48 @@
+//C++ 单队列实现栈
+class MyStack {
+public:
+    /** Initialize your data structure here. */
+    MyStack() {
+
+    }
+    
+    /** Push element x onto stack. */
+    void push(int x) {
+        que.push(x);
+        //把x之前的数据，都弹出来并重新push到队尾
+        for(int size = que.size() - 1; size > 0; --size){
+            int element = que.front();
+            que.pop();
+            que.push(element);
+        }
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    int pop() {
+        int element = que.front();
+        que.pop();
+        return element;
+    }
+    
+    /** Get the top element. */
+    int top() {
+        return que.front();
+    }
+    
+    /** Returns whether the stack is empty. */
+    bool empty() {
+        return que.empty();
+    }
+
+private:
+    queue<int> que;
+};
+
+/**
+ * Your MyStack object will be instantiated and called as such:
+ * MyStack* obj = new MyStack();
+ * obj->push(x);
+ * int param_2 = obj->pop();
+ * int param_3 = obj->top();
+ * bool param_4 = obj->empty();
+ */
