@@ -1,5 +1,93 @@
 # LeetCode算法
 
+## 常用函数整理
+### 求和
+### 进制转换
+### 字符串
+### (二分)查找
+### 最大/小值
+
+STL算法常用函数：
+排列组合：
+next_permutation() 是取出当前范围内的排列，并重新排序为下一个排列，
+prev_permutation() 是取出指定范围内的序列并将它重新排序为上一个序列。
+如果不存在下一个序列或上一个序列则返回 false，否则返回 true
+求和/拼接：
+对于数值型的vec，求和：
+int sum = accumulate(vec.begin() , vec.end() , 0);
+对于string型的vec，拼接：
+vector<string> vec{"abc", "def", "ghj"};     
+string str = accumulate(vec.begin() , vec.end() , string("xxx"));   //结果是”xxxabcdefghj”
+
+转换transform
+transform(S.begin(), S.end(), S.begin(), ::toupper);//小写字母转大写
+
+//删去所有的破折号
+for(auto it=S.begin(); it != S.end(); ++it)
+    if(*it == '-'){
+        S.erase(it);
+        --it;
+  }
+}
+
+//最大值 最小值的迭代器
+Auto iter  = min_element(houses.begin(), houses.end());
+Auto iter  = max_element(houses.begin(), houses.end());
+二分查找
+lower_bound ：返回一个非递减序列[first, last)中的第一个大于等于值val的位置（迭代器）
+upper_bound：返回一个非递减序列[first, last)中的第一个大于值val的位置（迭代器）
+
+binary_search(beg,end,val)： 以二分法检索的方式在[beg,end）之间查找val，找到返回true，找不到返回false。
+equal_range(beg,end,val)：返回一个迭代器对(i,j)，其中i是在不破坏次序的前提下，value可插入的第一个位置（>=亦即lower_bound），j则是在不破坏次序的前提下，value可插入的最后一个位置（>亦即upper_bound）因此，[i,j)内的每个元素都等同于value，而且[i,j)是[beg,end)之中符合此一性质的最大子区间
+字符串 <==> 数字
+123 = atoi(“123”)   
+“123” = to_string(123)
+
+进制转换
+
+#include<cstdio>
+#include<cstdlib> 
+strtol 函数：将一个任意1-36进制数转化为10进制数，返回是long int型。
+ 函数为long int strtol(const char *nptr, char **endptr, int base)
+ base是要转化的数的进制，非法字符会赋值给endptr，nptr是要转化的字符，例如：
+char buffer[20]="10379cend$3";  //8进制
+char *stop;
+Long int num = strtol(buffer, &stop, 8));   //10进制结果num=543  stop=”9cend$3” 
+
+itoa()函数：将一个10进制数转换为任意的2-36进制字符串
+函数原型：char*  itoa(int value, char*string, int radix);
+例如：itoa(num, str, 2); num是一个int型的，是要转化的10进制数，str是转化结果，后面的值为目标进制。
+
+Vector
+//放入/移除： Push_back(xx)   pop_back()
+//第一个/最后一个元素   front()    back()
+//删除（区间）  Erase(iter)    erase(begin, end)    包括begin不含end：[begin, end)
+clear();   //清空vec的所有元素
+empty(); //判断a是否为空，空则返回true，非空则返回false
+
+#include<algorithm>
+sort(a.begin(), a.end(), cmp);  //排序
+reverse(a.begin(), a.end());   //倒置
+Int idx = find(a.begin(), a.end(), value) - a.begin();   //查找value的下标
+
+二维数组
+Vector<vector<int>>  num(row, vector<int>(col, value)); //row行col列 初始值value
+
+结构体：
+struct A {
+	int id;
+Int age;
+	string name;
+ 	//重载小于运算符，可以创建set<A> s;
+	bool operator<(const A &b) const {
+If(id== b.id){//根据id去重
+Return false; 
+}
+		return age < b.age;//按年龄排序
+	}
+};
+
+
 ## 并查集
 ### 相关链接
 1, https://blog.csdn.net/qq_35546304/article/details/51879063
