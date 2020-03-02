@@ -1,0 +1,44 @@
+//动态规划  LeetCode62
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        if (obstacleGrid.empty()){
+            return 0;
+        }
+        //入口有障碍的话，直接返回
+        if (obstacleGrid[0][0] == 1){
+            return 0;
+        }
+        
+        int row = obstacleGrid.size();
+        int col = obstacleGrid[0].size();
+        vector<vector<long>> dp(row, vector<long>(col, 0)); // 初始化为0
+        
+        dp[0][0] = 1;//有一行一列的情况
+        //第一列有障碍物时，初始值
+        for(int i = 1; i < row; ++i){
+            if(obstacleGrid[i][0]){//有障碍物，则此处以及下方的dp值都是0
+                break;
+            }
+            dp[i][0] = 1;
+        }
+        //第一行有障碍物时，初始值
+        for(int i = 1; i < col; ++i){
+            if(obstacleGrid[0][i]){//有障碍物，则此处以及右方的dp值都是0
+                break;
+            }
+            dp[0][i] = 1;
+        }
+        //二维dp
+        for(int i = 1; i < row; ++i){
+            for(int j = 1; j < col; ++j){
+                if(obstacleGrid[i][j]){
+                    //dp[i][j] = 0;//(有障碍，此处不可到达，已经初始化为0了)
+                }else{
+                    dp[i][j] = dp[i-1][j] + dp[i][j-1];//状态转移
+                }
+            }
+        }
+        return dp[row-1][col-1];
+    }
+};
