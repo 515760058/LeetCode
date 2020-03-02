@@ -1,0 +1,19 @@
+/*
+动态规划：
+  只能向下或者向右移动一步:
+    说明当前这个位置，可以由上方(x种方法)或者左方(y种方法)走过来，共计(x+y)种方式。
+*/
+
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<vector<int>> dp(m, vector<int>(n, 1)); //m行n列，全部初始化为1 第一行第一列都只有一种走法
+        
+        for(int i = 1; i < m; ++i){
+            for(int j = 1; j < n; ++j){
+                dp[i][j] = dp[i-1][j] + dp[i][j-1];
+            }
+        }
+        return dp[m-1][n-1];
+    }
+};
