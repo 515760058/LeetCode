@@ -1,0 +1,57 @@
+//用并查集找到所有可交换位置的集合，排序每个集合内的字符，再插回原字符串。
+//例如s = "dcabfge", pairs = [[0,3],[1,2],[0,2],[4,6]]
+//那么可交换的集合有[0,1,2,3]、[4,6]
+//排序后的字符分别为'abcd', 'ef'
+//插回原字符串最终s = "abcdegf"
+
+class Solution {
+public:
+    string smallestStringWithSwaps(string s, vector<vector<int>>& pairs) {
+        //并查集初始化
+        map<int, int> m;
+        for(int i = 0; i < s.size(); ++i){
+            m[i] = i;
+        }
+        //构建并查集
+        for(auto& pair : pairs){
+            int root1 = findRoot(m, pair[0]);
+            int root2 = findRoot(m, pair[1]);
+            //小数字做为根, 以免循环指向
+            if(root1 >= root2){
+                m[root1] = root2;
+            }else{
+                m[root2] = root1;
+            }
+        }
+        //根据并查集m，重建集合myset   
+        map<int, vector<int>> myset; //key:root  value: node of this root.
+        for(int i = 0; i < s.size(); ++i){
+            myset[findRoot(m, i)].push_back(i);
+        }
+        //根据集合myset, 重构字符串
+        for(auto iter = myset.begin(); iter != myset.end(); ++iter){
+            auto& vec = iter->second;
+            sort(vec.begin(), vec.end());
+            //按照vec中的下标, 把该集合的字符都取出来  排序
+            string temp;
+            for(int idx : vec){
+                temp += s[idx];
+            }
+            sort(temp.begin(), temp.end());
+            //重构这些下标的字符
+            for(int i = 0; i < vec.size(); ++i){
+                s[vec[i]] = temp[i];
+            }
+        }
+        return s;
+    }
+
+private:
+    //并查集寻找跟根节点
+    int findRoot(map<int, int>& m, int i){
+        if(m[i] == i){
+            return i;
+        }
+        return findRoot(m, m[i]);
+    }
+};
