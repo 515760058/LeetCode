@@ -1,0 +1,59 @@
+//BFS思路：https://leetcode-cn.com/problems/sliding-puzzle/solution/c-bfs-by-justfun/
+
+/*
+定义2x3数组中的位置:
+  0 | 1 | 2
+  3 | 4 | 5
+*/
+//谜板的状态
+struct State {
+    string str; //谜板状态
+    int idx;    //当前str状态中‘0’的下标
+    int step;   //当前状态需要的移动步数
+};
+
+class Solution {
+public:
+    int slidingPuzzle(vector<vector<int>>& board) {
+        string start, dest = "123450";
+        for (int i = 0; i < 2; i++){
+            for (int j = 0; j < 3; j++){
+                start.push_back(board[i][j] + '0');
+            }
+        }
+        if(start == dest){
+            return 0;
+        }
+
+        vector<vector<int>> next = {
+            {1, 3},    //当‘0’在位置0时，可以往位置1或3移动
+            {0, 2, 4}, //当‘0’在位置1时，可以往位置0或2或4移动
+            {1, 5},    //......
+            {0, 4}, 
+            {1, 3, 5}, 
+            {2, 4},
+        };
+        //BFS
+        queue<State> q;
+        q.push({start, start.find("0"), 0});//起始状态
+        set<string> record {start};//记录出现过的谜板状态
+        while(!q.empty()){
+            State state = q.front();
+            q.pop();
+            string& str = state.str;
+            for(int nextIdx : next[state.idx]){
+                //交换到下一个可能的状态
+                string temp = str;
+                swap(temp[nextIdx], temp[state.idx]);
+                if(temp == dest){//交换后的temp 正好是答案
+                    return state.step + 1;
+                }
+                if(record.count(temp) == 0){//校验以前是否出现过该状态，并push到队列
+                    record.insert(temp);
+                    q.push({temp, nextIdx, state.step+1});
+                }
+            }
+        }
+        return -1;
+   }
+};
