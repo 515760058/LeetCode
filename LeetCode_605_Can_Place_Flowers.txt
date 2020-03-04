@@ -1,0 +1,38 @@
+//最左边i=0 :  位置1没有花
+//最右边    前一个位置没有花
+//中间位置i： i-1  i  i+1都是0
+class Solution {
+public:
+    bool canPlaceFlowers(vector<int>& flowerbed, int n) {
+        //花坛是特殊情况时
+        if(flowerbed.size() == 0){
+            return false;
+        }else if(flowerbed.size() == 1){//花坛只有一个长度
+            if(flowerbed[0] == 0){//可以种一个
+                return n <= 1;
+            }else{//不能种
+                return n <= 0;
+            }
+        }
+        //一般情况
+        int flower = 0;//能种多少花
+        //最左侧
+        if(flowerbed[0] == 0 && flowerbed[1] == 0){
+            ++flower;
+            flowerbed[0] = 1;
+        }
+        //最右侧
+        if(flowerbed.back() == 0 && flowerbed[flowerbed.size()-2] == 0){
+            ++flower;
+            flowerbed[flowerbed.size()-1] = 1;
+        }
+        //中间位置
+        for(int i = 1; i < flowerbed.size() - 1; ++i){
+            if(flowerbed[i-1] == 0 && flowerbed[i] == 0 && flowerbed[i+1] == 0){
+                ++flower;
+                flowerbed[i] = 1;
+            }
+        }
+        return flower >= n;
+    }
+};
