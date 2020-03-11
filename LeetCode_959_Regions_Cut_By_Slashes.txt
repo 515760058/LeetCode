@@ -1,0 +1,48 @@
+//构造大的网格，DFS
+//https://leetcode-cn.com/problems/regions-cut-by-slashes/solution/c-gou-zao-da-wang-ge-dfs-by-jian-liao/
+
+class Solution {
+public:
+    int regionsBySlashes(vector<string>& grid) {
+        //构造大的网格
+        int N = grid.size();
+        vector<vector<int> > bigGrid(3*N, vector<int>(3*N, 0));
+        for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < N; ++j) {
+                int r = 3 * i;
+                int c = 3 * j;
+                if (grid[i][j] == '/') {
+                    bigGrid[r][c+2] = bigGrid[r+1][c+1] = bigGrid[r+2][c] = 1;
+                } else if (grid[i][j] == '\\') {
+                    bigGrid[r][c] = bigGrid[r+1][c+1] = bigGrid[r+2][c+2] = 1;
+                }
+            }
+        }
+        //DFS
+        int res = 0;
+        for (int i = 0; i < bigGrid.size(); ++i) {
+            for (int j = 0; j < bigGrid[0].size(); ++j) {
+                if (bigGrid[i][j] == 0) {
+                    dfs(bigGrid, i, j);
+                    ++res;
+                }
+            }
+        }
+        return res;
+    }
+
+private:
+    void dfs(vector<vector<int>>& grid, int i, int j) {
+        int row = grid.size();
+        int col = grid[0].size();
+        if(i < 0 || i >= row || j < 0 || j >= col || grid[i][j]){
+            return;
+        }
+        grid[i][j] = 1;
+        dfs(grid, i-1, j);
+        dfs(grid, i+1, j);
+        dfs(grid, i, j-1);
+        dfs(grid, i, j+1);
+
+    }
+};
