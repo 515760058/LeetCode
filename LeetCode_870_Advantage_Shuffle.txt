@@ -1,0 +1,33 @@
+//先对A数据从小到大排序   并建立一个数组free,表示A中的每个元素是否已经被使用过
+//对B中的每个元素，从A中找一个刚好大于它的数（并且A的该元素没有被使用过）
+//（注意：使用二分法upper_bound确立起始下标，否则会超时）
+
+class Solution {
+public:
+    vector<int> advantageCount(vector<int>& A, vector<int>& B) {
+        sort(A.begin(), A.end());  //对A进行从小到大排序
+        vector<bool> free(A.size(), true);//表示A中的数 是否已经被使用过
+        vector<int> res(A.size());
+        //对B中的每个元素，从A中找一个刚好大于它的数
+        for(int i =0; i < B.size(); ++i){
+            int j = upper_bound(A.begin(), A.end(), B[i]) - A.begin();//使用STL中的二分法，在A中寻找第一个大于B[i]的下标
+            for(; j < A.size(); ++j){
+                if(free[j] ){//并且 这个A[j]没有被使用过
+                    free[j] = false;
+                    res[i] = A[j];
+                    break;
+                }
+            }
+            if(j == A.size()){//没找到大于B[i]的数, 或者大于B[i]的数都被使用过了, 就在A中从头找一个没使用过的数
+                for(j = 0; j < A.size(); ++j){
+                    if(free[j]){
+                        free[j] = false;
+                        res[i] = A[j];
+                        break;
+                    }
+                }
+            }            
+        }
+        return res;
+    }
+};
