@@ -1,0 +1,38 @@
+//拓扑排序 判断图中是否存在环
+class Solution {
+public:
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<int> indegree(numCourses, 0);//每个顶点的入度
+        vector<vector<int>> vec(numCourses);//顶点及其后继
+        //统计顶点的入度 和 它的后继
+        for(vector<int>& pre : prerequisites){
+            ++indegree[pre[0]];
+            vec[pre[1]].push_back(pre[0]);
+        }
+        //起始状态 将入度为0的顶点放入队列中
+        queue<int> que;
+        for(int i = 0; i < numCourses; ++i){
+            if(indegree[i] == 0) {
+                que.push(i);
+            }
+        }
+        //拓扑排序的顶点数量
+        int cnt = 0;
+        //依次取出入度为0的顶点，并删除该顶点在图中的边
+        while(!que.empty()){
+            //取出w (对w进行拓扑排序)
+            int w = que.front();
+            que.pop();
+            ++cnt;
+            //删除w的边: w所有的后继，入度都减一
+            for(int u : vec[w]){
+                --indegree[u];
+                if(indegree[u] == 0){
+                    que.push(u);
+                }
+            }
+        }
+        //若所有的顶点都拓扑排序了，则此图就不存在环。
+        return cnt == numCourses;
+    }
+};
