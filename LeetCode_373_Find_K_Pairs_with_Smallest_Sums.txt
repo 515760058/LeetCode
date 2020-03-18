@@ -1,0 +1,24 @@
+//暴力求解
+
+bool cmp(const vector<int>& v1, const vector<int>& v2){
+    return (v1[0] + v1[1]) < (v2[0] + v2[1]);
+}
+
+class Solution {
+public:
+    vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+        vector<vector<int>> pairs;
+        for(int i = 0; i < nums1.size(); ++i){
+            for(int j = 0; j < nums2.size(); ++j){
+                pairs.push_back( {nums1[i], nums2[j]} );
+            }
+        }
+        sort(pairs.begin(), pairs.end(), cmp);
+        
+        if(pairs.size() < k){
+            return pairs;
+        }
+        vector<vector<int>> res(pairs.begin(), pairs.begin()+k);
+        return res;
+    }
+};
