@@ -193,5 +193,19 @@ Return false;
 - 853车队
 - 969煎饼排序
 
+## 拓扑排序
+DAG，有向无环图，可以求拓扑排序，关键路径
+### 相关链接
+1, https://blog.csdn.net/qq_38984851/article/details/82844186
+
+2, https://www.jianshu.com/p/3347f54a3187
+
+3, https://blog.csdn.net/qq_41713256/article/details/80805338
+
+4, https://www.cnblogs.com/bigsai/p/11489260.html
+
+### 典型题目
+- 207. 课程表(判断图中是否存在环)
+- 210. 课程表II (求出一种拓扑排序的序列)
 
 
