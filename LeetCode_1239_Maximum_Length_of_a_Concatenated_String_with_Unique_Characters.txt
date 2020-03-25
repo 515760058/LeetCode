@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int maxLength(vector<string>& arr) {
+        return backtrace(arr, 0, 0);        
+    }
+
+private:
+    //回溯法
+    //param: idx 数组arr的下标
+    //param: bitFalg 已经选择的字母的bit位
+    int backtrace(vector<string>& arr, int idx, int bitFlag) {
+        if (idx >= arr.size()) {
+            return 0;
+        }
+        int oldFlag = bitFlag;
+        bool conflict = false;
+        for (char c : arr[idx]) {
+            if (bitFlag & (1 << (c-'a'))) {//当前字符串和已选择的字母bitFlag存在冲突
+                conflict = true;
+                break;
+            }
+            bitFlag |= (1 << (c-'a'));
+        }
+        if(conflict){//当前字符串和bitFlag存在冲突，不能选。继续观察下一个字符串
+            return backtrace(arr, idx+1, oldFlag);
+        }else{//当前字符串和bitFlag不冲突，可以选。
+            //但是存在两种情况: max(选择当前字符串并累计长度，不选当前字符串), 类似于背包
+            int len = arr[idx].length();
+            return max(backtrace(arr, idx+1, bitFlag) + len,
+                       backtrace(arr, idx+1, oldFlag));
+        }
+    }
+};
