@@ -1,0 +1,57 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+ //递归
+class Solution {
+public:
+    string tree2str(TreeNode* t) {
+        if(t == NULL){
+            return "";
+        }
+        if(t->left == NULL && t->right == NULL){//叶节点
+            return to_string(t->val);
+        }
+        if(t->left == NULL){//只有左子树为空(右子树不为空)
+            return to_string(t->val) + "()(" + tree2str(t->right) + ")";
+        }
+        if(t->right == NULL){//只有右子树为空(左子树不为空)
+            return to_string(t->val) + "(" + tree2str(t->left) + ")";
+        }
+        //左右子树都存在
+        return to_string(t->val) + "(" + tree2str(t->left) + ")(" + tree2str(t->right) + ")";
+    }
+};
+
+
+class Solution {
+public:
+	//https://blog.csdn.net/hy971216/article/details/81321996
+	//思路：按照先序遍历根结点-左子树-右子树的顺序递归，在左子结点为空但右子结点不为空的时候递归加上”()”
+    string tree2str(TreeNode* t) {
+        string res;
+        if(t == NULL) {
+            return "";
+        }
+        helper(t, res);
+        return string(res.begin() + 1, res.end() - 1);
+    }
+    
+    void helper(TreeNode* t, string& res) {
+        if(t == NULL) {
+            return ;
+        }
+        res += "(" + to_string(t->val);
+        if(t->left == NULL && t->right != NULL) {
+            res += "()";
+        }
+        helper(t->left, res);
+        helper(t->right, res);
+        res += ")";
+    }
+};
