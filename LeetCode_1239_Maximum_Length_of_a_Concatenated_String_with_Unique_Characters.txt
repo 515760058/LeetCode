@@ -5,7 +5,7 @@ public:
     }
 
 private:
-    //回溯法
+    //回溯法 位压缩
     //param: idx 数组arr的下标
     //param: bitFalg 已经选择的字母的bit位
     int backtrace(vector<string>& arr, int idx, int bitFlag) {
