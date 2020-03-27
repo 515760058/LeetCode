@@ -25,7 +25,6 @@ public:
         while(!qu.empty()){
             int curr = qu.front();
             qu.pop();
-
             for(int i = 0; i < row; ++i){
                 for(int j = 0; j < col; ++j){
                     int next = curr;//反转mat[i, j]位置，得到新的状态next
@@ -53,7 +52,7 @@ private:
         if(i < 0 || j < 0 || i >= row || j >= col){
             return;
         }
-        int n = i * row + j;
+        int n = i * col + j;
         if(bitTst(num, n)){
             bitClr(num, n);
         }else{
@@ -77,5 +76,73 @@ private:
     //将第n比特设为0
     inline void bitClr(int& num, int n){
         num &= (~(1 << n));
+    }
+};
+
+
+
+
+
+//使用字符串表示矩阵状态
+class Solution {
+public:
+    int minFlips(vector<vector<int>>& mat) {
+        int row = mat.size();
+        int col = mat[0].size();
+        //生成初始状态start和全零矩阵的状态end
+        string start(row * col, '0');
+        const string end = start;//全零矩阵的状态
+        for(int i = 0; i < row; ++i){
+            for(int j = 0; j < col; ++j){
+                if(mat[i][j] == 1){
+                    start[i * col + j] = '1';
+                }
+            }
+        }
+        if(start == end){
+            return 0;
+        }
+        //开始BFS
+        vector<vector<int>> offsets = {{-1,0}, {1,0}, {0,-1}, {0,1}, {0, 0}};//上下左右及自己
+        queue<string> qu;//队列
+        qu.push(start);
+        map<string, int> mymap;//key:状态  value:翻转次数
+        mymap[start] = 0;
+        while(!qu.empty()){
+            string curr = qu.front();
+            qu.pop();
+            for(int i = 0; i < row; ++i){
+                for(int j = 0; j < col; ++j){
+                    string next = curr;//反转mat[i, j]位置，得到新的状态next
+                    for(auto offset : offsets){
+                        bitReverse(mat, next, i+offset[0], j+offset[1]);
+                    }
+                    if(next == end){//找到了全0矩阵
+                        return mymap[curr] + 1;
+                    }
+                    if(mymap.count(next) == 0){//以前未出现过的状态，记录下来
+                        qu.push(next);
+                        mymap[next] = mymap[curr] + 1;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+private:
+    //翻转一个单元格
+    inline void bitReverse(vector<vector<int>>& mat, string& state, int i, int j){
+        int row = mat.size();
+        int col = mat[0].size();
+        if(i < 0 || j < 0 || i >= row || j >= col){
+            return;
+        }
+        int n = i * col + j;
+        if(state[n] == '0'){
+            state[n] = '1';
+        }else{
+            state[n] = '0';
+        }
     }
 };
