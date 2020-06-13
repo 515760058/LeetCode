@@ -1,0 +1,21 @@
+// 前缀和
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        int cnt = 0;
+        // key:前缀和   value:当前为止出现的次数
+        map<int, int> prefixSum;
+        prefixSum[0] = 1;
+
+        int sum = 0;
+        for(int i = 0; i < nums.size(); ++i){
+            sum += nums[i];
+
+            if(prefixSum.count(sum-k)){//在前面某位置出现了sum-k，说明[某位置，当前位置]该区间的和是k
+                cnt += prefixSum[sum-k];//加上出现sum-k的次数
+            }
+            ++prefixSum[sum];
+        }
+        return cnt;
+    }
+};
