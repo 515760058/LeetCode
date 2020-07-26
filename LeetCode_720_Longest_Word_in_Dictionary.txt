@@ -1,0 +1,74 @@
+// 字典树
+class Trie {
+public:
+    Trie() {}
+
+    ~Trie() {
+        for (int i = 0; i < LETTER_NUM; ++i) {
+            if (data[i] != nullptr) {
+                delete data[i];
+                data[i] = nullptr;
+            }
+        }
+    }
+
+    // 向字典树中插入一个单词
+    void insert(string& word) {
+        Trie* node = this;
+        for (char c : word) {
+            int idx = c - 'a';
+            if (node->data[idx] == nullptr) {
+                node->data[idx] = new Trie();
+            }
+            node = node->data[idx];
+        }
+        node->is_string = true;
+        node->string = word;
+    }
+
+    // 在字典树中查找该单词是否存在
+    bool search(string& word) {
+        Trie* node = this;
+        for (char c : word) {
+            int idx = c - 'a';
+            if (node->data[idx] == nullptr) {
+                return false;
+            }
+            node = node->data[idx];
+        }
+        return node->is_string;
+    }
+
+    static const int LETTER_NUM = 26;
+    bool is_string = false;
+    string string = "";
+    Trie* data[LETTER_NUM] = {nullptr};
+};
+
+class Solution {
+public:
+    string longestWord(vector<string>& words) {
+        sort(words.begin(), words.end());
+        // 构建字典树
+        Trie* tree = new Trie();
+        for (string& word : words) {
+            tree->insert(word);
+        }
+        // 查询
+        string res = "";
+        for (string& word : words) {
+            // 对单词word，从第一个字母依次查询 w wo wor wold  待优化
+            bool search = true;
+            for (int i = 1; i <= word.size() && search; ++i) {
+                string suffix = word.substr(0, i);
+                search = tree->search(suffix);
+                if (search && suffix.size() > res.size()) {
+                    res = suffix;
+                }
+            }
+        }
+        delete tree;
+        return res;
+
+    }
+};
