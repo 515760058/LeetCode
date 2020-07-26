@@ -1,0 +1,42 @@
+git add .
+git commit . -m "commit_message"
+git push -u origin master
+
+
+git status
+//查看尚未暂存的文件(add之前)和暂存区域快照(index)之间的差异，也就是修改之后还没有暂存起来的变化内容
+git diff
+//已经暂存起来的文件(add之后，staged)和上次提交时的快照之间(HEAD)的差异
+git diff --cached
+git diff --staged 
+//工作版本(Working tree)和HEAD的差别
+git diff HEAD
+
+git checkout xxx
+git reset HEAD^
+
+git pull命令：
+https://blog.csdn.net/my2010Sam/article/details/80196862
+方式1：
+    git pull origin master
+方式2：
+    git fetch origin master 
+    git merge origin/master	
+
+Git初始化本地已有项目,并推送到远端Git仓库操作
+https://blog.csdn.net/kuangdacaikuang/article/details/84632883
+
+git中.ignore的用法：
+https://www.jianshu.com/p/a49124700abc
+
+
+
+如果你添加.gitignore的时候，git里面已经上传了很多不需要的文件，可以使用下面两个命令干掉他们
+如果是文件夹：git rm -r --cached 文件夹名
+如果是文件：git rm --cached 文件名
+
+
+一些博主
+https://www.cnblogs.com/tham/
+Vulkan Cookbook中文翻译：
+https://blog.csdn.net/qq_19473837/category_8125729.html
