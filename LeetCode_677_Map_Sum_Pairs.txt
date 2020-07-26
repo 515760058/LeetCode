@@ -1,0 +1,80 @@
+class Trie {
+public:
+    Trie() {}
+    ~Trie() {
+        for (int i = 0; i < LETTER_NUM; ++i) {
+            delete(data[i]);
+            data[i] = nullptr;
+        }
+    }
+
+    static const int LETTER_NUM = 26;
+    bool is_string = false;
+    int val = 0;
+    Trie* data[LETTER_NUM] = {nullptr};
+};
+
+
+class MapSum {
+public:
+    /** Initialize your data structure here. */
+    MapSum() {
+        root = new Trie();
+    }
+
+    ~MapSum() {
+        delete(root);
+    }
+    
+    void insert(string key, int val) {
+        Trie* node = root;
+        for (char c : key) {
+            int idx = c - 'a';
+            if (node->data[idx] == nullptr) {
+                node->data[idx] = new Trie();
+            }
+            node = node->data[idx];
+        }
+        
+        node->val = val;
+        node->is_string = true;
+    }
+    
+    int sum(string prefix) {
+        // 找到前缀结束节点的地址
+        Trie* node = root;
+        for (char c : prefix) {
+            int idx = c - 'a';
+            if (node->data[idx] == nullptr) {
+                return 0;
+            }
+            node = node->data[idx];
+        }
+        // 求和
+        int sum = node->val; // prefix本身可能就是一个有效的键，因此需要算上
+        sumHelper(node, sum);
+        return sum;
+    }
+
+private:
+    // 从root节点开始 递归计算sum
+    void sumHelper(Trie* root, int& sum) {
+        for (int i = 0; i < Trie::LETTER_NUM; ++i) {
+            if (root->data[i] != nullptr) {
+                if (root->data[i]->is_string) {
+                    sum += root->data[i]->val;
+                }
+                sumHelper(root->data[i], sum);
+            }
+        }
+    }
+
+    Trie* root = nullptr;
+};
+
+/**
+ * Your MapSum object will be instantiated and called as such:
+ * MapSum* obj = new MapSum();
+ * obj->insert(key,val);
+ * int param_2 = obj->sum(prefix);
+ */
