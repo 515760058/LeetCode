@@ -215,4 +215,16 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - LeetCode560 和为K的子数组
 - LeetCode974 和可被 K 整除的子数组
 
+## 字典树
+### 相关链接
+
+### 典型题目
+- LeetCode_208_Implement_Trie_(Prefix_Tree) 实现Trie(前缀树)
+- 211_Add_and_Search_Word--Data_structure_design 添加与搜索单词 - 数据结构设计
+- LeetCode 421数组中两个数的最大异或值
+- leetcode648 单词替换
+- leetcode677 键值映射
+- leetcode720 词典中最长的单词
+
+
 
