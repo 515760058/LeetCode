@@ -1,0 +1,55 @@
+// 字典树
+class Trie{
+public:
+    Trie() {}
+    ~Trie(){
+        for(int i = 0; i < LETTER_NUM; ++i){
+            if (data[i] != nullptr) {
+                delete data[i];
+                data[i] = nullptr;
+            }
+        }
+    }
+
+    static const int LETTER_NUM = 2; // bit0 bit1
+    int value = -1;
+    Trie* data[LETTER_NUM] = {nullptr};
+};
+
+class Solution {
+public:
+    int findMaximumXOR(vector<int>& nums) {
+        Trie* root = new Trie();
+        //把每个数字按照比特位 添加到字典树中 最后保存这个数
+        // bit0对应data[0]  bit1对应data[1]
+        for (int num : nums) {
+            Trie* node = root;
+            for (int i = 31; i >= 0; --i) {
+                int bit = (num >> i) & 1;
+                if (node->data[bit] == nullptr) {
+                    node->data[bit] = new Trie();
+                }
+                node = node->data[bit];
+            }
+            node->value = num;
+        }
+        //贪心的查找，贪心策略：先走与本位异或后为1的路径
+        int res = INT_MIN;
+        for (int num : nums) {
+            Trie* node = root;
+            for (int i = 31; i >= 0; --i) {
+                int bit = (num >> i) & 1;
+                if (bit == 1) { // 当前是bit1 优先找bit0的 这样才能异或结果最大. 没有bit0就等待下一级再找
+                    node = node->data[0] ? node->data[0] : node->data[1];
+                } else { // 当前是bit0 优先找bit1的 这样才能异或结果最大. 没有bit1就等待下一级再找
+                    node = node->data[1] ? node->data[1] : node->data[0];
+                }
+            }
+            int temp = node->value;
+            res = max(res, num ^ temp);
+        }
+		
+        delete root;
+        return res;
+    }
+};
