@@ -1,0 +1,76 @@
+// 字典树
+class Trie {
+public:
+    Trie() {}
+
+    ~Trie() {
+        for (int i = 0; i < LETTER_NUM; ++i) {
+            if (data[i] != nullptr) {
+                delete data[i];
+                data[i] = nullptr;
+            }
+        }
+    }
+
+    // 向字典树中插入一个单词
+    void insert(string& word) {
+        Trie* node = this;
+        for (char c : word) {
+            int idx = c - 'a';
+            if (node->data[idx] == nullptr) {
+                node->data[idx] = new Trie();
+            }
+            node = node->data[idx];
+        }
+        node->is_prefix = true;
+        node->prefix = word;
+    }
+
+    // 在字典树中查找能匹配该单词的最短前缀
+    string searchPrefix(string& word) {
+        Trie* node = this;
+        for (char c : word) {
+            if (node->is_prefix) { // 找到匹配的前缀
+                return node->prefix;
+            }
+            int idx = c - 'a';
+            if (node->data[idx] == nullptr) {
+                return "";
+            }
+            node = node->data[idx];
+        }
+        return "";
+    }
+
+    static const int LETTER_NUM = 26;
+    bool is_prefix = false;
+    string prefix = "";
+    Trie* data[LETTER_NUM] = {nullptr};
+};
+
+class Solution {
+public:
+    string replaceWords(vector<string>& dict, string sentence) {
+        // 把前缀，加入到字典树中
+        Trie* tree = new Trie();
+        for (string& root : dict) {
+            tree->insert(root);
+        }
+        // 提取sentence中的每个单词，并在字典树中查找最短前缀，最后组装结果
+        stringstream ss(sentence);
+        string word;
+        string res;
+        while(ss >> word) {
+            string str = tree->searchPrefix(word); // 查找该单词的最短前缀
+            if (str != "") {
+                res += str + " ";
+            } else {
+                res += word + " ";
+            }
+        }
+        res.erase(res.end() - 1); // 删除最后一个空格
+
+        delete tree;
+        return res;
+    }
+};
