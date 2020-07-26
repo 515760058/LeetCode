@@ -1,0 +1,82 @@
+class Trie {
+public:
+    Trie() {}
+    ~Trie() {
+        for(int i = 0; i < LETTER_NUM; ++i){
+            delete(data[i]);
+            data[i] = nullptr;
+        }
+    }
+
+    static const int LETTER_NUM = 26;
+    bool is_string = false;
+    Trie* data[LETTER_NUM] = {nullptr};
+};
+
+class WordDictionary {
+public:
+    /** Initialize your data structure here. */
+    WordDictionary() {
+        root = new Trie();
+    }
+    
+    ~WordDictionary() {
+        delete(root);
+    }
+
+    
+    /** Adds a word into the data structure. */
+    void addWord(string word) {
+        Trie* node = root;
+        for (char c :word) {
+            int idx = c - 'a';
+            if (node->data[idx] == nullptr) {
+                node->data[idx] = new Trie();
+            }
+            node = node->data[idx];
+        }
+        node->is_string = true;
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    bool search(string word) {
+        return searchHelper(root, word);
+    }
+
+private:
+
+    bool searchHelper(Trie* root, string word) {
+        if(root == nullptr) {
+            return false;
+        }
+        for (int i = 0; i < word.size(); ++i) {
+            // 碰到'.'
+            if (word[i] == '.') {
+                for (int j = 0; j < Trie::LETTER_NUM; ++j) { // 依次使用每个字母来代替'.'
+                    // 查找剩余的字母
+                    if (searchHelper(root->data[j], word.substr(i+1))) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            //普通的字母
+            int idx = word[i] - 'a';
+            if (root->data[idx] == nullptr) {
+                return false;
+            }
+            // 下一层
+            root = root->data[idx];
+        }
+        return root->is_string;
+    }
+
+    Trie* root = nullptr;
+};
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary* obj = new WordDictionary();
+ * obj->addWord(word);
+ * bool param_2 = obj->search(word);
+ */
