@@ -1,0 +1,52 @@
+// 该题目 隐含的条件是字符串的长度必须相等
+// 根据字符串的长度，放在map<int, vector<string>>中
+
+class MagicDictionary {
+public:
+    /** Initialize your data structure here. */
+    MagicDictionary() {
+
+    }
+    
+    /** Build a dictionary through a list of words */
+    void buildDict(vector<string> dict) {
+        for (string& str : dict) {
+            m[str.size()].push_back(str);
+        }
+    }
+    
+    /** Returns if there is any word in the trie that equals to the given word after modifying exactly one character */
+    bool search(string word) {
+        vector<string>& candicates = m[word.size()];
+        for (string& candicate : candicates) {
+            if (diff1(word, candicate)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+private:
+    // word和candicate差异字母的数量  是否为1
+    bool diff1(string& word, string& candicate) {
+        int diff = 0;
+        for (int i = 0; i < word.size(); ++i) {
+            if (word[i] != candicate[i]) {
+                ++diff;
+            }
+            if (diff == 2) {
+                return false;
+            }
+        }
+        return diff == 1;
+    }
+
+    map<int, vector<string>> m; // key:字符串的长度  value:该长度所对应的所有字符串
+};
+
+/**
+ * Your MagicDictionary object will be instantiated and called as such:
+ * MagicDictionary* obj = new MagicDictionary();
+ * obj->buildDict(dict);
+ * bool param_2 = obj->search(word);
+ */
