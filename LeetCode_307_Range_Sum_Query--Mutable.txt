@@ -1,0 +1,110 @@
+// 树状数组 80ms  单点修改 区间查询
+class NumArray {
+public:
+    NumArray(vector<int>& nums) {
+        this->nums = nums;
+        sum.resize(nums.size() + 1); //多一个 第一个是0
+        for (int i = 0; i < nums.size(); ++i) {
+            updateTree(i+1, nums[i]);
+        }
+    }
+    
+    void update(int i, int val) {
+        int diff =  val - nums[i];// 注意 更新的是差值
+        updateTree(i+1, diff);
+        nums[i] = val; // 不要忘了更新数组的值
+    }
+    
+    int sumRange(int i, int j) {
+        return query(j+1) - query(i);
+    }
+
+private:
+    // 根据当前下标 计算和父节点或子节点的下标距离
+    int lowBit(int idx) {
+        return idx & (-idx);
+    }
+
+    // 构建/更新 树状数组
+    void updateTree(int idx, int val) {
+        while(idx < sum.size()) {
+            sum[idx] += val;
+            idx += lowBit(idx);
+        }
+    }
+
+    // 对区间[0, idx]进行查询
+    int query(int idx) {
+        int res = 0;
+        while(idx > 0) {
+            res += sum[idx];
+            idx -= lowBit(idx);
+        }
+        return res;
+    }
+
+    vector<int> nums; // 原始数据
+    vector<int> sum; // 树状数组
+};
+
+
+/* // 前缀和 900ms
+class NumArray {
+public:
+    NumArray(vector<int>& nums) {
+        data = nums;
+        prefixSum.resize(data.size() + 1);
+        prefixSum[0] = 0;
+        for (int i = 0; i < data.size(); ++i) {
+            prefixSum[i+1] = prefixSum[i] + data[i];
+        }
+    }
+    
+    void update(int i, int val) {
+        data[i] = val;
+        for (; i < data.size(); ++i) {
+            prefixSum[i+1] = prefixSum[i] + data[i];
+        }
+    }
+    
+    int sumRange(int i, int j) {
+        return prefixSum[j+1] - prefixSum[i];
+    }
+
+private:
+    vector<int> data; // 原始数据
+    vector<int> prefixSum; //前缀和
+};
+*/
+
+/*  // 直接解法 320ms
+class NumArray {
+public:
+    NumArray(vector<int>& nums) {
+        data = nums;
+    }
+    
+    void update(int i, int val) {
+        data[i] = val;
+    }
+    
+    int sumRange(int i, int j) {
+        int sum = 0;
+        for (; i <= j; ++i) {
+            sum += data[i];
+        }
+        return sum;
+    }
+
+private:
+    vector<int> data;
+};
+*/
+
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray* obj = new NumArray(nums);
+ * obj->update(i,val);
+ * int param_2 = obj->sumRange(i,j);
+ */
