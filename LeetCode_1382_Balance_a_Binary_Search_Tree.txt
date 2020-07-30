@@ -1,0 +1,43 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+ // 两种解法：
+ //  1 AVL树  LL右旋 RR左旋 LR左右双旋 RL右左双旋...
+ //  2 中序遍历 重建二叉树
+class Solution {
+public:
+    TreeNode* balanceBST(TreeNode* root) {
+        vector<int> seq;
+        inOrder(root, seq);
+        return build(seq, 0, seq.size()-1);
+    }
+
+private:
+    // 中序遍历获得BST的序列
+    void inOrder(TreeNode* root, vector<int>& seq) {
+        if (root == nullptr) {
+            return;
+        }
+        inOrder(root->left, seq);
+        seq.push_back(root->val);
+        inOrder(root->right, seq);
+    }
+
+    // 根据中序序列  重建二叉树
+    TreeNode* build(vector<int>& seq, int start, int end) {
+        if (start > end) {
+            return nullptr;
+        }
+        int mid = (start + end) >> 1;
+        TreeNode* root = new TreeNode(seq[mid]); // 序列中间的数 是根节点
+        root->left  = build(seq, start, mid-1);  // 构建左子树  根节点左边的序列
+        root->right = build(seq, mid+1, end);    // 构建右子树  根节点右边的序列
+        return root;
+    }
+};
