@@ -1,0 +1,85 @@
+// 字典树
+class Trie {
+public:
+    Trie() {}
+
+    ~Trie() {
+        for (int i = 0; i < LETTER_NUM; ++i) {
+            if (data[i] != nullptr) {
+                delete data[i];
+                data[i] = nullptr;
+            }
+        }
+    }
+
+    // 插入一个word 并记录其对应的索引idx
+    void inerst(string& word, int idx) {
+        if (word.empty()) {
+            return;
+        }
+        Trie* node = this;
+        for (char c : word) {
+            int i = c - 'a';
+            if (node->data[i] == nullptr) {
+                node->data[i] = new Trie();
+            }
+            node = node->data[i];
+        }
+        node->is_string = true;
+        node->idx = idx;
+    }
+
+    // 搜索一个字符串str  返回能匹配上的所有idx
+    vector<int> search(string& str) {
+        vector<int> index;
+        Trie* node = this;
+        for (char c : str) {
+            // 在过程中匹配上某单词 记录该单词的idx
+            if (node->is_string) {
+                index.push_back(node->idx);
+            }
+            // 更新下一个字母
+            int i = c - 'a';
+            if (node->data[i] == nullptr) {
+                return index;
+            }
+            node = node->data[i];
+        }
+        // 末尾匹配上单词 也记录其idx
+        if (node->is_string) {
+            index.push_back(node->idx);
+        }
+        return index;
+    }
+
+    static const int LETTER_NUM = 26;
+    Trie* data[LETTER_NUM] = {nullptr};
+    bool is_string = false;
+    int idx = -1; // smalls数组中每一个字符串的索引
+};
+
+class Solution {
+public:
+    vector<vector<int>> multiSearch(string big, vector<string>& smalls) {
+        // 构造字典树
+        Trie* tree = new Trie();
+        for (int i = 0; i < smalls.size(); ++i) {
+            tree->inerst(smalls[i], i);
+        }
+        // 搜索单词 保存结果
+        vector<vector<int>> res(smalls.size(), vector<int>());
+        for (int start = 0; start < big.size(); ++start) {
+            // mississippi  ississippi  ssissippi sissippi issippi...
+            string str = big.substr(start, big.size() - start);
+            vector<int> index = tree->search(str);
+            // 更新到res
+            for (int idx : index) {
+                res[idx].push_back(start);
+            }
+        }
+
+        delete tree;
+        return res;
+
+    }
+};
