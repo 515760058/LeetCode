@@ -1,0 +1,30 @@
+/*
+随机函数rand()生成所有数的概率是相等的  (rand()%n+1)可以生成 1 ~ n 的所有数
+现在把原来的数组w做一个变换，每个值是前面所有值的累加 (前缀和)
+比如[4,2,3]变成[4,6,9]  可以把这个数组看成从数轴上从1开始的很多段[1 2 3 4], [5 6], [7 8 9] 这些段里的每个数字生成概率是相等的，那么生成某个段内数字的概率就是段的长度与总长度的比值
+于是，只需要随机生成一个数，然后使用二分查找这个数字落在哪个段
+*/
+class Solution {
+public:
+    Solution(vector<int>& w) {
+        prefixSum.resize(w.size());
+        prefixSum[0] = w[0];
+        for (int i = 1; i < w.size(); ++i) {
+            prefixSum[i] = prefixSum[i-1] + w[i];
+        }
+    }
+    
+    int pickIndex() {
+        int num = rand() % prefixSum.back() + 1;
+        int idx = lower_bound(prefixSum.begin(), prefixSum.end(), num) - prefixSum.begin();
+        return idx;
+    }
+private:
+    vector<int> prefixSum;
+};
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(w);
+ * int param_1 = obj->pickIndex();
+ */
