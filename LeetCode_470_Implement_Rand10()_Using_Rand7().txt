@@ -1,0 +1,26 @@
+// The rand7() API is already defined for you.
+// int rand7();
+// @return a random integer in the range 1 to 7
+
+class Solution {
+    /*
+    随机数：关于用Rand7生成Rand10的最准确的算法（MS中的一道题）--仿真证明 - CSDN博客 
+    https://blog.csdn.net/doudouxiong123456/article/details/6846943?locationNum=15&fps=1
+    
+    取0~39内的数除于4取整，得到范围为0~9（每个取值的数都是机会均等的）
+    */
+public:
+    int rand10() {
+        int num; // 表示一个7进制数 含有两个进制位 其十进制的范围是0~48
+        do {
+            int i = rand7() - 1; // 两位7进制的高位(0~6)
+            int j = rand7() - 1; // 两位7进制的低位(0~6) 因此保证了0~39出现的概率相等
+            num = i * 7 + j;
+        } while(num >= 40);
+        // 0 1 2 3 对应最终的随机数1
+        // 4 5 6 7 对应最终的随机数2
+        // ...
+        // 36 37 38 39 对应最终的随机数10
+        return num / 4 + 1;
+    }
+};
