@@ -1,0 +1,33 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+ // 本道题我们需要将其转换为累加树，使得每个节点的值是原来的节点值加上所有大于它的节点值之和
+ // https://leetcode-cn.com/problems/binary-search-tree-to-greater-sum-tree/solution/1038-cong-er-cha-sou-suo-shu-dao-geng-da-he-shu-fa/
+ // 解法1 特殊顺序的中序遍历
+ // 解法2 先中序遍历记录序列 然后累加 最后再中序遍历更新值
+class Solution {
+public:
+    TreeNode* bstToGst(TreeNode* root) {
+        int sum = 0;
+        inOrder(root, sum);
+        return root;
+    }
+
+private:
+    // 特殊顺序的中序遍历  right -- val  --left
+    void inOrder(TreeNode* root, int& sum) {
+        if (root == nullptr) {
+            return;
+        }
+        inOrder(root->right, sum); // right
+        sum += root->val; // 累加当前节点的值
+        root->val = sum;  // 更新
+        inOrder(root->left, sum);  // left
+    }
+};
