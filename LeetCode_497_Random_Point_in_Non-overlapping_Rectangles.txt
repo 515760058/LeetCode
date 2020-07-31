@@ -1,0 +1,43 @@
+/*
+和leetcode528按权重随机选择 有些类似
+和leetcode478在圆内随机生成点 也有些类似
+
+本题分为两次操作采样操作
+  第一次：根据矩形中的点的数量 按概率选择一个矩形(索引i)  (类似leetcode528 前缀和 + 二分查找)
+  第二次：选择矩形之后  在该矩形内随机选择一个整数点(按行 按列)  (leetcode478在圆内随机生成点)
+
+将数字平移到0 ~ n-1上，可以通过rand获得对应的行号和列号
+*/
+
+class Solution {
+public:
+    Solution(vector<vector<int>>& rects) {
+        this->rects = rects;
+        // 前缀和
+        int pointNum = 0;
+        for (vector<int>& rect : rects) {
+            pointNum += (rect[2] - rect[0] + 1) * (rect[3] - rect[1] + 1); // 累加每个矩形中点的数量
+            prefixSum.push_back(pointNum);
+        }
+    }
+    
+    vector<int> pick() {
+        // 二分法 选择一个矩形
+        int num = rand() % prefixSum.back() + 1; // [1, back()]
+        int idx = lower_bound(prefixSum.begin(), prefixSum.end(), num) - prefixSum.begin();
+        // 在该矩形内随机选择一个整数点(按行 按列)
+        int x = rand() % (rects[idx][2] - rects[idx][0] + 1);
+        int y = rand() % (rects[idx][3] - rects[idx][1] + 1);
+        return {rects[idx][0] + x, rects[idx][1] + y};
+    }
+
+private:
+    vector<vector<int>> rects;
+    vector<int> prefixSum;
+};
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(rects);
+ * vector<int> param_1 = obj->pick();
+ */
