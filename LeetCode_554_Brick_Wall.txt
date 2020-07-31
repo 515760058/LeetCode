@@ -1,0 +1,22 @@
+// 穿过砖块最少的垂线 就是穿过砖缝(砖的边界)最多的
+// 因此 对每一行  统计砖缝
+class Solution {
+public:
+    int leastBricks(vector<vector<int>>& wall) {
+        map<int, int> m; // key：砖缝的idx  value:砖缝出现的次数
+        for (vector<int>& row : wall) {
+            int idx = 0;
+            for (int i = 0; i < row.size() - 1; ++i) { //最后一个砖缝不统计
+                idx += row[i];
+                ++m[idx];
+            }
+        }
+        // 找到最大的砖缝
+        int num = 0;
+        for (auto iter = m.begin(); iter != m.end(); ++iter) {
+            num = max(num, iter->second);
+        }
+        // 墙的高度 - 砖缝的次数
+        return wall.size() - num;
+    }
+};
