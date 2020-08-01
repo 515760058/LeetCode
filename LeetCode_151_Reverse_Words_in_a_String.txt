@@ -1,0 +1,24 @@
+class Solution {
+public:
+    string reverseWords(string s) {
+        // 把每个单词 放入栈中
+        stack<string> stk;
+        istringstream ss(s);
+        string str;
+        while (ss >> str) {
+            stk.push(str);
+        }
+
+        if (stk.empty()) {
+            return "";
+        }
+        // 还原字符串
+        string res;
+        while (!stk.empty()) {
+            res += stk.top() + " ";
+            stk.pop();
+        }
+        // 去除最后的空格
+        return res.substr(0, res.size() -1);
+    }
+};
