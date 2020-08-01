@@ -1,0 +1,54 @@
+/*
+正常情况下 如果生成一个随机数 而这个数在黑名单中 那么就需要重新生成一个随机数 问题是怎么能够减少随机的次数
+换句话说：如何生成的一个随机数是在黑名单中  如何将其转化为正常值？
+
+思路: 在[0,N)中有b个黑名单数值  我们可以在[0,N-b)的范围内取随机数
+假设在[0，N-b]内有x个黑名单值 那么在[N-b,N)肯定有x个白名单值
+把这x个黑名单值  和x个白名单值  使用map对应起来
+
+那么 当取随机数r时 如果这个r在黑名单中 我们可以不需要再次进行取随机数 只要取map中r对应的白名单值就可以了
+
+具体示例
+ 数组：0 1 2 3 4 5 6 7 8 9     其中2 4 6 8在黑名单中
+ 那么黑名单数字(顺序)和白名单数字(倒序)一一对应  即2->9  4->7  6->5  8->3 
+ 而生成随机数的范围是[0, 5]
+*/
+class Solution {
+public:
+	Solution(int N, vector<int>& blacklist) {
+        range = N - blacklist.size();
+        sort(blacklist.begin(), blacklist.end());
+        // 对每个黑名单值进行映射
+        int white = N;
+        for (int black : blacklist) {
+            // 二分法 从后向前找一个白名单值
+            --white;
+            while (binary_search(blacklist.begin(), blacklist.end(), white)) {
+                --white;
+            }
+            // 建立黑-白映射关系
+            blackToWhite[black] = white;
+        }
+	}
+
+	int pick() {
+		int num = rand() % range; // 随机数[0, range-1]
+        //如果num在映射表中 说明它是黑名单数 需要返回它对应的白名单数
+		if (blackToWhite.count(num)) {
+			return blackToWhite[num];
+		}
+        //否则直接返回
+		return num;
+	}
+
+private:
+  	int range; // 随机数范围
+	unordered_map<int, int> blackToWhite; // 映射表
+};
+
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(N, blacklist);
+ * int param_1 = obj->pick();
+ */
