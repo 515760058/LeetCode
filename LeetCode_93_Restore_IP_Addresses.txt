@@ -10,7 +10,7 @@ public:
             for(int j = i + 1; j < len; ++j){ // j 第二个点的位置
                 for(int k = j + 1; k < len; ++k){// k 第三个点的位置
                     string str = isIP(s, i, j, k);//上述三个点 划分ip地址是否成功
-                    if( str != ""){
+                    if(!str.empty()){
                         res.push_back(str);
                     }
                 }
@@ -34,7 +34,11 @@ private:
         long c = atoi( str3.c_str() );
         long d = atoi( str4.c_str() );
         //检验数字是否在[0, 255]，  注意0开头的数字是不合法的。
-        if(0<=a && a<=255 && 0<=b && b<=255 && 0<=c && c<=255 && 0<=d && d<=255){
+        if(0 <= a && a <= 255 &&
+           0 <= b && b <= 255 &&
+           0 <= c && c <= 255 &&
+           0 <= d && d <= 255)
+          {
             string newip = to_string(a) + to_string(b)+ to_string(c)+ to_string(d);
             if(newip.length() == s.length()){//ip地址中每个数字都是有效的：转变成整数，再转变回去，长度应该相等。
                 //cout << "  a="  << a <<  "  b=" << b << "  c=" << c << "  d=" << d << endl;
