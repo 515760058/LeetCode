@@ -1,0 +1,39 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int maxSumBST(TreeNode* root) {
+        int res = 0;
+        postTraversal(root, res);
+        return res;
+    }
+
+private:
+    // 后续遍历 并统计
+    // vector<int> 第一个数字表示子树是否是BST  第二个表示子树限制的最大值  第三个是子树限制的最小值 第四个数字表示子树的和
+    vector<int> postTraversal(TreeNode* root, int& res) {
+        if (root == nullptr) {
+            return {true, INT_MAX, INT_MIN, 0};
+        }
+        vector<int> leftTree = postTraversal(root->left, res);
+        vector<int> rightTree = postTraversal(root->right, res);
+        // 检查左子树和右子树是否是BST  判断当前节点的取值是否超过子树的限制
+        if (leftTree[0]==false || rightTree[0]==false || root->val >= rightTree[1] || root->val <= leftTree[2]) {
+            return {false, 0, 0, 0};
+        }
+        int curMin = root->left ? leftTree[1] : root->val;
+        int curMax = root->right ? rightTree[2] : root->val;
+        int sum = (root->val + leftTree[3] + rightTree[3]);
+        res = max(res, sum);
+        return {true, curMin, curMax, sum};
+    }
+};
