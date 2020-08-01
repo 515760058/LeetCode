@@ -1,0 +1,81 @@
+// 把二维数组压缩成一维 只需要知道这个一维数组的总长度即可。
+// 每次随机 就是从一维数组中选一个点 根据该点的位置推出在二维数组的行列信息
+// 感觉这个方式适用于频繁调用reset()函数的情况  因为多次调用flip之后,最后的随机数比较难生成
+class Solution {
+public:
+    Solution(int n_rows, int n_cols) {
+        len = n_rows * n_cols;
+        rows = n_rows;
+        cols = n_cols;
+        //srand(time(0));
+    }
+    
+    vector<int> flip() {
+        int pos;
+        do {
+            pos = rand() % len; // [0, len-1]
+        } while (index.count(pos) != 0);
+
+        index.insert(pos);
+        return {pos/cols,  pos%cols};
+    }
+    
+    void reset() {
+        index.clear();
+    }
+
+private:
+    int len; // 一维数组大小
+    int rows;
+    int cols;
+    unordered_set<int> index;
+};
+
+/*
+// 感觉这个算法比较适合多次调用flip 而比较少调用reset函数的情况
+// 把二维数组压缩成一维  使用C++11的洗牌算法shuffle
+// 18/19个通过测试用例  最后一个超时  应该是因为频繁的调用shuffle导致的
+class Solution {
+public:
+    Solution(int n_rows, int n_cols) {
+        col = n_cols;
+        // 生成索引数组
+        index.resize(n_rows * n_cols);
+        for (int i = 0; i < index.size(); ++i) {
+            index[i] = i;
+        }
+        // 打乱索引数组
+        idx = index.size();
+        reset();
+    }
+    
+    vector<int> flip() {
+        if (idx >= index.size()) {
+            return {};
+        }
+        vector<int> res { index[idx]/col, index[idx]%col };
+        ++idx;
+        return res;
+    }
+    
+    void reset() {
+        // 洗牌算法 随机打乱index数组的[0, idx]区间
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::shuffle(index.begin(), index.begin()+idx, std::default_random_engine(seed));
+        // 复位
+        idx = 0;
+    }
+
+private: 
+    int col; // 只记录列就行了
+    int idx; // index数组使用的索引
+    vector<int> index;
+};
+*/
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(n_rows, n_cols);
+ * vector<int> param_1 = obj->flip();
+ * obj->reset();
+ */
