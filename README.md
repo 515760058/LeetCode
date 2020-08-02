@@ -239,6 +239,14 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 
 ## 树状数组 线段树
 ### 相关链接
+- 树状数组
+- https://blog.csdn.net/Small_Orange_glory/article/details/81290634
+- https://blog.csdn.net/zcz5566719/article/details/107185515
+- https://blog.csdn.net/Mo_1034923393/article/details/107675374
+- 线段树
+- https://blog.csdn.net/zearot/article/details/52280189
+- https://blog.csdn.net/anlian523/article/details/80766794
+
 ### 典型题目
 - leetcode307 区域和检索-数组可修改  树状数组
 
