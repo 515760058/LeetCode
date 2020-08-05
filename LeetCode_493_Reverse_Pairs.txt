@@ -1,0 +1,63 @@
+// 树状数组
+class FinTree {
+public:
+    FinTree(int size) {
+        tree.resize(size);
+    }
+
+    // 更新：下标idx的数据 增加val
+    void updateTree(int idx, int val) {
+        while (idx < tree.size()) {
+            tree[idx] += val;
+            idx += lowbit(idx);
+        }
+    }
+
+    // 统计：查询区间[0, idx]的和
+    int queryTree(int idx) {
+        int res = 0;
+        while (idx > 0) {
+            res += tree[idx];
+            idx -= lowbit(idx);
+        }
+        return res;
+    }
+
+private:
+    int lowbit(int idx) {
+        return idx & (-idx);
+    }
+    // 树状数组
+    vector<int> tree;
+};
+
+// 建议先做 leetcode 315. 计算右侧小于当前元素的个数
+// leetcode 327 区间和的个数
+class Solution {
+public:
+    int reversePairs(vector<int>& nums) {
+        if (nums.empty()) {
+            return 0;
+        }
+        // 树状数组
+        FinTree ft(nums.size() + 1);
+
+        // 离散化 排序+去重
+        // 原始的nums数据是随机的 甚至还有负数 不能直接作为树状数组的索引
+        // 通过 排序+去重 的方式, 将每个原始数据都对应一个[0, data.size()]区间的数字
+        set<int> myset(nums.begin(), nums.end());
+        vector<int> data (myset.begin(), myset.end());
+
+        int count = 0;
+        // 从后向前遍历
+        for (int i = nums.size() - 1; i >= 0; --i) {
+            // 查找num/2   标记了一个>=value的索引
+            int idx = lower_bound(data.begin(), data.end(), ceil(nums[i]/2.)) - data.begin();
+            count += ft.queryTree(idx);
+            // 更新num对应的树状数组值
+            idx = lower_bound(data.begin(), data.end(), nums[i]) - data.begin();
+            ft.updateTree(idx+1, 1);
+        }
+        return count;
+    }
+};
