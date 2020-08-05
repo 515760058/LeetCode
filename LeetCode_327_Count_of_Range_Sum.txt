@@ -1,0 +1,27 @@
+// 前缀和 + 二分查找 + 插入排序
+
+// 解题思：该题的简化版是存在负数的数组，求连续的子数组和等于k的个数。
+// lower<=presum-x<=upper 变换为persum-upper<=x<=presum-lower;
+// 因此，x的查找范围是可以确定的。
+// 求前缀和，同时利用map对前缀和计数，同时在map中查找上边界（persum-upper）的迭代器，下边界（presum-lower）的迭代器，然后对迭代器内的计数加和
+class Solution {
+public:
+    int countRangeSum(vector<int>& nums, int lower, int upper) {
+        map<long long , int> countmap;
+        countmap[0] = 1; // ???
+
+        long long sum = 0;
+        int count = 0;
+        for (int i = 0; i < nums.size();i++){
+            sum += nums[i]; // 前缀和
+            auto seconditer = countmap.upper_bound(sum - lower);
+            auto firstiter = countmap.lower_bound(sum - upper);
+            while(firstiter != seconditer){
+                count += firstiter->second;
+                ++firstiter;
+            }
+            ++countmap[sum]; // 更新
+        }
+        return count;
+    }
+};
