@@ -1,0 +1,76 @@
+/*
+// 方法一：二分查找+插入排序
+// 倒序nums数组， 在插入的时候 根据插入的位置 就可以知道比它小的数字的个数
+class Solution {
+public:
+    vector<int> countSmaller(vector<int>& nums) {
+        vector<int> temp; // 准备插入的数组
+        vector<int> res(nums.size());
+        for (int i = nums.size() - 1; i >= 0; --i) {
+            auto iter = lower_bound(temp.begin(), temp.end(), nums[i]); // 插入的位置
+            res[i] = iter - temp.begin(); // 该位置前面有几个数字
+            temp.insert(iter, nums[i]);
+        }
+        return res;
+    }
+};
+*/
+
+// 方法二：树状数组
+// https://blog.csdn.net/zcz5566719/article/details/107185515
+// 图腾问题：对于数字大小的比较，我们直接把数字自身作为索引。在数组左侧的数字，都是该数字在原数组左侧中小于它的数字；在数组右侧的数字，都是该数字在原数组左侧中大于它的数字
+// 树状数组
+class FinTree {
+public:
+    FinTree(int size) {
+        tree.resize(size);
+    }
+
+    // 更新：下标idx的数据 增加val
+    void updateTree(int idx, int val) {
+        while (idx < tree.size()) {
+            tree[idx] += val;
+            idx += lowbit(idx);
+        }
+    }
+
+    // 统计：查询区间[0, idx]的和
+    int queryTree(int idx) {
+        int res = 0;
+        while (idx > 0) {
+            res += tree[idx];
+            idx -= lowbit(idx);
+        }
+        return res;
+    }
+
+private:
+    int lowbit(int idx) {
+        return idx & (-idx);
+    }
+    // 树状数组
+    vector<int> tree;
+};
+
+class Solution {
+public:
+    vector<int> countSmaller(vector<int>& nums) {
+        // 离散化 排序+去重
+        // 目的是把每个数字映射到[0, nums.size]区间 便于在树状数组中处理
+        set<int> myset (nums.begin(), nums.end());
+        vector<int> index (myset.begin(), myset.end());
+
+        vector<int> counts (nums.size());
+        FinTree tree (nums.size()+1);
+        // 倒序遍历nums数组
+        for (int i = nums.size() - 1; i >= 0; --i) {
+            // nums[i]在index数组中对应的索引
+            int idx = lower_bound(index.begin(), index.end(), nums[i]) - index.begin();
+            // 保存结果
+            counts[i] = tree.queryTree(idx);
+            // 更新树状数组
+            tree.updateTree(idx+1, 1);
+        }
+        return counts;
+    }
+};
