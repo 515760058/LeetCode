@@ -37,8 +37,13 @@ Auto iter  = max_element(houses.begin(), houses.end());
 
 
 二分查找 
+
 https://www.jianshu.com/p/cb0d5488bb6a
+
+https://blog.csdn.net/qian2213762498/article/details/79250097
+
 lower_bound ：返回一个非递减序列[first, last)中的第一个大于等于值val的位置（迭代器）
+
 upper_bound：返回一个非递减序列[first, last)中的第一个大于值val的位置（迭代器）
 
 
