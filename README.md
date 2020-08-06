@@ -32,13 +32,20 @@ for(auto it=S.begin(); it != S.end(); ++it)
 
 //最大值 最小值的迭代器
 Auto iter  = min_element(houses.begin(), houses.end());
-Auto iter  = max_element(houses.begin(), houses.end());
-二分查找
+Auto iter  = max_element(houses.begin(), houses.end());
+通过解引用迭代器，就可以获得最值。
+
+
+二分查找 
+https://www.jianshu.com/p/cb0d5488bb6a
 lower_bound ：返回一个非递减序列[first, last)中的第一个大于等于值val的位置（迭代器）
 upper_bound：返回一个非递减序列[first, last)中的第一个大于值val的位置（迭代器）
 
+
 binary_search(beg,end,val)： 以二分法检索的方式在[beg,end）之间查找val，找到返回true，找不到返回false。
 equal_range(beg,end,val)：返回一个迭代器对(i,j)，其中i是在不破坏次序的前提下，value可插入的第一个位置（>=亦即lower_bound），j则是在不破坏次序的前提下，value可插入的最后一个位置（>亦即upper_bound）因此，[i,j)内的每个元素都等同于value，而且[i,j)是[beg,end)之中符合此一性质的最大子区间
+
+
 字符串 <==> 数字
 123 = atoi(“123”)   
 “123” = to_string(123)
