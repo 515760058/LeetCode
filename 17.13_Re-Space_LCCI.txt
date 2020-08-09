@@ -1,0 +1,18 @@
+// 动态规划
+class Solution {
+public:
+    int respace(vector<string>& dictionary, string sentence) {
+        vector<int> dp(sentence.size()+1, 0); // dp[i]表示到从开头到i 未匹配字符的最小数量
+        for (int i = 1; i <= sentence.size(); ++i) {
+            dp[i] = dp[i - 1] + 1; // 首先假设第i个字符未匹配上 直接加1
+            // 遍历字典 找一个更小的dp[i]
+            for (string& word : dictionary) {
+                int n = word.size();
+                if (i >= n && sentence.substr(i-n, n) == word) { // sentence[i-n, i]正好在字典中
+                    dp[i] = min(dp[i], dp[i-n]);
+                }
+            }
+        }
+        return dp[sentence.size()];
+    }
+};
