@@ -1,0 +1,25 @@
+class Solution {
+public:
+    vector<int> divingBoard(int shorter, int longer, int k) {
+        if (k == 0) {
+            return {};
+        }
+        // 两种木板长度相等 只有一种结果
+        if (shorter == longer) {
+            return { shorter*k };
+        }
+        // 使用i块短木板 使用k-i块长木板 共有k+1种可能
+        vector<int> res (k+1);
+        // 方法1 暴力法
+        //for (int i = 0; i <= k; ++i) {
+        //    res[i] = i * longer + (k-i) * shorter; // 答案好像是从小到大排序的
+        //}
+        // 方法2
+        // 在方法1的基础上进行优化：每次使用一块长木板替换短木板, 跳水板的长度就增加了(longer-shorter), 可以使用递进的思路
+        res[0] =  shorter * k; // 初始长度
+        for (int i = 1; i <= k; ++i) {
+            res[i] = res[i-1] + (longer-shorter);
+        }
+        return res;
+    }
+};
