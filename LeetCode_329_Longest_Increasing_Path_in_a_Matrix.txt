@@ -1,0 +1,52 @@
+// 记忆化搜索
+// POJ1088-滑雪 (经典的记忆化搜索)
+class Solution {
+public:
+    int longestIncreasingPath(vector<vector<int>>& matrix) {
+        if (matrix.empty()) {
+            return 0;
+        }
+
+        int row = matrix.size();
+        int col = matrix[0].size();
+        vector<vector<int>> mem (row, vector<int>(col, 0)); // 记忆(保存)的结果
+
+        int res = 0;
+        for (int i = 0; i < row; ++i) {
+            for (int j = 0; j < col; ++j) {
+                res = max(res, dfs(matrix, mem, i, j));
+            }
+        }
+        return res;
+    }
+
+private:
+    // 定义上下左右 四个方向
+    const vector<int> dx {-1, 1, 0, 0};
+    const vector<int> dy {0, 0, -1, 1};
+
+    // 记忆化搜索  返回int表示当前ij的搜索结果
+    int dfs(vector<vector<int>>& matrix, vector<vector<int>>& mem, int i, int j) {
+        // 是否有以前保存的结果
+        if (mem[i][j]) {
+            return mem[i][j];
+        }
+        // 路径至少是1
+        int res = 1;
+        for (int idx = 0; idx < dx.size(); ++idx) { // 遍历上下左右四个位置
+            // 下一个位置
+            int xx = i + dx[idx];
+            int yy = j + dy[idx];
+            // 下一个位置符合是否符合条件
+            if (0 <= xx && xx < matrix.size()    &&
+                0 <= yy && yy < matrix[0].size() &&
+                matrix[i][j] > matrix[xx][yy] ) { // 当前位置 > 下一个位置的值
+                    res = max(res, 1 + dfs(matrix, mem, xx, yy));
+            }
+        }
+        // 记住(保存)这个节点的结果
+        mem[i][j] = res;
+
+        return res;
+    }
+};
