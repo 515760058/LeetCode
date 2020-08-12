@@ -1,0 +1,17 @@
+/*  石头数量->  输赢
+    1,2,3  ->  true
+    4      ->  false
+    5,6,7  ->  true （我分别拿走1,2,3块，剩余4块石头给对手，对手就输了）
+    8      ->  false
+    ......
+    4的倍数，我就会输，否则我就赢
+*/
+class Solution {   
+public:
+    bool canWinNim(int n) {
+        if (n % 4 == 0) {
+            return false;
+        }
+        return true;
+    }
+};
