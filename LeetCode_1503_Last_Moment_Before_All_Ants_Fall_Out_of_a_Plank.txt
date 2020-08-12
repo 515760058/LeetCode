@@ -1,0 +1,19 @@
+// 题目条件：当两只向不同方向移动的蚂蚁在某个点相遇时，它们会同时改变移动方向并继续移动。
+// 并且蚂蚁的速度都相同
+// 因此两只蚂蚁相遇就都掉头  就等价于没掉头  和一直向前走的效果是一样的
+class Solution {
+public:
+    int getLastMoment(int n, vector<int>& left, vector<int>& right) {
+        int time = 0;
+        // 向左走的蚂蚁,每只掉下去的时间
+        for (int position : left) {
+            time = max(time, position);
+        }
+        // 向右走的蚂蚁,每只掉下去的时间
+        for (int position : right) {
+            time = max(time, n-position);
+        }
+
+        return time;
+    }
+};
