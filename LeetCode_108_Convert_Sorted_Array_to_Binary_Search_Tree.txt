@@ -1,0 +1,31 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+ /*  剑指offer  page151 BST->双向链表  */
+class Solution {
+public:
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        if (nums.empty()) {
+            return nullptr;
+        }
+        return buildBST(nums, 0, nums.size()-1);
+    }
+
+private:
+    TreeNode* buildBST(vector<int>& nums, int start, int end){
+        if(start > end){
+            return nullptr;
+        }
+        int mid = (start + end) >> 1;
+        TreeNode* node = new TreeNode(nums[mid]); // 新建结点（树）
+        node->left  = buildBST(nums, start, mid-1); // 构建左子树
+        node->right = buildBST(nums, mid+1, end);  // 构建右子树
+        return node;
+    }
+};
