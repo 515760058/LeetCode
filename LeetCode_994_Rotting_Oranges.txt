@@ -1,0 +1,74 @@
+// BFS
+class Solution {
+public:
+    int orangesRotting(vector<vector<int>>& grid) {
+        int row = grid.size();
+        int col = grid[0].size();
+        
+        vector<vector<int>> minute(row, vector(col, MY_MAX));
+        queue<Position> que;
+        // 使用腐烂橘子 初始化队列状态
+        for (int i = 0; i < row; ++i) {
+            for (int j = 0; j < col; ++j) {
+                // 烂橘子 初始标记0 并入队
+                if (grid[i][j] == 2) {
+                    minute[i][j] = 0;
+                    que.push( Position(i, j) );
+                }
+                // 空格 标记为-1
+                if (grid[i][j] == 0) {
+                    minute[i][j] = -1;
+                }
+            }
+        }
+
+        while (!que.empty()) {
+            Position pos = que.front();
+            que.pop();
+            
+            for (int idx = 0; idx < dx.size(); ++idx) {
+                // 下一个位置
+                int nextX = pos.x + dx[idx];
+                int nextY = pos.y + dy[idx];
+                // 校验坐标
+                if (nextX < 0 || nextX >= row || nextY < 0 || nextY >= col) {
+                    continue;
+                }
+                // 烂橘子 空格 已感染的橘子, 这些已经处理过了
+                if (minute[nextX][nextY] != MY_MAX) {
+                    continue;
+                }
+                // 未被感染的正常橘子 现在开始感染
+                minute[nextX][nextY] = minute[pos.x][pos.y] + 1;
+                // 下一个位置入队
+                que.push( Position(nextX, nextY) );
+            }
+        }
+        // 分析minute
+        int res = 0;
+        for (int i = 0; i < row; ++i) {
+            for (int j = 0; j < col; ++j) {
+                if (minute[i][j] == MY_MAX) { // 存在永远不能感染的
+                    return -1;
+                }
+                res = max(res, minute[i][j]);
+            }
+        }
+        return res;
+    }
+
+private:
+    vector<int> dx {-1, 1, 0, 0};
+    vector<int> dy {0, 0, -1, 1};
+
+    const int MY_MAX = 999;
+
+    struct Position {
+        int x;
+        int y;
+        Position (int i, int j) {
+            x = i;
+            y = j;
+        }
+    };
+};
