@@ -1,0 +1,15 @@
+// 1, 最简单，先给数组排序，然后返回第k个位置元素  
+// 2, 优先队列
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        // 优先队列 默认是从大到小的
+        priority_queue<int> q (nums.begin(), nums.end());
+        // 把前k-1个大的元素弹出去
+        for(int i = 1; i < k; ++i){
+            q.pop();
+        }
+        // 第k个
+        return q.top();
+    }
+};
