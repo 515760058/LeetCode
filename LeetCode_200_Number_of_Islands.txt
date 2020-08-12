@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int count = 0;
+        for(int i = 0; i < grid.size(); ++i){
+            for(int j = 0; j < grid[0].size(); ++j){
+                if( grid[i][j] == '1'){
+                    ++count; // 统计该岛屿
+                    DFS(grid, i, j); // 抹去该岛屿
+                }
+            }
+        }
+        return count;
+    }
+    
+    //深度搜索，把那个岛屿改成0（从地图上抹去）
+    void DFS(vector<vector<char>>& grid, int i, int j){
+        int row = grid.size();
+        int col = grid[0].size();
+        // 检验下标 判断数据
+        if(i < 0 || i >= row || j < 0 || j >= col ||  grid[i][j] == '0') {
+            return;
+        }
+
+        grid[i][j] = '0'; // 抹去
+        DFS(grid, i-1, j); // 上
+        DFS(grid, i+1, j); // 下
+        DFS(grid, i, j-1); // 左
+        DFS(grid, i, j+1); // 右
+    }
+};
