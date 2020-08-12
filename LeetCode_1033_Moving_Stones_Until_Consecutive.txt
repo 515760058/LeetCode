@@ -1,0 +1,25 @@
+//最大值：要么是0（连续的情况），要么是big-small-2 （一步一步的移动）
+//最小值：0（连续的情况）， 1（相差1或者2） 2（其他情况）
+class Solution {
+public:
+    vector<int> numMovesStones(int a, int b, int c) {
+        //对abc排序
+        vector<int> temp = {a, b, c};
+        sort(temp.begin(), temp.end());
+        a = temp[0];
+        b = temp[1];
+        c = temp[2];
+
+        if (c-b==1 && b-a==1) { // 连续的
+            return {0, 0};
+        }
+        if (c-b==1 || b-a==1) { // 相差1
+            return {1, c-a-2};
+        }
+        if (c-b==2 || b-a==2) { // 相差2
+            return {1, c-a-2};
+        }
+        //其他情况
+        return {2, c-a-2};
+    }
+};
