@@ -1,0 +1,11 @@
+// 用常规列举法试出规律发现:
+//   4~8都是亮2个灯泡
+//   9~15都是亮3个灯泡
+//   16~24都是亮4个灯泡
+//  所以规律是sqrt(n)
+class Solution {
+public:
+    int bulbSwitch(int n) {
+        return (int)sqrt(n);
+    }
+};
