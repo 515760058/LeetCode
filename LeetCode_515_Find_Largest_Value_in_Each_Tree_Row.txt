@@ -1,0 +1,41 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> largestValues(TreeNode* root) {
+        // 层序遍历
+        vector<vector<int>> level;
+        preOrder(root, 0, level); // 根节点的深度视为0
+
+        // 在level中寻找每层的最大值
+        vector<int> res;
+        for (vector<int>& vec : level) {
+            int val = *max_element(vec.begin(), vec.end());
+            res.push_back(val);
+        }
+        return res;
+    }
+
+private:
+    // 使用先序遍历的方式实现层序遍历 结果保存在level中
+    void preOrder(TreeNode *root, int depth, vector<vector<int>> &level) {
+        if (root == nullptr) {
+            return;
+        }
+        // 如果第一次出现此深度 就在level的末尾新增一个空数组
+        if (depth >= level.size()) {
+            level.push_back(vector<int> {});
+        }
+        // 把深度为depth的节点 放在相应的层
+        level[depth].push_back(root->val);
+        preOrder(root->left, depth + 1, level); // 左子树 下一层深度
+        preOrder(root->right, depth + 1, level); // 右子树 下一层深度
+    }
+};
