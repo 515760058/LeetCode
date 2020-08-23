@@ -1,0 +1,37 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int sumEvenGrandparent(TreeNode* root) {
+        int sum = 0;
+        preOrder(root, sum);
+        return sum;
+    }
+
+private:
+    void preOrder(TreeNode* root, int& sum) {
+        if (root == nullptr) {
+            return;
+        }
+        // 当前节点是偶数
+        if ((root->val & 0x1) == 0) {
+            if (root->left != nullptr) {
+                sum += (root->left->left ? root->left->left->val : 0);
+                sum += (root->left->right ? root->left->right->val : 0);
+            }
+            if (root->right != nullptr) {
+                sum += (root->right->left ? root->right->left->val : 0);
+                sum += (root->right->right ? root->right->right->val : 0);
+            }
+        }
+        preOrder(root->left, sum);
+        preOrder(root->right, sum);
+    }
+};
