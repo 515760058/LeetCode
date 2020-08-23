@@ -1,0 +1,36 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+class Solution {
+public:
+    bool isBalanced(TreeNode* root) {
+        bool balance = true;
+        checkDepth(root, balance);
+        return balance;
+    }
+
+private:
+    // 后续遍历 比较左右子树的深度
+    int checkDepth(TreeNode* root, bool& balance) {
+        // 空子树 或者 已经确定不平衡了
+        if (root == nullptr || balance == false) {
+            return 0;
+        }
+        // 左右子树的深度
+        int left = checkDepth(root->left, balance);
+        int right = checkDepth(root->right, balance);
+        // 判断当前节点是否平衡
+        if (abs(left-right) > 1) {
+            balance = false;
+        }
+        // 当前节点的深度
+        return max(left, right) + 1;
+    }
+};
