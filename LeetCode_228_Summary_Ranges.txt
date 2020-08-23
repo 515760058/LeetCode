@@ -1,0 +1,30 @@
+class Solution {
+public:
+    vector<string> summaryRanges(vector<int>& nums) {
+        vector<string> res;
+        for (int start = 0; start < nums.size(); ) {
+            int end = findRange(nums, start);
+            if (start < end) {
+                res.push_back( to_string(nums[start]) + "->" + to_string(nums[end]) );
+            } else { // start == end
+                res.push_back( to_string(nums[start]) );
+            }
+            start = end + 1;
+        }
+        return res;
+    }
+
+private:
+    // 在nums中根据start, 找到连续区间的end
+    int findRange(vector<int>& nums, int start) {
+        int end = start + 1;
+        while (end < nums.size()) {
+            if (nums[start] + 1 != nums[end]) {
+                break;
+            }
+            ++start;
+            ++end;
+        }
+        return --end;
+    }
+};
