@@ -1,0 +1,62 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+// 二叉树转成图  然后DFS
+class Solution {
+public:
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int K) {
+        // 根据二叉树建图
+        map<int, vector<int>> graph;
+        treeToGraph(root, graph);
+        // 对图 使用DFS
+        set<int> visited; // 每个节点是否被访问过
+        vector<int> res;
+        DFS(graph, target->val, K, visited, res);
+        return res;
+    }
+
+private:
+    // 使用二叉树建图 前序遍历
+    void treeToGraph(TreeNode* root, map<int, vector<int>>& graph) {
+        if (root == nullptr) {
+            return;
+        }
+        // 当前节点<-->子节点 的关系
+        if (root->left != nullptr) {
+            graph[root->val].push_back(root->left->val);
+            graph[root->left->val].push_back(root->val);
+        }
+        if (root->right != nullptr) {
+            graph[root->val].push_back(root->right->val);
+            graph[root->right->val].push_back(root->val);
+        }
+        // 遍历子树
+        treeToGraph(root->left, graph);
+        treeToGraph(root->right, graph);
+    }
+
+    // 
+    void DFS(map<int, vector<int>>& graph, int val, int k, set<int>& visited, vector<int>& res) {
+        if (k == 0) {
+            res.push_back(val);
+            return;
+        }
+        // 标记访问
+        visited.insert(val);
+        // 下一个
+        vector<int>& nexts = graph[val];
+        for (int next : nexts) {
+            if (!visited.count(next)) { // 该节点没被访问过
+                visited.insert(next);
+                DFS(graph, next, k-1, visited, res);
+            }
+        }
+    }
+};
