@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int maxEvents(vector<vector<int>>& events) {
+        // 排序
+        sort(events.begin(), events.end(), 
+             [](vector<int>& a, vector<int>& b) { // lambda 按结束时间排序
+                return a[1] < b[1];
+             }
+             );
+
+        set<int> mySet;
+        for(auto& event: events) { // 每个会议
+            for(int day = event[0]; day <= event[1]; ++day) { // 这个会议的[起始天, 结束天]
+                // 如果插入成功, 说明这个day之前没有被占用, 那么这个day就可以出席当前这个会议 则break
+                // 如果插入失败, 说明这个day已经出席了之前的会议, 继续考虑下一个day
+                auto insertRes = mySet.insert(day);
+                if (insertRes.second) {
+                    break;
+                }
+            }
+        }
+        return mySet.size();
+    }
+};
