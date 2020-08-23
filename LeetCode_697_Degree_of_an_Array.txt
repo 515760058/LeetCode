@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int findShortestSubArray(vector<int>& nums) {
+        // 统计每个数字  及其出现的下标
+        map<int, vector<int>> mymap; // key:数字 value:该数字在nums中的下标
+        for (int i = 0; i < nums.size(); ++i) {
+            mymap[nums[i]].push_back(i);
+        }
+
+        // 找到最大的频数
+        int freq = 0;
+        for (auto& node : mymap) {
+            freq = max(freq, (int)node.second.size());
+        }
+
+        // 最大频数对应数字的 最小的度
+        int smallLen = nums.size();
+        for(auto& node : mymap){
+            if(freq == (int)node.second.size()){
+                int len = node.second.back() - node.second.front() + 1;
+                smallLen = min(smallLen, len);
+            }
+        }
+        return smallLen;
+    }
+};
