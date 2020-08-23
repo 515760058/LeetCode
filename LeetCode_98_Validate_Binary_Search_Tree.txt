@@ -7,6 +7,7 @@
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
+// 还有一个巧妙的方法 参考leetcode1373二叉搜索子树的最大键值和
 class Solution {
 public:
     bool isValidBST(TreeNode* root) {
