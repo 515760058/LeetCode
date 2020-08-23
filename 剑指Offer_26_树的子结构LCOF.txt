@@ -1,0 +1,49 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+// 双层遍历
+class Solution {
+public:
+    bool isSubStructure(TreeNode* A, TreeNode* B) {
+        if (B == nullptr) {
+            return false;
+        }
+
+        bool res = false;
+        preOrder(A, B, res);
+        return res;
+    }
+
+private:
+    // 第一层递归 前序遍历二叉树A  在合适的节点开始检查子结构
+    void preOrder(TreeNode* a, TreeNode* b, bool& res) {
+        if (a == nullptr || res) {
+            return;
+        }
+        // 前序
+        if (a->val == b->val) {
+            res = checkSubStructure(a, b); // 校验当前节点是否是子结构
+        }
+        preOrder(a->left, b, res);
+        preOrder(a->right, b, res);
+    }
+
+    // 第二层递归 对二叉树B进行递归
+    bool checkSubStructure(TreeNode* a, TreeNode* b) {
+        if (b == nullptr) { // b为空
+            return true;
+        }
+        if (a == nullptr) { // a为空 (但是b不为空)
+            return false;
+        }
+        return  (a->val == b->val) && 
+                checkSubStructure(a->left, b->left) &&
+                checkSubStructure(a->right, b->right);
+    }
+};
