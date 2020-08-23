@@ -1,0 +1,140 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+/*  剑指offer page283  序列化二叉树
+    1
+   / \
+  2   3
+     / \
+    4   5
+
+序列化为 "1,2,$,$,3,4,$,$,5,$,$,"
+*/
+// leetcode 331 验证二叉树的前序序列化
+// 这个版本使用了stringstream
+class Codec {
+public:
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        stringstream ss; // 保存字符串结果
+        serializeCore(root, ss);
+        return ss.str();
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        stringstream ss(data);
+        return deserializeCore(ss);
+    }
+
+private:
+    // 前序遍历 序列化一棵二叉树
+    void serializeCore(TreeNode* root, stringstream& ss) {
+        if (root == nullptr) {
+            ss << "$ "; // $占位符号
+            return;
+        }
+        // 前序
+        ss << root->val << " ";
+        serializeCore(root->left, ss);
+        serializeCore(root->right, ss);
+    }
+
+    // 根据前序遍历字符串 重建二叉树
+    TreeNode* deserializeCore(stringstream& ss) {
+        if (ss.fail()) {
+            return nullptr;
+        }
+        // 获取根节点(前序序列的第一个字符)
+        string str;
+        ss >> str;
+        // 根节点是否有效
+        if (str == "$") {
+            return nullptr;
+        }
+        // 创建当前节点
+        TreeNode* node = new TreeNode( atoi(str.c_str()) );
+        node->left = deserializeCore(ss);
+        node->right = deserializeCore(ss);
+        return node;
+    }
+};
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec;
+// codec.deserialize(codec.serialize(root));
+
+
+
+
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+// 这个版本未使用stringstream
+class Codec {
+public:
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        string res = "";
+        serializeCore(root, res);
+        // cout << res << endl;
+        return res;
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        return deserializeCore(data);
+    }
+
+private:
+    //序列化的核心
+    void serializeCore(TreeNode* node, string& res){
+        // 空结点 使用$符号标记
+        if(node == NULL){
+            res += "$,";
+            return;
+        }
+        // 前序遍历的顺序
+        res += to_string(node->val) + ",";
+        serializeCore(node->left,  res);
+        serializeCore(node->right, res);
+    }
+    
+   // 反序列化的核心
+    TreeNode* deserializeCore(string& data){
+        // 根据',' 取出前序遍历的根节点
+        int idx = data.find(","); // 第一个','的索引
+        string str = data.substr(0, idx);// ','前面的数字 是根节点
+        // 取出根节点之后 要赶紧更新序列
+        data = data.substr(idx + 1); // ','后面的字符串 是左子树和右子树数据
+        if(str == "$"){ 
+            return nullptr;    
+        }
+        
+        int num = atoi( str.c_str() );// 字符串转成数字
+        // 同样按照先序遍历的顺序 处理根节点和左右子树
+        TreeNode* node = new TreeNode(num); // 创建根结点
+        node->left = deserializeCore(data); // 反序列化左子树
+        node->right = deserializeCore(data); // 反序列化右子树
+        return node;
+    }
+};
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec;
+// codec.deserialize(codec.serialize(root));
