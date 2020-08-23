@@ -1,0 +1,61 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+// 双层遍历
+class Solution {
+public:
+    bool isSubPath(ListNode* head, TreeNode* root) {
+        bool res = false;
+        preOrder(head, root, res);
+        return res;
+    }
+
+private:
+    // 第一层 前序遍历
+    void preOrder(ListNode* head, TreeNode* root, bool& res) {
+        // 已经找到了  或者 树或链表为空
+        if (res || root == nullptr || head == nullptr) {
+            return;
+        }
+        // 当前节点匹配上了 就从当前节点开始第二层遍历
+        if (head->val == root->val) {
+            checkList(head, root, res);
+        }
+        // 当前节点未匹配上 继续左右子树
+        preOrder(head, root->left, res);
+        preOrder(head, root->right, res);
+    }
+
+    // 第二层 从当前节点开始 是否能匹配上链表
+    void checkList(ListNode* head, TreeNode* root, bool& res) {
+        // 链表被耗尽 说明(已经)找到了
+        if (res || head == nullptr) {
+            res = true;
+            return;
+        }
+        // 二叉树被耗尽 说明此路不同
+        if (root == nullptr) {
+            return;
+        }
+        // 当前节点匹配上 继续验证下一节点
+        if (head->val == root->val) {
+            checkList(head->next, root->left, res);
+            checkList(head->next, root->right, res);
+        }
+    }
+};
