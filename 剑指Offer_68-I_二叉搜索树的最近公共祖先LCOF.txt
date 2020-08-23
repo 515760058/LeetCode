@@ -1,0 +1,31 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+// 注意是二叉搜索树 可以利用它的性质
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        // 已经递归到p或者q
+        if ((root == nullptr) || (root->val == p->val) || (root->val == q->val)) {
+            return root;
+        }
+
+        // p和q都小于root 走左子树
+        if ((p->val < root->val) && (q->val < root->val)) {
+            return lowestCommonAncestor(root->left, p, q);
+        }
+        // p和q都大于root 走右子树
+        if ((p->val > root->val) && (q->val > root->val)) { 
+            return lowestCommonAncestor(root->right, p, q);
+        }
+        // 相比于root  p和q一大一小 那就是当前root
+        return root;
+    }
+};
