@@ -1,0 +1,26 @@
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        // 区间的左右端点  分开统计
+        vector<int> starts;
+        vector<int> ends;
+        for (auto& interval : intervals) {
+            starts.push_back(interval[0]);
+            ends.push_back(interval[1]);
+        }
+        // 排序
+        sort(starts.begin(), starts.end());
+        sort(ends.begin(), ends.end());
+
+        // 
+        vector<vector<int>> res;
+        for (int i = 0, j = 0; i < intervals.size(); ++i) {
+            // 最后一个起点 || 新起点
+            if (i == intervals.size() - 1 || starts[i + 1] > ends[i]) {
+                res.push_back( {starts[j], ends[i]} );
+                j = i + 1;
+            }
+        }
+        return res;
+    }
+};
