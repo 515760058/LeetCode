@@ -1,0 +1,95 @@
+// 差分数组 (公交车算法)
+class Solution {
+public:
+    vector<int> corpFlightBookings(vector<vector<int>>& bookings, int n) {
+        vector<int> diff(n + 1, 0);
+
+        for (vector<int>& booking : bookings) {
+            int left = booking[0] -1;
+            int right = booking[1];
+            diff[left] += booking[2];
+            diff[right] -= booking[2];
+        }
+
+        int sum = 0;
+        vector<int> res;
+        for (int i = 0; i < n; ++i) {
+            sum += diff[i];
+            res.push_back(sum);
+        }
+        return res;
+    }
+};
+
+
+
+
+/*
+// 树状数组   区间修改 单点查询
+class TreeArray {
+public:
+    // 构造函数  data表示原始数组
+    TreeArray(const vector<int>& data) {
+        this->data = data;
+        // 初始化差分数组
+        diff.resize(data.size() + 1);
+        diff[0] = 0;
+        diff[1] = data[0];
+        for (int i = 1; i < data.size(); ++i) {
+            diff[i+1] = data[i] - diff[i-1];
+        }
+    }
+
+    //区间[left, right] 加val
+    void addRange(int left, int right, int val) {
+        add(left, val);
+        add(right+1, -val);
+    }
+
+    //查询索引是idx的值
+    int query(int idx) {
+        int res = 0;
+        while (idx > 0) {
+            res += diff[idx];
+            idx -= lowbit(idx);
+        }
+        return res;
+    }
+
+private:
+    // 将idx索引的值 增加val
+    void add(int idx, int val) {
+        while (idx <= diff.size()) {
+            diff[idx] += val;
+            idx += lowbit(idx);
+        }
+    }
+
+    int lowbit(int idx) {
+        return idx & (-idx);
+    }
+
+    // data是原始数据
+    vector<int> data;
+    // diff是data数组的差分数组
+    vector<int> diff;
+};
+
+class Solution {
+public:
+    vector<int> corpFlightBookings(vector<vector<int>>& bookings, int n) {
+        vector<int> data(n + 1, 0); 
+        TreeArray tree (data);
+
+        for (vector<int>& booking : bookings) {
+            tree.addRange(booking[0], booking[1], booking[2]);
+        }
+
+        vector<int> res;
+        for (int i = 1; i <= n; ++i) {
+            res.push_back( tree.query(i) );
+        }
+        return res;
+    }
+};
+*/
