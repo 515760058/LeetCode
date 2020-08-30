@@ -1,0 +1,32 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+/*
+ 后序遍历  返回值表示左/右子树分别欠缺/多余多少个硬币
+  欠缺硬币则返回负数  多余硬币则返回正数
+*/ 
+class Solution {
+public:
+    int distributeCoins(TreeNode* root) {
+        int count = 0;
+        postOrder(root, count);
+        return count;
+    }
+
+public:
+    int postOrder(TreeNode* root, int& count) {
+        if (root == nullptr) {
+            return 0;
+        }
+        int l = postOrder(root->left, count);
+        int r = postOrder(root->right, count);
+        count += abs(l) + abs(r); // 无论是欠缺还是多余 都需要移动
+        return (root->val - 1) + l + r; //  减1表示当前节点保留一个硬币
+    }
+};
