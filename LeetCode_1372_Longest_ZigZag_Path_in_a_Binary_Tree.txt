@@ -1,0 +1,31 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+class Solution {
+public:
+    int longestZigZag(TreeNode* root) {
+        int res = 0;
+        helper(root, res);
+        return res;
+    }
+
+private:
+    // 返回值的意义: vec[0]表示当前节点的左交错路径长度   vec[1]表示当前节点的右交错路径长度
+    vector<int> helper(TreeNode* root, int& res) {
+        if (root == nullptr) {
+            return {-1, -1};
+        }
+        auto leftSubTree = helper(root->left, res);
+        auto rightSubTree = helper(root->right, res);
+        res = max(res, leftSubTree[1] + 1); // 当前节点左交错路径长度 = 1 + 左子树的右交错路径长度
+        res = max(res, rightSubTree[0] + 1); // 当前节点右交错路径长度 = 1 + 右子树的左交错路径长度
+        return { leftSubTree[1]+1, rightSubTree[0]+1 };
+    }
+};
