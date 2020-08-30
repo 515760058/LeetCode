@@ -1,0 +1,42 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+/*
+后序遍历得到分别以各个节点为根的子树总和
+去掉一条边的乘积 = 子树总和 * （总和 - 子树总和），取最大值
+不能提前取模。比如 1e9 + 7（取模后为0） 和 1e9 + 6（取模后不变），提前取模会导致错误
+*/
+class Solution {
+public:
+    int maxProduct(TreeNode* root) {
+        vector<long> sums;
+        postOrder(root, sums); // 整棵树的和是sums.back()
+        
+        long res = 0;
+        for (int i = 0; i < sums.size() - 1; ++i) {
+            res = max(res, (sums.back()-sums[i]) * sums[i]);
+        }
+        return res % mod;
+    }
+
+private:
+    static const int mod = 1e9 + 7;
+
+    // 后序遍历 在sums中保存每个节点对应子树的和
+    long postOrder(TreeNode* root, vector<long>& sums) {
+        if (root == nullptr) {
+            return 0;
+        }
+        long leftSum = postOrder(root->left, sums);
+        long rightSum = postOrder(root->right, sums);
+        long currentSum = root->val + leftSum + rightSum;
+        sums.push_back(currentSum);
+        return currentSum;
+    }
+};
