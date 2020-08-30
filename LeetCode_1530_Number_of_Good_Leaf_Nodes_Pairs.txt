@@ -1,0 +1,59 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int countPairs(TreeNode* root, int distance) {
+        // 根节点到所有叶子节点路径(注意路径记录的是每个节点的地址, 因为val是有重复的)
+        vector<vector<TreeNode*>> pathes;
+        allPathFromRootToLeaf(root, {}, pathes);
+        // 任意两个路径中 叶子节点的距离  并统计结果
+        int count = 0;
+        for (int i = 0; i < pathes.size(); ++i) {
+            for (int j = i+1; j < pathes.size(); ++j) {
+                if (calcDistance(pathes[i], pathes[j]) <= distance) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+private:
+    // 根节点到每个叶子节点的路径
+    void allPathFromRootToLeaf(TreeNode* root, vector<TreeNode*> temp, vector<vector<TreeNode*>>& pathes) {
+        if (root == nullptr) {
+            return;
+        }
+        temp.push_back(root);
+        // 叶子节点 保存路径
+        if (root->left == nullptr && root->right == nullptr) {
+            pathes.push_back(temp);
+            return;
+        }
+        allPathFromRootToLeaf(root->left, temp, pathes);
+        allPathFromRootToLeaf(root->right, temp, pathes);
+    }
+
+    // 任意两条路径 计算叶子节点的距离
+    int calcDistance(vector<TreeNode*>& path1, vector<TreeNode*>& path2) {
+        // 两条路径的前缀节点都是相同的 找到第一个不同的节点
+        int idx = 0;
+        while (idx < path1.size() && idx < path2.size()) {
+            if (path1[idx] != path2[idx]) {
+                break;
+            }
+            idx++;
+        }
+        // 两个叶子节点的距离
+        return (path1.size() - idx) + (path2.size() - idx);
+    }
+};
