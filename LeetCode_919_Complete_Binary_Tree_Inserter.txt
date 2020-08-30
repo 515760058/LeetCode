@@ -1,0 +1,58 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class CBTInserter {
+public:
+    CBTInserter(TreeNode* root) {
+        index = 0;
+        //  BFS 按完全二叉树的顺序遍历
+        queue<TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            TreeNode* temp = q.front();
+            q.pop();
+            cache[++index] = temp;
+            if (temp->left != nullptr) {
+                q.push(temp->left);
+            }
+            if (temp->right != nullptr) {
+                q.push(temp->right);
+            }
+        }
+    }
+    
+    int insert(int v) {
+        TreeNode* node = new TreeNode(v);
+        cache[++index] = node; // 保存新节点
+        int father = index >> 1;
+        if (index & 0x1) {
+            cache[father]->right = node;
+        } else {
+            cache[father]->left = node;
+        }
+        return cache[father]->val;
+    }
+    
+    TreeNode* get_root() {
+        return cache[1];
+    }
+
+private:
+    // key:完全二叉树节点的idx  value:节点对应的地址
+    map<int, TreeNode*> cache;
+    // 完全二叉树节点的idx
+    int index;
+};
+
+/**
+ * Your CBTInserter object will be instantiated and called as such:
+ * CBTInserter* obj = new CBTInserter(root);
+ * int param_1 = obj->insert(v);
+ * TreeNode* param_2 = obj->get_root();
+ */
