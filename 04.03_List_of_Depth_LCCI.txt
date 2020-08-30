@@ -1,0 +1,57 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+// 层序遍历
+class Solution {
+public:
+    vector<ListNode*> listOfDepth(TreeNode* tree) {
+        // 层序遍历
+        vector<vector<int>> level;
+        preOrder(tree, 0, level);
+        // 转换格式
+        vector<ListNode*> res;
+        for (auto& vec : level) {
+            // 构建一个链表
+            ListNode* temp = nullptr;
+            for (int val : vec) {
+                ListNode* node = new ListNode(val);
+                if (temp == nullptr) { // 刚刚创建的node是该层的第一个
+                    res.push_back(node);
+                } else { // 不是第一个
+                    temp->next = node;
+                }
+                temp = node;
+            }
+        }
+        return res;
+    }
+
+private:
+    // 前序遍历实现层序
+    void preOrder(TreeNode* root, int depth, vector<vector<int>>& level) {
+        if (root == nullptr) {
+            return;
+        }
+        if (depth >= level.size()) {
+            level.push_back( {} );
+        }
+        // 前序 按层保存
+        level[depth].push_back(root->val);
+        preOrder(root->left, depth+1, level);
+        preOrder(root->right, depth+1, level);
+    }
+};
