@@ -1,0 +1,103 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+
+/*
+位运算法：异或的性质就是两个相同的数 异或为0
+  回文串只会有两种情况 要么1221  要么121  (最多只能有1个数字出现奇数次) 所以异或后，要么是0 要么是出现奇数次的数字
+  
+  因为题目取值范围是1~9  所以可以用每一个bit位 表示一个数字 比如5写成10000  这样哪怕是121这种情况 也只会剩下一个bit位  也就是100
+
+  最后众所周知 n & (n - 1) 可以用来消除最后一个比特1
+*/ 
+class Solution {
+public:
+    int pseudoPalindromicPaths (TreeNode* root) {
+        int cnt = 0;
+        helper(root, 0, cnt);
+        return cnt;
+    }
+
+private:
+    void helper(TreeNode* root, int x_or, int& cnt) {
+        if (root == nullptr) {
+            return;
+        }
+        x_or ^= (0x1 << root->val);
+        if (root->left == nullptr && root->right == nullptr) { // 叶子节点
+            if ((x_or == 0) || ((x_or&(x_or-1)) == 0)) { // 全是偶数次 || 只有一个数出现奇数次
+                ++cnt;
+                return;
+            }
+        }
+        helper(root->left, x_or, cnt);
+        helper(root->right, x_or, cnt);
+    }
+};
+
+
+
+/* 常规方法  判断每一条路径
+class Solution {
+public:
+    int pseudoPalindromicPaths (TreeNode* root) {
+        // 从根节点到叶子的所有路径
+        vector<vector<int>> pathes;
+        allPathFromRootToLeaf(root, {}, pathes);
+        // 判断每个路径 是否是'伪回文'
+        int cnt = 0;
+        for (auto& path : pathes) {
+            if (isPseudoPalindromicPath(path)) {
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+
+private:
+    // 从根节点到叶子的所有路径
+    void allPathFromRootToLeaf(TreeNode* root, vector<int> temp, vector<vector<int>>& pathes) {
+        if (root == nullptr) {
+            return;
+        }
+        // 记录当前节点
+        temp.push_back(root->val);
+        // 是叶子节点
+        if (root->left == nullptr && root->right == nullptr) {
+            pathes.push_back(temp);
+            return;
+        }
+        // 向下递归
+        allPathFromRootToLeaf(root->left, temp, pathes);
+        allPathFromRootToLeaf(root->right, temp, pathes);
+    }
+
+    // 判断给定的路径 是否是'伪回文'
+    bool isPseudoPalindromicPath(vector<int>& path) {
+        // 统计每个数字的出现次数 最多只能有1个数字出现奇数次
+        map<int, int> m;
+        for (int num : path) {
+            ++m[num];
+        }
+
+        int odd = 0;
+        for (auto& kv : m) {
+            if (kv.second & 0x1) {
+                odd++;
+                if (odd >= 2) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+};
+*/
