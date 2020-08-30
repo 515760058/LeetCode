@@ -1,0 +1,56 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+/*
+链接：https://leetcode-cn.com/problems/binary-tree-coloring-game/solution/cxiang-jie-by-sy_rabbit/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+解题思路
+先读懂游戏规则，挖掘信息：
+
+当某个玩家在某回合被跳过时，则其在其余回合必然被跳过，即必输，因此，最先出现没有可染色的节点的玩家会输
+把树看做一张图，二号玩家想要赢，就要尽可能的切断一号玩家之后的可染色通路（结合最近大火的糖豆人的决赛关蜂窝谜图），因此，二号玩家第一步的最优选择就是在一号玩家所选择的节点的邻节点（左右子节点或父节点）着色，这样能保证其着色节点所在方向的所有节点都不可能被一号玩家着色，因此，要选择所在方向节点数最多的临节点着色。根据以上规律，能确保二号玩家胜利的情况就是，选择的节点所在方向的节点数大于另外两个方向的节点数之和再加一（一号玩家的着色节点）
+找到了二号玩家的最优策略，现在问题就变成了如何分别统计某节点的三个邻节点方向的节点个数：
+
+对于左右子节点方向，可以用二叉树遍历的方法统计
+对于父节点方向，则用总节点数减去左右子节点方向的节点数再减一（一号玩家的着色节点）
+另外，同样可以用二叉树的遍历来找到一号玩家的染色节点
+*/
+class Solution {
+public:
+    bool btreeGameWinningMove(TreeNode* root, int n, int x) {
+        if(root == nullptr) {
+            return false;
+        }
+        //找到了一号玩家的染色节点
+        if(root->val == x){
+            int l = getNum(root->left); // 左子树方向节点数
+            int r = getNum(root->right); // 右子树方向节点数
+            int other = n - l - r - 1; // 父节点方向节点数
+            if(other > l+r+1 || l > other+r+1 || r > other+l+1) {
+                return true;
+            }
+        }
+        // 向左右子树递归 找一号玩家的染色节点
+        return btreeGameWinningMove(root->left, n, x) || btreeGameWinningMove(root->right, n, x);
+    }
+
+private:
+    // 后序遍历 获取以root为根节点的二叉树的节点数
+    int getNum(TreeNode* root) {
+        if (root == nullptr) {
+            return 0;
+        }
+        int l = getNum(root->left);
+        int r = getNum(root->right);
+        return l + r + 1;
+    }
+};
