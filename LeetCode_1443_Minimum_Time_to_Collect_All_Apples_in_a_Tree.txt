@@ -1,0 +1,33 @@
+// 方法1：
+// 记录从根节点到每个苹果的路径  (如果是图就用BFS 如果是树就用递归)
+// 路径上的点去重复 再乘以2就是结果
+
+// 方法2：
+// 把图转成换从子节点-->父节点的图
+// 从苹果出发 向上找父节点直到0
+// 所有路径*2 就是结果
+
+// 这个是方法2.
+class Solution {
+public:
+    int minTime(int n, vector<vector<int>>& edges, vector<bool>& hasApple) {
+        map<int, int> graph { {0, 0} }; // key:子节点 value:父节点
+        for (auto& edge : edges) {
+            graph[edge[1]] = edge[0];
+        }
+        // 从每个苹果出发 向上找路径 并放在set中去重
+        set<vector<int>> pathes;
+        for (int i = 0; i < hasApple.size(); ++i) {
+            if (hasApple[i] == false) {
+                continue;
+            }
+            // 保存从苹果i到根节点0的路径
+            int apple = i;
+            while(apple != 0) {
+                pathes.insert( {apple, graph[apple]} );
+                apple = graph[apple];
+            }
+        }
+        return pathes.size() << 1;
+    }
+};
