@@ -1,0 +1,70 @@
+// 先使用dfs找到第一个岛 修改为2 并将其入队列
+// 以队列为基础进行BFS 查找最小距离；
+class Solution {
+public:
+    int shortestBridge(vector<vector<int>> &A) {
+        // dfs查找第一个岛 并将其标记为2 放入队列中
+        bool firstIsland = true; // 只查找第一个岛
+        queue<pair<int, int>> q;
+        for (int i = 0; i < A.size() && firstIsland; ++i) {
+            for (int j = 0; j < A[0].size() && firstIsland; ++j) {
+                if (A[i][j] == 1) {
+                    dfs(A, i, j, q);
+                    firstIsland = false;
+                }
+            }
+        }
+        // 对队列里的岛进行bfs向外扩展搜索 并记录层数
+        // 当遇到第二个岛的时候返回层数
+        int level = 0;
+        while (!q.empty()) {
+            int k = q.size();
+            for (int i = 0; i < k; ++i) {
+                auto f = q.front();
+                q.pop();
+                for (int d = 0; d < dirR.size(); ++d) {
+                    int r = f.first  + dirR[d];
+                    int c = f.second + dirC[d];
+                    // 检查下一个坐标的有效性
+                    if (r < 0 || r >= A.size() || c < 0 || c >= A[0].size()) {
+                        continue;
+                    }
+                    if (A[r][c] == 2) {
+                        continue;
+                    }
+                    // 碰到第二座桥
+                    if (A[r][c] == 1) {
+                        return level;
+                    }
+                    // 修改沿途路径 并放入队列
+                    A[r][c] = 2;
+                    q.push( {r, c} );
+                }
+            }
+            level++;
+        }
+        return level;
+    }
+
+private:
+    void dfs(vector<vector<int>>& A, int i, int j, queue<pair<int, int>>& q) {
+        if (i < 0 || i >= A.size() || j < 0 || j >= A[0].size()) {
+            return;
+        }
+        if (A[i][j] == 0 || A[i][j] == 2) {
+            return;
+        }
+        // 标记 并放入队列
+        q.push({i, j});
+        A[i][j] = 2;
+        for (int d = 0; d < dirR.size(); ++d) {
+            int r = i + dirR[d];
+            int c = j + dirC[d];
+            dfs(A, r, c, q);
+        }
+    }
+
+    // 上下左右 四个方向
+    vector<int> dirR = {-1, 1,  0, 0};
+    vector<int> dirC = { 0, 0, -1, 1};
+};
