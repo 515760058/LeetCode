@@ -1,0 +1,42 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+/*
+层序遍历思路：把一颗树的节点（包括空节点）按层序遍历排成一行
+   当且仅当存在两个相邻节点：前一个为null，后一个不为null时，才不是不是完全二叉树。
+例子：
+       1
+      / \
+     2   3
+    / \   \
+   4   5   7
+层序遍历序列为：[1, 2, 3, 4, 5, null, 7]，其中null出现在了7前面，所以不合法
+*/
+class Solution {
+public:
+    bool isCompleteTree(TreeNode* root) {
+        queue<TreeNode*> q;
+        q.push(root);
+
+        TreeNode* prev = root;
+        while (!q.empty()) {
+            TreeNode* node = q.front();
+            q.pop();
+            if (prev == nullptr && node != nullptr) {
+                return false;
+            }
+            if (node != nullptr) {
+                q.push(node->left);
+                q.push(node->right);
+            }
+            prev = node;
+        }
+        return true;
+    }
+};
