@@ -1,0 +1,59 @@
+// 使用并查集把相同的名字合并起来  合并的时候选择字典序最小的名字作为根节点
+// 然后统计一下所有根节点的频率
+class Solution {
+public:
+    vector<string> trulyMostPopular(vector<string>& names, vector<string>& synonyms) {
+        unordered_map<string, string> tree; // 并查集数组
+        // 把所有的名字 合并
+        for (auto& synonym : synonyms) {
+            //取出每对名字中的两个名字
+            int comma_ind = synonym.find(',');
+            string name1 = synonym.substr(1, comma_ind - 1);
+            string name2 = synonym.substr(comma_ind + 1, int(synonym.size()) - comma_ind - 2);
+            // 这里需要注意 比较大小时不是直接比较name1和name2 而是比较他们的根
+            string root1 = findRoot(tree, name1);
+            string root2 = findRoot(tree, name2);
+            m_union(tree, root1, root2);
+        }
+
+        // 对每个名字和出现次数 对其根节点进行操作
+        unordered_map<string, int> hash_map;
+        for (auto& name_str : names) {
+            int t_ind = name_str.find('(');
+            string name = name_str.substr(0, t_ind);
+            int freq = atoi(name_str.substr(t_ind + 1, int(name_str.size()) - t_ind - 2).c_str());
+            hash_map[findRoot(tree, name)] += freq;
+        }
+        
+        // 转换输出格式
+        vector<string> res;
+        for (auto iter = hash_map.begin(); iter != hash_map.end(); iter++) {
+            string tmp = iter->first + "(" + to_string(iter->second) + ")";
+            res.push_back(tmp);
+        }
+        return res;
+    }
+
+private:
+    // 构造并查集，通过父亲找祖先
+    string findRoot(unordered_map<string, string>& tree, string key) {
+        //自己的祖先是自己
+        if (tree.count(key) == 0) {
+            return key;
+        }
+        auto ancestor = findRoot(tree, tree[key]);
+        tree[key] = ancestor;
+        return ancestor;
+    }
+
+    // 插入
+    void m_union(unordered_map<string, string>& tree, string r1, string r2){
+        if (r1 != r2) {
+            if (r1 < r2) {
+                tree[r2] = r1;
+            } else {
+                tree[r1] = r2;
+            }
+        }
+    }
+};
