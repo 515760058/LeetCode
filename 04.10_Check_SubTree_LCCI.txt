@@ -1,0 +1,50 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+// 双层遍历
+class Solution {
+public:
+    bool checkSubTree(TreeNode* t1, TreeNode* t2) {
+        // t1中可能的起始点 (和t2根节点值 相等的点)
+        set<TreeNode*> s;
+        preOrder(t1, t2->val, s);
+        // 对t1的每个起始点 和t2判断
+        for (TreeNode* node : s) {
+            if (sameTree(node, t2)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+private:
+    void preOrder(TreeNode* root, int val, set<TreeNode*>& s) {
+        if (root == nullptr) {
+            return;
+        }
+        if (root->val == val) {
+            s.insert(root);
+        }
+        preOrder(root->left, val, s);
+        preOrder(root->right, val, s);
+    }
+
+    // 判断t1和t2是否相等
+    bool sameTree(TreeNode* t1, TreeNode* t2) {
+        if (t1 == nullptr && t2 == nullptr) {
+            return true;
+        }
+        if (t1 == nullptr || t2 == nullptr) {
+            return false;
+        }
+        return  t1->val == t2->val &&
+                sameTree(t1->left, t2->left) &&
+                sameTree(t1->right, t2->right);
+    }
+};
