@@ -1,0 +1,29 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isUnivalTree(TreeNode* root) {
+        if (root == nullptr) {
+            return true;
+        }
+        return preOrder(root, root->val);
+    }
+
+private:
+    // 递归 每个节点的值都和根节点的值做比较
+    bool preOrder(TreeNode* root, int rootVal) {
+        if (root == nullptr) {
+            return true;
+        }
+        return root->val == rootVal &&
+               preOrder(root->left, rootVal) &&
+               preOrder(root->right, rootVal);
+    } 
+};
