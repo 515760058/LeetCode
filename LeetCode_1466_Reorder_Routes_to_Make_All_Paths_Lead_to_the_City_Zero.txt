@@ -1,0 +1,29 @@
+// 有向图转成无向图  然后从位置0开始DFS遍历
+// 每次遍历到下一个节点 检查这一条边的方向是不是正确的 不正确的就需要记录下来
+class Solution {
+public:
+    int minReorder(int n, vector<vector<int>>& connections) {
+        // 转成无向图
+        vector<vector<pair<int,bool>>> graph(n);
+        for(auto& c : connections){
+            graph[c[0]].push_back( {c[1], true} ); // c[0] -> c[1]有路径
+            graph[c[1]].push_back( {c[0], false} ); // c[1] -> c[0]没有路径
+        }
+        // 
+        int res = 0;
+        dfs(graph, 0, -1, res);
+        return res;
+    }
+
+private:
+    void dfs(vector<vector<pair<int,bool>>>& graph, int node, int from, int& res){
+        for (auto& c : graph[node]) {
+            if (c.first != from) { // 不能走回头路
+                if (c.second) { // 原始方向 有问题
+                    res++;
+                }
+                dfs(graph, c.first, node, res);
+            }
+        }
+    }
+};
