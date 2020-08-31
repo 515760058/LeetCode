@@ -1,0 +1,55 @@
+// BFS 逆流的想法
+//   从太平洋(左边 上边)出发 类似于洪泛的行为 能逆流到哪些单元格
+//   从大西洋(右边 下边)出发 类似于洪泛的行为 能逆流到哪些单元格
+// 记录同时能访问到太平洋和大西洋的单元格 就是答案
+class Solution {
+public:
+    vector<vector<int>> pacificAtlantic(vector<vector<int>>& matrix) {
+        if (matrix.empty() || matrix[0].empty()) {
+            return {};
+        }
+        
+        int row = matrix.size();
+        int col = matrix[0].size();
+        // 单元格的状态(能否被太平洋或大西洋逆流覆盖)
+        vector<vector<bool>> pacific(row, vector<bool>(col, false));
+        vector<vector<bool>> atlantic(row, vector<bool>(col, false));
+        //
+        for (int i = 0; i < row; ++i) {
+            dfs(matrix, pacific, INT_MIN, i, 0); // 从左侧出发
+            dfs(matrix, atlantic, INT_MIN, i, col - 1); // 从右侧出发
+        }
+        for (int i = 0; i < col; ++i) {
+            dfs(matrix, pacific, INT_MIN, 0, i); // 从上侧出发
+            dfs(matrix, atlantic, INT_MIN, row - 1, i); // 从下侧出发
+        }
+
+        vector<vector<int>> res;
+        for (int i = 0; i < row; ++i) {
+            for (int j = 0; j < col; ++j) {
+                if (pacific[i][j] && atlantic[i][j]) {
+                    res.push_back( {i, j} );
+                }
+            }
+        }
+        return res;
+    }
+
+private:
+    void dfs(vector<vector<int>>& matrix, vector<vector<bool>>& visited, int pre, int i, int j){
+        // 校验下标的有效性
+        if (i < 0 || i >= matrix.size() || j < 0 || j >= matrix[0].size()) {
+            return;
+        }
+        // 已经覆盖过的 || 高度不满足条件
+        if (visited[i][j] || matrix[i][j] < pre) {
+            return;
+        }
+        // 逆流 覆盖此单元格
+        visited[i][j] = true;
+        dfs(matrix, visited, matrix[i][j], i + 1, j);
+        dfs(matrix, visited, matrix[i][j], i - 1, j);
+        dfs(matrix, visited, matrix[i][j], i, j + 1);
+        dfs(matrix, visited, matrix[i][j], i, j - 1);
+    }
+};
