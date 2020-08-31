@@ -1,0 +1,45 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+// leetcode1325. 删除给定值的叶子节点
+class Solution {
+public:
+    vector<TreeNode*> delNodes(TreeNode* root, vector<int>& to_delete) {
+        // 后序遍历
+        vector<TreeNode*> res;
+        root = postOrder(root, to_delete, res);
+        // 检查根节点是否被删除了
+        if (root != nullptr) {
+            res.push_back(root);
+        }
+        return res;
+    }
+
+private:
+    // 后序遍历
+    TreeNode* postOrder(TreeNode* root, vector<int>& to_delete, vector<TreeNode*>& res) {
+        if(root == nullptr) {
+            return nullptr;
+        }
+        root->left = postOrder(root->left, to_delete, res);
+        root->right = postOrder(root->right, to_delete, res);
+        // 需要删除该节点 则先保存该节点的左右子树 并返回nullptr用以修改父节点的left/right字段
+        if (find(to_delete.begin(), to_delete.end(), root->val) != to_delete.end()) {
+            if (root->left != nullptr) {
+                res.push_back(root->left);
+            }
+            if (root->right != nullptr) {
+                res.push_back(root->right);
+            }
+            return nullptr;
+        }
+        // 不用删除该节点 则直接返回该节点地址
+        return root;
+    }
+};
