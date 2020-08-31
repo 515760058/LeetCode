@@ -1,0 +1,50 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+/*
+每一个结点有3个状态：
+    0：该结点没有被摄像头且未被覆盖 意味着父节点需要放置摄像头
+    1：该结点处有摄像头
+    2：该结点没有摄像头 但子节点有摄像头(可以覆盖该节点)
+设想一下,如果要求最少的安置摄像头数量,我们肯定会择优选择不在头尾处安插,于是利用后续遍历
+当我们从底层向上遍历的时候,一开始左右结点处于0状态 就是父节点没有摄像头 因此我们要在0状态的时候给父节点安插一个摄像头 父节点变为状态1
+当我们在父节点安插好摄像头后 对于父节点的上层结点该结点就成了子节点 那么上层结点的状态即为2 因此要return 2.
+
+最初使的时候遍历到底层遇到空结点，我们返回2，因为我们不希望在尾结点安置摄像头，在最下层结点安置摄像头不如它的上层结点安置摄像头覆盖的多。
+*/
+class Solution {
+public:
+    int minCameraCover(TreeNode* root) {
+        int res = 0;
+        // 根节点的状态
+        int r = minCameraCoverHelper(root, res);
+        return r == 0 ? res + 1 : res;
+    }
+
+private:
+    int minCameraCoverHelper(TreeNode* root, int& res) {
+        if (root == nullptr) {
+            return 2;
+        }
+        // 左右子节点的状态
+        int l = minCameraCoverHelper(root->left, res);
+        int r = minCameraCoverHelper(root->right, res);
+        // 左或右子节点存在未被覆盖的情况 则当前节点必须放摄像头
+        if (l == 0 || r == 0) {
+            res++;
+            return 1;
+        }
+        // 左或右子节点放了摄像头 当前节点是被覆盖的状态
+        if (l == 1 || r == 1) {
+            return 2;
+        }
+        // 当前节点既没有摄像头也未被覆盖(期待父节点放置摄像头覆盖当前节点)
+        return 0;
+    }
+};
