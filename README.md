@@ -130,6 +130,8 @@ Return false;
 - Accounts Merge 账户合并
 
 - Surrounded Regions
+- 面试题 17.07. 婴儿名字
+
 
 ## 单调栈
 详细易懂的讲解单调栈 https://leetcode-cn.com/problems/daily-temperatures/solution/javadan-diao-zhan-ni-xu-bian-li-by-hyh-2/
@@ -251,15 +253,20 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - 面试题04.05. 合法二叉搜索树
 - leetcode700 二叉搜索树中的搜索
 - leetcode 将有序数组转换为二叉搜索树
-- leetcode1382 将二叉搜索树变平衡
+- leetcode1382 将二叉搜索树变平衡（重建BST）
+- 面试题 04.02. 最小高度树(重建BST)
+- leetcode1008. 先序遍历构造二叉树(重建BST)
 - leetcode1038 从二叉搜索树到更大和树
 - leetcode1373 二叉搜索子树的最大键值和
 - 剑指 Offer 54 二叉搜索树的第k大节点
 - 剑指 Offer 68 - I. 二叉搜索树的最近公共祖先
+- 剑指 Offer 68 - II. 二叉树的最近公共祖先
 - 面试题 04.08. 首个共同祖先(非BST)
+- leetcode1379. 找出克隆二叉树中的相同节点
 - leetcode173 二叉搜索树迭代器
-- 
-- 
+- LeetCode938. 二叉搜索树的范围和
+- 面试题 04.06. 后继者
+
 
 ## 树 二叉树 N叉树
 ### 相关链接
@@ -268,14 +275,19 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - leetcode589 N叉树的前序遍历
 - leetcode590 N叉树的后序遍历
 
+- 树的深度
+- leetcode559. N叉树的最大深度
+
 - 检验树的性质
 - leetcode110 平衡二叉树
 - 面试题 04.04. 检查平衡性
 - 剑指 Offer 55 - II. 平衡二叉树
+- leetcode958 检验完全二叉树
 
 - 层序遍历及其衍生题目
 - leetcode 102 二叉树的层序遍历
 - leetcode 107 二叉树的层次遍历 II
+- 剑指 Offer 32 - I. 从上到下打印二叉树
 - 剑指 Offer 32 - II. 从上到下打印二叉树 II
 - 剑指 Offer 32 - III. 从上到下打印二叉树 III
 - leetcode1302. 层数最深叶子节点的和
@@ -284,10 +296,17 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - leetcode 二叉树的层平均值
 - leetcode 二叉树的垂序遍历
 - 面试题 04.03. 特定深度节点链表
+- LeetCode429. N叉树的层序遍历
 
 - 重建二叉树
 - leetcode654 最大二叉树
+- 剑指 Offer 07. 重建二叉树
 
+- leetcode998. 最大二叉树 II
+
+- 翻转/镜像二叉树
+- 剑指 Offer 27. 二叉树的镜像
+- leetcode951. 翻转等价二叉树
 
 - 序列化
 - leetcode297. 二叉树的序列化与反序列化
@@ -298,15 +317,27 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - 面试题 04.12. 求和路径
 - leetcode1367 二叉树中的列表
 - 剑指 Offer 26. 树的子结构
+- 面试题 04.10. 检查子树
 - leetcode
 
 - 树转图
 - leetcode863. 二叉树中所有距离为K的结点
+- leetcode1466. 重新规划路线
+
 
 - 根到叶子的路径
 - leetcode1022. 从根到叶的二进制数之和
 - leetcode1530. 好叶子节点对的数量
 - leetcode1457. 二叉树中的伪回文路径
+- leetcode1026. 节点与其祖先之间的最大差值
+- leetcode988. 从叶结点开始的最小字符串
+- leetcode1448. 统计二叉树中好节点的数目
+- 剑指Offer 34. 二叉树中和为某一值的路径
+
+
+- 删除二叉树节点
+- leetcode1325. 删除给定值的叶子节点
+- leetcode1110. 删点成林
 
 - 其他
 - leetcode1315 祖父节点值为偶数的节点和
@@ -322,6 +353,11 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - leetcode979. 在二叉树中分配硬币(后序遍历)
 - leetcode1261. 在受污染的二叉树中查找元素
 - leetcode993. 二叉树的堂兄弟节点
+- leetcode965. 单值二叉树
+- leetcode116. 填充每个节点的下一个右侧节点指针
+- leetcode968. 监控二叉树
+
+
 
 ## 树状数组 线段树
 ### 相关链接
@@ -399,12 +435,16 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 ## 广度优先搜索BFS
 ### 相关链接
 ### 典型题目
-- leetcode 994 腐烂的橘子
+- leetcode 994 腐烂的橘子(地图分析)
+- leetcode1162. 地图分析(腐烂的橘子)
+- leetcode934. 最短的桥 dfs+bfs
+- leetcode1306. 跳跃游戏 III
 
 ## 深度优先搜索DFS
 ### 相关链接
 ### 典型题目
 - leetcode 200岛屿数量
+- leetcode417. 太平洋大西洋水流问题
 
 
 ## 优先队列
