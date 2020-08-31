@@ -1,0 +1,31 @@
+// BFS
+class Solution {
+public:
+    bool canReach(vector<int>& arr, int start) {
+        queue<int> q; // 队列中存放的是下标
+        q.push(start);
+        set<int> visited; // 已访问过的下标
+        visited.insert(start);
+        while (!q.empty()) {
+            int idx = q.front();
+            q.pop();
+            // 到达元素0
+            if (arr[idx] == 0) {
+                return true;
+            }
+            // 放入下一个有效的位置(没有访问过)
+            for (int i = 0; i < dir.size(); ++i) {
+                int next = idx + arr[idx] * dir[i];
+                if (0 <= next && next < arr.size() && visited.count(next) == 0) {
+                    q.push(next);
+                    visited.insert(next);
+                }
+            }
+        }
+        return false;
+    }
+
+private:
+    // 加 或者 减
+    vector<int> dir = {1, -1};
+};
