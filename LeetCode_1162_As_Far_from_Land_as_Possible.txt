@@ -1,0 +1,54 @@
+// 这一题的本质是‘leetcode 994腐烂的橘子’ 
+// 陆地就是初始的烂橘子  什么时候可以把所有的海洋都感染成陆地?
+// BFS
+class Solution {
+public:
+    int maxDistance(vector<vector<int>>& grid) {
+        // 把所有的陆地放入队列
+        queue<pair<int, int>> q;
+        for (int i = 0; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[0].size(); ++j) {
+                if (grid[i][j] == 1) {
+                    q.push( {i, j} );
+                }
+            }
+        }
+
+        if (q.empty() || q.size() == grid.size()*grid[0].size()) {
+            return -1;
+        }
+        // BFS 以陆地为基础 一圈一圈的向外扩展
+        int level = -1;
+        while (!q.empty()) {
+            // 外圈的每一圈
+            int k = q.size();
+            while (--k >= 0) {
+                pair<int, int> p = q.front();
+                q.pop();
+                // 上下左右 四个方向
+                for (int i = 0; i < dirC.size(); ++i) {
+                    // 下一个坐标
+                    int r = p.first + dirR[i];
+                    int c = p.second + dirC[i];
+                    // 校验下一个坐标的有效性
+                    if (r < 0 || r >= grid.size() || c < 0 || c >= grid[0].size()) {
+                        continue;
+                    }
+                    // 下一个位置是陆地(已经遍历过了)
+                    if (grid[r][c] == 1) {
+                        continue;
+                    }
+                    // 下一个位置是海洋 改成陆地并放入队列中
+                    grid[r][c] = 1;
+                    q.push( {r, c} );
+                }
+            }
+            level++;
+        }
+        return level;
+    }
+
+private:
+    vector<int> dirR = {-1, 1, 0, 0};
+    vector<int> dirC = {0, 0, -1, 1};
+};
