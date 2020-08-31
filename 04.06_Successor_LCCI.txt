@@ -1,0 +1,29 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+// 要找的是第一个大于p->val的节点  所以遇到第一个大于p->val的即可返回
+class Solution {
+public:
+    TreeNode* inorderSuccessor(TreeNode* root, TreeNode* p) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        // 左子树
+        TreeNode* res = inorderSuccessor(root->left, p);
+        if (res != nullptr) {
+            return res;
+        }
+        // 当前节点
+        if (root->val > p->val) {
+            return root;
+        }
+        // 右子树
+        return inorderSuccessor(root->right, p);
+    }
+};
