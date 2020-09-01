@@ -1,0 +1,46 @@
+// BFS
+class Solution {
+public:
+    int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
+        if (grid[0][0]) {
+            return -1;
+        }
+        queue<pair<int, int>> q;
+        q.push( {0, 0} );
+        grid[0][0] = 1;
+
+        int step = 1;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int idx = 0; idx < size; ++idx) {
+                pair<int, int> pos = q.front();
+                q.pop();
+                // 到达右下角
+                if (pos.first == grid.size()-1 && pos.second == grid[0].size()-1) {
+                    return step;
+                }
+                // 八个方向
+                for (int i = 0; i < dirX.size(); ++i) {
+                    // 下一个位置
+                    int xx = pos.first + dirX[i];
+                    int yy = pos.second+ dirY[i];
+                    // 检查下标和数据的有效性
+                    if (xx < 0 || xx >= grid.size() || yy < 0 || yy >= grid[0].size()) {
+                        continue;
+                    }
+                    // 放入队列 并清除
+                    if (grid[xx][yy] == 0) {
+                        q.push( {xx, yy} );
+                        grid[xx][yy] = 1;
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+    }
+
+private:
+    vector<int> dirX {-1, 1, 0, 0, -1, -1,  1, 1};
+    vector<int> dirY { 0, 0,-1, 1, -1,  1, -1, 1};
+};
