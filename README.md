@@ -131,7 +131,7 @@ Return false;
 
 - Surrounded Regions
 - 面试题 17.07. 婴儿名字
-
+- leetcode785. 判断二分图
 
 ## 单调栈
 详细易懂的讲解单调栈 https://leetcode-cn.com/problems/daily-temperatures/solution/javadan-diao-zhan-ni-xu-bian-li-by-hyh-2/
@@ -290,6 +290,7 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - 剑指 Offer 32 - I. 从上到下打印二叉树
 - 剑指 Offer 32 - II. 从上到下打印二叉树 II
 - 剑指 Offer 32 - III. 从上到下打印二叉树 III
+- leetcode513. 找树左下角的值
 - leetcode1302. 层数最深叶子节点的和
 - leetcode 199 二叉树的右视图
 - leetcode 在每个树行中找最大值
@@ -439,12 +440,21 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - leetcode1162. 地图分析(腐烂的橘子)
 - leetcode934. 最短的桥 dfs+bfs
 - leetcode1306. 跳跃游戏 III
+- leetcode909 蛇梯棋
+- leetcode310. 最小高度树
+- leetcode785. 判断二分图
+- leetcode1091. 二进制矩阵中的最短路径(bfs最短路径的长度)
+- leetcode127 单词接龙(bfs最短路径的长度)
+- 面试题17.22. 单词转换(bfs最短路径)
 
 ## 深度优先搜索DFS
 ### 相关链接
 ### 典型题目
 - leetcode 200岛屿数量
 - leetcode417. 太平洋大西洋水流问题
+- leetcode130. 被围绕的区域
+- leetcode529. 扫雷游戏
+- leetcode1391 检查网格中是否存在有效路径
 
 
 ## 优先队列
