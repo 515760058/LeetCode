@@ -1,0 +1,99 @@
+/*
+把题目介绍里面的图分析一下 发现越是靠里面的节点越有可能是最小高度树
+因此就从图的边缘开始(先找到所有出度为1的节点) 然后把所有出度为1的节点进队列 然后不断地bfs 最后找到的就是两边同时向中间靠近的节点
+那么它就是到两边距离最小的点 也就是到其他叶子节点最近的节点了
+*/
+class Solution {
+public:
+    vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
+        if (n == 1) {
+            return {0};
+        }
+        // 构建无向图 同时记录每个节点的出现次数(为了找边缘节点)
+        vector<unordered_set<int>> graph(n);
+        for (vector<int>& edge : edges) {
+            graph[edge[0]].insert(edge[1]);
+            graph[edge[1]].insert(edge[0]);
+        }
+        // BFS
+        // 数组中只出现1次的节点就是边缘节点 使用边缘节点初始化队列
+        queue<int> que;
+        for (int i = 0; i < n; ++i) {
+            if (graph[i].size() == 1) {
+                que.push(i);
+            }
+        }
+        // 从边缘节点向中心进行扩展 最后剩余的1个或2个节点就是中心节点
+        while (n > 2) {
+            int size = que.size();
+            n -= size;
+            for (int idx = 0; idx < size; ++idx) {
+                int node = que.front();
+                que.pop();
+                for (int next : graph[node]) {
+                    // 删除 度是否为1
+                    graph[next].erase(node);
+                    if (graph[next].size() == 1) {
+                        que.push(next);
+                    }
+                }
+            }
+        }
+
+        vector<int> res;
+        while (!que.empty()) {
+            res.push_back(que.front());
+            que.pop();
+        }
+        return res;
+    }
+};
+
+/*
+// 首先构建无向图  然后在无向图中依次从每个点出发使用BFS遍历记录最小高度
+// 这样会超时的
+class Solution {
+public:
+    vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
+        // 构建无向图
+        vector<vector<int>> graph(n, vector<int>{});
+        for (vector<int>& edge : edges) {
+            graph[edge[0]].push_back(edge[1]);
+            graph[edge[1]].push_back(edge[0]);
+        }
+
+        // 依次从每个点出发使用BFS遍历记录最小高度
+        map<int, vector<int>> res; // key:高度  value:高度对应的节点
+        for (int start = 0; start < n; ++start) {
+            int height = bfs(graph, start);
+            res[height].push_back(start);
+        }
+        return (*res.begin()).second;
+    }
+
+private:
+    // 从节点start出发 对graph进行BFS遍历 返回高度
+    int bfs(vector<vector<int>>& graph, int start) {
+        queue<int> que { {start} };
+        set<int> visited { {start} };
+        int height = -1;
+        while (!que.empty()) {
+            int size = que.size();
+            for (int idx = 0; idx < size; ++idx) {
+                int node = que.front();
+                que.pop();
+                for (int next : graph[node]) {
+                    if (visited.count(next)) {
+                        continue;
+                    }
+                    que.push(next);
+                    visited.insert(next);
+                }
+            }
+            ++height;
+        }
+        // cout << "node:"<<start << "----height:" << height << endl;
+        return height;
+    }
+};
+*/
