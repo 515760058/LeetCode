@@ -1,74 +1,67 @@
 // BFS
+// 同类题目 leetcode1162 地图分析
 class Solution {
 public:
     int orangesRotting(vector<vector<int>>& grid) {
-        int row = grid.size();
-        int col = grid[0].size();
-        
-        vector<vector<int>> minute(row, vector(col, MY_MAX));
-        queue<Position> que;
-        // 使用腐烂橘子 初始化队列状态
-        for (int i = 0; i < row; ++i) {
-            for (int j = 0; j < col; ++j) {
-                // 烂橘子 初始标记0 并入队
-                if (grid[i][j] == 2) {
-                    minute[i][j] = 0;
-                    que.push( Position(i, j) );
+        // 使用腐烂橘子 初始化队列
+        queue<pair<int, int>> fresh;
+        queue<pair<int, int>> que;
+        for (int i = 0; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[0].size(); ++j) {
+                if (grid[i][j] == 2) { // 烂橘橘子的坐标 入队
+                    que.push( {i, j} );
                 }
-                // 空格 标记为-1
-                if (grid[i][j] == 0) {
-                    minute[i][j] = -1;
+                if (grid[i][j] == 1) { // 记录新鲜橘子
+                    fresh.push( {i, j} );
                 }
             }
+        }
+        // 当队列为空(没有烂橘子)时：存在新鲜橘子那就永远不能感染(返回-1)  不存在新鲜橘子时就返回0 
+        if (que.empty()) {
+            return fresh.empty() ? 0 : -1; 
+        }
+        // BFS
+        int minute = -1;
+        while (!que.empty()) {
+            int size = que.size();
+            for (int i = 0; i < size; ++i) {
+                pair<int, int> currPos = que.front();
+                que.pop();
+                // 基于当前位置 计算下一个位置
+                for (int idx = 0; idx < dx.size(); ++idx) {
+                    int nextX = currPos.first + dx[idx];
+                    int nextY = currPos.second + dy[idx];
+                    // 校验下一个位置的坐标
+                    if (nextX < 0 || nextX >= grid.size() || nextY < 0 || nextY >= grid[0].size()) {
+                        continue;
+                    }
+                    // 下一个位置是烂橘子(已感染的橘子)和空格  已经处理过了
+                    if (grid[nextX][nextY] != 1) {
+                        continue;
+                    }
+                    // 下一个位置是未被感染的正常橘子 现在开始感染
+                    grid[nextX][nextY] = 2;
+                    // 下一个位置入队
+                    que.push( {nextX, nextY} );
+                }
+            }
+            ++minute;
         }
 
-        while (!que.empty()) {
-            Position pos = que.front();
-            que.pop();
-            
-            for (int idx = 0; idx < dx.size(); ++idx) {
-                // 下一个位置
-                int nextX = pos.x + dx[idx];
-                int nextY = pos.y + dy[idx];
-                // 校验坐标
-                if (nextX < 0 || nextX >= row || nextY < 0 || nextY >= col) {
-                    continue;
-                }
-                // 烂橘子 空格 已感染的橘子, 这些已经处理过了
-                if (minute[nextX][nextY] != MY_MAX) {
-                    continue;
-                }
-                // 未被感染的正常橘子 现在开始感染
-                minute[nextX][nextY] = minute[pos.x][pos.y] + 1;
-                // 下一个位置入队
-                que.push( Position(nextX, nextY) );
-            }
-        }
-        // 分析minute
-        int res = 0;
-        for (int i = 0; i < row; ++i) {
-            for (int j = 0; j < col; ++j) {
-                if (minute[i][j] == MY_MAX) { // 存在永远不能感染的
+        // 经过BFS感染之后, 如果还存在新鲜橘子 则返回-1
+        for (int i = 0; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[0].size(); ++j) {
+                if (grid[i][j] == 1) {
                     return -1;
                 }
-                res = max(res, minute[i][j]);
             }
         }
-        return res;
+        // 返回最小分钟
+        return minute;
     }
 
 private:
+    // 上下左右 四个方向
     vector<int> dx {-1, 1, 0, 0};
     vector<int> dy {0, 0, -1, 1};
-
-    const int MY_MAX = 999;
-
-    struct Position {
-        int x;
-        int y;
-        Position (int i, int j) {
-            x = i;
-            y = j;
-        }
-    };
 };
