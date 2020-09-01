@@ -1,0 +1,80 @@
+/*
+// 并查集
+// 如果是二分图的话 那么图中每个顶点的所有邻接点都应该属于同一集合 且不与顶点处于同一集合
+// 因此可以使用并查集来解决这个问题: 遍历图中每个顶点 将当前顶点的所有邻接点进行合并
+//      并判断这些邻接点中是否存在某一邻接点已经和当前顶点处于同一个集合中  若是则说明不是二分图
+class Solution {
+public:
+    bool isBipartite(vector<vector<int>>& graph) {
+        vector<int> vec(graph.size(), -1);
+        for (int i = 0; i < graph.size(); ++i) { // 节点i
+            for (int j : graph[i]) { // 和节点i 相连的节点j
+                // 两个相连的节点 处在同一集合 则返回false
+                int root1 = find(vec, i);
+                int root2 = find(vec, j);
+                if (root1 == root2) {
+                    return false;
+                }
+                // 将顶点i的所有邻接点 进行合并
+                int root = find(vec, graph[i][0]);
+                if (root != root2) {
+                    vec[root] = root2;
+                }
+            }
+        }
+        return true;
+    }
+
+private:
+    // 在vec中 查找根节点
+    int find(vector<int>& vec, int i){
+        if (vec[i] == -1) {
+            return i;
+        }
+        return vec[i] = find(vec, vec[i]); // 路径压缩
+    }
+};
+*/
+
+/*
+从任一顶点开始使用BFS遍历整个图 遍历的过程中用两种不同的颜色对顶点进行染色 相邻顶点染成相反的颜色
+  (1)上述过程中如果发现相邻的顶点被染成了相同的颜色 说明不是二分图
+  (2)而如果所有的连通域都染色成功 说明它是二分图
+题目中给定的无向图不一定保证连通 因此从每次节点开始BFS遍历 直到每一个节点都被染色或确定答案为False为止
+每次遍历开始时 任选一个未被染色的节点 将所有与该节点直接或间接相连的节点进行染色。
+*/
+class Solution {
+public:
+    bool isBipartite(vector<vector<int>>& graph) {
+        // 遍历每个节点i 依次作为BFS染色的起始点
+        for (int i = 0; i < graph.size(); ++i) {
+            vector<int> color(graph.size(), UNCOLORED); // 都是未染色的状态
+            queue<int> q;
+            q.push(i);
+            // 先给起始点i染色
+            color[i] = RED;
+            while (!q.empty()) {
+                int node = q.front();
+                q.pop();
+                // node相邻的节点颜色(和node相反)
+                int nextColor = (color[node] == RED ? GREEN : RED);
+                for (int neighbor: graph[node]) {
+                    // 如果下一个节点未染色 放入队列 并进行染色
+                    if (color[neighbor] == UNCOLORED) {
+                        q.push(neighbor);
+                        color[neighbor] = nextColor;
+                    } else if (color[neighbor] != nextColor) {
+                        // 下一个节点已经染色了 但是和期望的颜色不对 返回false
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+private:
+    int UNCOLORED = 0;
+    int RED = 1;
+    int GREEN = 2;
+};
