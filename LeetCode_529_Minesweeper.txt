@@ -1,0 +1,66 @@
+/*
+1. 踩雷M---变为X 然后结束
+2. 未踩雷E---dfs递归
+  2.1 周围有雷1~8---变为雷的个数 然后结束
+  2.2 周围无雷B--- 继续dfs递归
+*/
+
+class Solution {
+public:
+    vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {
+        // 踩雷M---变为X 然后结束
+        if (board[click[0]][click[1]] == 'M') {
+            board[click[0]][click[1]] = 'X';
+            return board;
+        }
+        // 未踩雷E 向下递归
+        dfs(board, click[0], click[1]);
+        return board;
+    }
+
+private:
+    void dfs(vector<vector<char>>& board, int i, int j) {
+        // 校验坐标范围
+        if (i < 0 || i >= board.size() || j < 0 || j >= board[0].size()) {
+            return;
+        }
+        // 有效值只有'E'
+        if (board[i][j] != 'E') {
+            return;
+        }
+
+        int cnt = inArea(board, i, j);
+        // 周围有雷1~8
+        if (cnt > 0) {
+            board[i][j] = '0' + cnt;
+            return;
+        }
+        // 周围无雷B
+        board[i][j] = 'B';
+        for (int idx = 0; idx < dirX.size(); ++idx) {
+            int nextX = i + dirX[idx];
+            int nextY = j + dirY[idx];
+            dfs(board, nextX, nextY);
+        }
+    }
+
+    // 统计[i, j]周围的地雷
+    int inArea(vector<vector<char>>& board, int i, int j) {
+        int res = 0;
+        for (int idx = 0; idx < dirX.size(); ++idx) {
+            int nextX = i + dirX[idx];
+            int nextY = j + dirY[idx];
+            if (nextX < 0 || nextX >= board.size() || nextY < 0 || nextY >= board[0].size()) {
+                continue;
+            }
+            if (board[nextX][nextY] == 'M') {
+                res++;
+            }
+        }
+        return res;
+    }
+
+    // 八个方向
+    vector<int> dirX {-1, -1, -1,  0, 0,  1, 1, 1};
+    vector<int> dirY {-1,  0,  1, -1, 1, -1, 0, 1};
+};
