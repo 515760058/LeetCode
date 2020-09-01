@@ -1,0 +1,58 @@
+// BFS
+class Solution {
+public:
+    int snakesAndLadders(vector<vector<int>>& board) {
+        int brdSize = board.size();
+        int dst = brdSize * brdSize; // 目的地
+        // 开始BFS
+        queue<int> q;
+        q.push(1);
+        vector<bool> visit(dst + 1, false); // 已访问的点
+        visit[1] = true;
+
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int curr = q.front();
+                q.pop();
+                // 到达目的地
+                if (curr == dst) {
+                    return step;
+                }
+                // 基于当前位置curr 掷骰子下一个位置next
+                int loopMax = min(curr + 7, dst + 1);
+                for (int j = curr + 1; j < loopMax; j++) {
+                    int next = j;
+                    // 恰好碰到传送点入口 传到到对应位置
+                    int trans = GetPos(board, brdSize, j);
+                    if (trans != -1) {
+                        next = trans;
+                    }
+                    // 下一个位置是否访问过
+                    if (visit[next]) {
+                        continue;
+                    }
+                    // 放入队列并标记访问
+                    q.push(next);
+                    visit[next] = true;
+                }
+            }
+            step++;
+        }
+        // 无法到达方格N*N
+        return -1;
+    }
+
+private:
+    // 根据给定的位置index 返回其对应的board[i][j]的值
+    int GetPos(const vector<vector<int>>& board, int brdSize, int index) {
+        int line = (index - 1) / brdSize;   // 从下往上
+        int i = brdSize - 1 - line;
+        int j = (index - 1) % brdSize;  // 偶数行 col索引从左到右是从小到大
+        if (line % 2) {     
+            j = brdSize - 1 - j;        // 从下往上是奇数行，则col索引从左到右是从大到小
+        }
+        return board[i][j];
+    }
+};
