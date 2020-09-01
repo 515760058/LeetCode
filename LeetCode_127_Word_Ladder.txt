@@ -1,0 +1,47 @@
+// BFS  下一题面试题17.22单词转换
+class Solution {
+public:
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        unordered_set<string> s(wordList.begin(), wordList.end()); // 转为集合 便于判断
+        // endWord不在字典中 所以无法进行转换
+        if (s.count(endWord) == 0) {
+            return 0;
+        }
+        // BFS
+        queue<string> que;
+        que.push(beginWord);
+        set<string> visited = { {beginWord} }; // 去重
+        int cnt = 0;
+        while(!que.empty()){
+            ++cnt;
+            int size = que.size();
+            for (int idx = 0; idx < size; ++idx) {
+                string word = que.front();
+                que.pop();
+                //新单词就是endWord
+                if(word == endWord) {
+                    return cnt;
+                }
+                // 以该单词为基础 修改一个字母(遍历改成a-z) 得出所有的合法新单词
+                for(int i = 0; i < word.size(); ++i){
+                    string newWord = word;
+                    for(char ch = 'a'; ch <= 'z'; ++ch) {
+                        newWord[i] = ch;
+                        // 判断新单词的合法性
+                        if (s.count(newWord) == 0) {
+                            continue;
+                        }
+                        // 已经出现过这个单词
+                        if(visited.count(newWord)) {
+                            continue;
+                        }
+                        // 新单词加到queue 并记录
+                        que.push(newWord);
+                        visited.insert(newWord);
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+};
