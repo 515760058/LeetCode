@@ -1,0 +1,77 @@
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    vector<Node*> neighbors;
+    
+    Node() {
+        val = 0;
+        neighbors = vector<Node*>();
+    }
+    
+    Node(int _val) {
+        val = _val;
+        neighbors = vector<Node*>();
+    }
+    
+    Node(int _val, vector<Node*> _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+};
+*/
+
+class Solution {
+public:
+    Node* cloneGraph(Node* node) {
+        if (node == nullptr) {
+            return nullptr;
+        }
+        // bfs遍历 收集节点及其邻居
+        map<int, vector<int>> graph; // key:节点  value:邻居
+        bfs(node, graph);
+        // 创建每个节点 并记录其地址
+        map<int, Node*> m;
+        for (auto& g : graph) {
+            m[g.first] = new Node(g.first);
+        }
+        // 遍历graph 设置节点之间的关系
+        for (auto& g : graph) {
+            auto& nei = (m[g.first])->neighbors;
+            for (int val : g.second) {
+                nei.push_back(m[val]);
+            }
+        }
+        // 返回克隆图的地址
+        return m[node->val];
+    }
+
+private:
+    void bfs(Node* root, map<int, vector<int>>& graph) {
+        queue<Node*> q;
+        q.push(root);
+        graph[root->val] = vector<int>();
+        while (!q.empty()) {
+            Node* node = q.front();
+            q.pop();
+            // 收集该节点及其邻居
+            for (Node* temp : node->neighbors) {
+                graph[node->val].push_back(temp->val);
+                // 将邻居节点 放入队列
+                if (graph.count(temp->val) == 0) {
+                    graph[temp->val] = vector<int>();
+                    q.push(temp);
+                }
+            }
+        }
+        // 看一下构建的无向图
+        //for (auto& g : graph) {
+        //    cout << g.first << " : ";
+        //    for (int i : g.second) {
+        //        cout << i << " ";
+        //    }
+        //    cout << endl;
+        //}
+    }
+};
