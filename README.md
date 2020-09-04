@@ -132,6 +132,10 @@ Return false;
 - Surrounded Regions
 - 面试题 17.07. 婴儿名字
 - leetcode785. 判断二分图
+- leetcode947. 移除最多的同行或同列石头
+- leetcode785. 判断二分图(BFS染色 并查集)
+
+
 
 ## 单调栈
 详细易懂的讲解单调栈 https://leetcode-cn.com/problems/daily-temperatures/solution/javadan-diao-zhan-ni-xu-bian-li-by-hyh-2/
@@ -224,6 +228,12 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 -  LeetCode207课程表(判断图中是否存在环)
 -  LeetCode210课程表II (求出一种拓扑排序的序列)
 
+## 图算法
+- leetcode787 K站中转内最便宜的航班(Bellman-Ford算法)
+- leetccode743 网络延迟时间(Dijkstra最短路径)
+- leetcode332. 重新安排行程(图的欧拉回路)
+
+
 ## 前缀和
 ### 相关链接
 
@@ -298,10 +308,13 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - leetcode 二叉树的垂序遍历
 - 面试题 04.03. 特定深度节点链表
 - LeetCode429. N叉树的层序遍历
+- leetcode 117. 填充每个节点的下一个右侧节点指针II
+
 
 - 重建二叉树
 - leetcode654 最大二叉树
 - 剑指 Offer 07. 重建二叉树
+- leetcode106 从中序与后序遍历序列构造二叉树
 
 - leetcode998. 最大二叉树 II
 
@@ -357,7 +370,7 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - leetcode965. 单值二叉树
 - leetcode116. 填充每个节点的下一个右侧节点指针
 - leetcode968. 监控二叉树
-
+- leetcode872 叶子相似的树
 
 
 ## 树状数组 线段树
@@ -425,6 +438,11 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 ### 相关链接
 ### 典型题目
 - 面试题17.13. 恢复空格
+- leetcode198 打家劫舍
+- leetcode213 打家劫舍II
+- leetcode337 打家劫舍 III
+
+
 
 ## 记忆化搜索
 ### 相关链接
@@ -442,10 +460,16 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - leetcode1306. 跳跃游戏 III
 - leetcode909 蛇梯棋
 - leetcode310. 最小高度树
-- leetcode785. 判断二分图
+- leetcode785. 判断二分图(BFS染色 并查集)
+- leetcode886 可能的二分法(BFS染色)
 - leetcode1091. 二进制矩阵中的最短路径(bfs最短路径的长度)
+- leetcode752 打开转盘锁(bfs最短路径的长度)
 - leetcode127 单词接龙(bfs最短路径的长度)
 - 面试题17.22. 单词转换(bfs最短路径)
+- leetcode133. 克隆图
+- leetcode1311 获取你好友已观看的视频
+- leetcode1129 颜色交替的最短路径
+- leetcode690 员工的重要性
 
 ## 深度优先搜索DFS
 ### 相关链接
@@ -455,6 +479,8 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - leetcode130. 被围绕的区域
 - leetcode529. 扫雷游戏
 - leetcode1391 检查网格中是否存在有效路径
+- 面试题16.19. 水域大小
+- leetcode1020. 飞地的数量
 
 
 ## 优先队列
@@ -463,7 +489,7 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - leetcode 215 数组中的第K个最大元素
 
 
-## 脑筋急转弯
+## 脑筋急转弯 / 数学
 ### 相关链接
 ### 典型题目
 - leetcode 1033 移动石子直到连续
@@ -472,5 +498,5 @@ DAG，有向无环图，可以求拓扑排序，关键路径
 - leetcode 1227 机座位分配概率
 - leetcode 319 灯泡开关
 - leetcode 777 在LR字符串中交换相
-
+- leetcode 279 完全平方数
 
