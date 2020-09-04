@@ -1,0 +1,40 @@
+// 并查集  把行和列合并
+// M行N列的二维平面  使用0 ~ M-1来表示每一行    使用M+0 ~ M+N-1来表示[0, N-1]列
+// 一个坐标[x, y] 表示把第x行和第M+y列合并起来
+// 现在行列的范围是最大是10000  因此M和N取最大10000
+class Solution {
+public:
+    int removeStones(vector<vector<int>>& stones) {
+        // 初始化集合的状态
+        map<int, int> m;
+        for (vector<int>& stone : stones) {
+            m[stone[0]] = stone[0]; // 行号x 使用x表示
+            m[stone[1]+M] = stone[1]+M; // 列号y 使用M+y表示
+        }
+        
+        // 查找与合并
+        for (vector<int>& stone : stones) {
+            int root1 = find(m, stone[0]); // 行号的根
+            int root2 = find(m, stone[1]+M); // 列号的根
+            // 合并
+            m[root1] = root2;
+        }
+        // 查找每个行号/列号的root  记录合并后集合的数量
+        set<int> roots;
+        for (auto& p : m) {
+            int root = find(m, m[p.first]);
+            roots.insert(root);
+        }
+        return stones.size() - roots.size();
+    }
+
+private:
+    int find(map<int, int>& m, int key) {
+        if (m[key] == key) {
+            return key;
+        }
+        return find(m, m[key]);
+    }
+
+    const int M = 10000;
+};
