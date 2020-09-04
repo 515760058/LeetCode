@@ -1,0 +1,74 @@
+// Dijkstra最短路径 O(n*n)  是一种单源最短路算法 不能处理负边权的情况
+// 而Bellman-Ford算法(leetcode787 K站中转内最便宜的航班)能适应一般的情况(即存在负权边的情况)
+class Solution {
+public:
+    // Dijkstra算法 N个节点(编号1~N)  从K节点出发到各个节点的最短路径(边的权值不能是负值)
+    int networkDelayTime(vector<vector<int>>& times, int N, int K) {
+        //distance[i]表示点K到点i的最短距离
+        vector<int> distance(N+1, INT_MAX);
+        distance[0] = distance[K] = 0; // 本题中0不是有效节点  K到自己的最短距离为0
+        // 构建邻接矩阵
+        vector<vector<int>> graph(N+1,vector<int>(N+1,-1));
+        //for (int i = 1; i <= N; ++i) {
+        //    graph[i][i] = 0;
+        //}
+        for(auto& time : times){
+            graph[time[0]][time[1]] = time[2];
+        }
+        // 该队列用于即将访问的节点 初始为K
+        queue<int> q { {K} };
+        // 开始搜索各个点到k的最短距离
+        while(!q.empty()){
+            int front = q.front();
+            q.pop();
+            // 利用当前front节点 尝试更新点k到所有节点(1~N)的最短距离
+            for(int target = 1; target <= N; ++target){
+                if(graph[front][target] != -1 && distance[front] + graph[front][target] < distance[target]){
+                    // 如果front到target有边，并且点K到front的距离distance[front] + 点front到target距离graph[front][target]小于点k到target的距离distance[target]
+                    // 则进行更新
+                    distance[target] = distance[front] + graph[front][target];
+                    // 入队
+                    q.push(target);
+                }
+            }
+        }
+        // 寻找点K到各个点的最短距离的最大值
+        int maxRes = *max_element(distance.begin()+1, distance.end());
+        return maxRes == INT_MAX? -1 : maxRes;
+    }
+};
+
+
+/*
+// Floyd算法 O(n*n*n)
+class Solution {
+public:
+    int networkDelayTime(vector<vector<int>>& times, int N, int K) {
+        // 邻接矩阵
+        vector<vector<long>> graph(N+1, vector<long>(N+1, INT_MAX));
+        for (int i = 1; i <= N; ++i) {
+            graph[i][i] = 0;
+        }
+        for (auto& time : times) {
+            graph[time[0]][time[1]] = time[2];
+        }
+        // 
+        for (int k = 1; k <= N; k++) { // k放在最外层
+            for (int i = 1; i <= N; i++) {
+                for (int j = 1; j <= N; j++) {
+                    graph[i][j] = min(graph[i][j], graph[i][k]+graph[k][j]);
+                }
+            }
+        }
+        
+        long ans = 0;
+        for (int i = 1; i <= N; i++){
+            if (graph[K][i] == INT_MAX) {
+                return -1;
+            }
+            ans = max(ans, graph[K][i]);
+        }
+        return ans;
+    }
+};
+*/
