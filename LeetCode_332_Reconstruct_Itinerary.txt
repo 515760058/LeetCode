@@ -1,0 +1,27 @@
+// 本题和leetcode753破解保险箱 类似  求解有向图的欧拉回路/欧拉通路
+// https://leetcode-cn.com/problems/reconstruct-itinerary/solution/zhong-xin-an-pai-xing-cheng-by-leetcode-solution/
+class Solution {
+public:
+    vector<string> findItinerary(vector<vector<string>>& tickets) {
+        for (auto& it : tickets) {
+            vec[it[0]].emplace(it[1]);
+        }
+        dfs("JFK");
+
+        reverse(stk.begin(), stk.end());
+        return stk;
+    }
+
+private:
+    void dfs(const string& curr) {
+        while (vec.count(curr) && vec[curr].size() > 0) {
+            string tmp = vec[curr].top();
+            vec[curr].pop();
+            dfs(move(tmp));
+        }
+        stk.emplace_back(curr);
+    }
+
+    unordered_map<string, priority_queue<string, vector<string>, std::greater<string>>> vec;
+    vector<string> stk;
+};
