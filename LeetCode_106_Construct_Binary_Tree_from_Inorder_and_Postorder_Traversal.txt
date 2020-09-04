@@ -1,0 +1,45 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+/*
+思路：和上一篇的由前序和中序类似。
+  后序遍历的顺序是左右根  所以最后一个元素是根节点
+  再在中序遍历中找到这个节点的位置  则根节点左边是左子树的中序遍历结果  右边是右子树的中序遍历结果
+  在后序遍历中同样可以分为两个部分  分别对应左子树的后序遍历结果和右子树的遍历结果
+ 再递归就可以得到最终的二叉树分布
+*/
+class Solution {
+public:
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        int size = inorder.size();
+        if(size == 0 || postorder.empty()){
+            return NULL;
+        }
+         //后续遍历的最后一个元素 是根节点
+         int r = postorder.back();
+         TreeNode *root =new TreeNode(r);
+         // 在中序遍历中找到根节点r的位置
+         int p = find(inorder.begin(), inorder.end(), r) - inorder.begin();
+         // 根据根节点 分别划分左右子树
+         vector<int> in_left, in_right, post_left, post_right;
+         for (int i = 0; i < size; i++){
+             if (i < p){
+                in_left.push_back(inorder[i]);
+                post_left.push_back(postorder[i]);
+             } else if(i > p) {
+                in_right.push_back(inorder[i]);
+                post_right.push_back(postorder[i-1]); // 这里要注意位置
+             }
+         }
+         //递归下去
+         root->left = buildTree(in_left,post_left);
+         root->right = buildTree(in_right,post_right);
+         return root;
+    }
+};
