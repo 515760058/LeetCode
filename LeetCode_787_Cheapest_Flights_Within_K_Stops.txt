@@ -1,0 +1,19 @@
+// Bellman-Ford算法模板
+// Bellman-Ford算法和Dijkstra算法(leetcode743网络延迟时间)同为解决单源最短路径的算法
+// 对于带权有向图G=(V, E)  Dijkstra算法要求图G中边的权值均为非负 而Bellman-Ford算法能适应一般的情况(即存在负权边的情况)
+class Solution {
+public:
+    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int K) {
+        vector<long> dist (n, INT_MAX);
+        dist[src] = 0; // 起始点距离为0
+
+        for(int i = 0; i <= K; i++) {
+            vector<long> backup = dist;
+            for (auto& flight : flights) {
+                dist[flight[1]] = min(dist[flight[1]], backup[flight[0]] + flight[2]);
+            }
+        }
+        // 如果dist[dst]还是INT_MAX  则说明经过最大k站中转也不能到达dst
+        return dist[dst] == INT_MAX ? -1 : dist[dst];
+    }
+};
