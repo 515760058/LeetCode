@@ -1,0 +1,38 @@
+/*
+// Employee info
+class Employee {
+public:
+    // It's the unique ID of each node.
+    // unique id of this employee
+    int id;
+    // the importance value of this employee
+    int importance;
+    // the id of direct subordinates
+    vector<int> subordinates;
+};
+*/
+// 找到指定的领导 然后再找到这位领导所有的下属(包括非直系下属)
+class Solution {
+public:
+    int getImportance(vector<Employee*> employees, int id) {
+        unordered_map<int, Employee*> m; // id 指针
+        for (Employee* employee : employees) {
+            m[employee->id] = employee;
+        }
+        // BFS
+        int imp = 0;
+        queue<int> q { {id} };
+        while (!q.empty()) {
+            // 获取该员工employee
+            Employee* employee = m[q.front()];
+            q.pop();
+            // 累加重要度
+            imp += employee->importance;
+            // employee的直系下属 入队
+            for (int subordinate : employee->subordinates) {
+                q.push(subordinate);
+            }
+        }
+        return imp;
+    }
+};
