@@ -1,0 +1,34 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+// 思路和算法:  首先找出给定的两个树的叶值序列 之后比较是否相等
+class Solution {
+public:
+    bool leafSimilar(TreeNode* root1, TreeNode* root2) {
+        vector<int> leaves1;
+        vector<int> leaves2;
+        dfs(root1, leaves1);
+        dfs(root2, leaves2);
+        return leaves1 == leaves2;
+    }
+
+private:
+    void dfs(TreeNode* node, vector<int>& leaves) {
+        if (node == NULL) {
+            return;
+        }
+        if (node->left == NULL && node->right == NULL){
+            leaves.push_back(node->val);
+            return;
+        }
+        dfs(node->left, leaves);
+        dfs(node->right, leaves);
+    }
+};
