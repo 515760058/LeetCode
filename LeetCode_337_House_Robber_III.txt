@@ -1,0 +1,36 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+// leetcode198打家劫舍
+// leetcode213打家劫舍II
+// 本题的思路是： 不偷根节点 那么可以选择下一个偷或不偷的最大值
+//                偷根节点 只能选择子树中不偷的最大值
+class Solution {
+public:
+    int rob(TreeNode* root) {
+        pair<int, int> p = robCore(root);
+        return max(p.first, p.second);
+    }
+
+private:
+    // pair的first表示不偷子节点的值  pair的second表示偷了子节点的结果 
+    pair<int, int> robCore(TreeNode* root) {
+        if (root == nullptr) {
+            return {0, 0};
+        }
+        pair<int, int> pLeft =  robCore(root->left);
+        pair<int, int> pRight = robCore(root->right);
+        // 不偷根节点 那么可以选择下一个偷或不偷的最大值
+        int moneyWithoutNode = max(pLeft.first, pLeft.second) + max(pRight.first, pRight.second);
+        // 偷根节点 只能选择子树中不偷的最大值
+        int moneyWithNode = root->val + pLeft.first + pRight.first;
+
+        return {moneyWithoutNode, moneyWithNode};
+    }
+};
