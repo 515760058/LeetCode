@@ -1,0 +1,69 @@
+// BFS
+class Solution {
+public:
+    vector<string> watchedVideosByFriends(vector<vector<string>>& watchedVideos, vector<vector<int>>& friends, int id, int level) {
+        // BFS 找到和自己距离为level的朋友id
+        set<int> ids;
+        bfs(friends, id, level, ids);
+        // 统计距离为level的朋友 所看的视频及其频率
+        map<string, int> videos;
+        for (int id : ids) {
+            for (string& video : watchedVideos[id]) {
+                videos[video]++;
+            }
+        }
+        // 排序
+        vector<pair<string, int>> temp;
+        for (auto& video : videos) {
+            temp.push_back( {video.first, video.second} );
+        }
+        sort(temp.begin(), temp.end(), 
+            [](const pair<string, int>& p1, const pair<string, int>& p2){ // lambda
+                if (p1.second != p2.second) { // 频率
+                    return p1.second < p2.second;
+                }
+                return p1.first < p2.first; // 字母顺序
+            });
+        // 整理结果
+        vector<string> res;
+        for (pair<string, int>& p : temp) {
+            res.push_back(p.first);
+        }
+        return res;
+    }
+
+private:
+    // BFS 找到和自己距离为level的朋友id
+    void bfs(vector<vector<int>>& friends, int id, int level, set<int>& ids) {
+        queue<int> q { {id} };
+        set<int> visited {id};
+        int distance = 0;
+        while (!q.empty()) {
+            // 当前这一层的距离就是level 因此保存这一层的朋友id
+            if (distance == level) {
+                while (!q.empty()) {
+                    ids.insert(q.front());
+                    q.pop();
+                }
+                return;
+            }
+            // 当前的朋友 向外扩展遍历
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                int curr = q.front();
+                q.pop();
+                for (int next : friends[curr]) {
+                    if (visited.count(next) == 0) {
+                        q.push(next);
+                        visited.insert(next);
+                    }
+                }
+            }
+            distance++;
+        }
+        // 查看距离为level的朋友id 是否正确
+        //for (int id : ids) {
+        //    cout << id << " ";
+        //}
+    }
+};
