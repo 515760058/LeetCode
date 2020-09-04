@@ -1,0 +1,66 @@
+// BFS最短路径 的长度
+class Solution {
+public:
+    int openLock(vector<string>& deadends, string target) {
+        map<string, string> visited;
+        for (string& dead : deadends) {
+            visited[dead] = "";
+        }
+        string start = "0000";
+        if (visited.count(start)) {
+            return -1;
+        }
+        
+        queue<string> q;
+        q.push(start);
+        visited[start] = "";
+        while(!q.empty()) {
+            string str = q.front();
+            q.pop();
+            // 到达目标点
+            if (str == target) {
+                break;
+            }
+            // 遍历str的每个字符 旋转一下 得出下一个数字
+            for(int i = 0; i < str.size(); ++i) {
+                string temp1 = plusOne(str, i);
+                string temp2 = minusOne(str, i);
+                if (visited.count(temp1) == 0) {
+                    q.push(temp1);
+                    visited[temp1] = str;
+                }
+                if (visited.count(temp2) == 0) {
+                    q.push(temp2);
+                    visited[temp2] = str;
+                }
+            }
+        }
+        // 恢复序列
+        // 不能到达target点
+        if (visited.count(target) == 0) {
+            return -1;
+        }
+        // 可以到达target点
+        vector<string> res;
+        while (target != "") {
+            res.push_back(target);
+            target = visited[target];
+        }
+        reverse(res.begin(), res.end());
+        //for (auto r : res) {
+        //    cout << r << "-->";
+        //}
+        return res.size() - 1; //不包含起始点"0000"
+    }
+
+private:
+    string plusOne(string s, int i) {
+        (s[i] == '9') ? s[i] = '0' : ++s[i];
+        return s;
+    }
+
+    string minusOne(string s, int i) {
+        (s[i] == '0') ? s[i] = '9' : --s[i];
+        return s;
+    }
+};
