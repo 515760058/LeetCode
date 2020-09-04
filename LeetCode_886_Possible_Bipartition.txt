@@ -1,0 +1,83 @@
+// leetcode785判断二分图 BFS染色
+class Solution {
+public:
+    bool possibleBipartition(int N, vector<vector<int>>& dislikes) {
+        // 构建图
+        vector<vector<int>> graph(N+1);
+        for (auto& dislike : dislikes) {
+            graph[dislike[0]].push_back( dislike[1] );
+        }
+        // 遍历每个节点i 依次作为BFS染色的起始点
+        for (int i = 0; i < graph.size(); ++i) {
+            vector<int> color(graph.size(), UNCOLORED); // 都是未染色的状态
+            queue<int> q;
+            q.push(i);
+            // 先给起始点i染色
+            color[i] = RED;
+            while (!q.empty()) {
+                int node = q.front();
+                q.pop();
+                // node相邻的节点颜色(和node相反)
+                int nextColor = (color[node] == RED ? GREEN : RED);
+                for (int neighbor: graph[node]) {
+                    // 如果下一个节点未染色 放入队列 并进行染色
+                    if (color[neighbor] == UNCOLORED) {
+                        q.push(neighbor);
+                        color[neighbor] = nextColor;
+                    } else if (color[neighbor] != nextColor) {
+                        // 下一个节点已经染色了 但是和期望的颜色不对 返回false
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+private:
+    int UNCOLORED = 0;
+    int RED = 1;
+    int GREEN = 2;
+};
+
+
+/*
+// 并查集  这个方法不行  因为存在环[[1,2],[2,3],[3,4],[4,5],[1,5]]
+class Solution {
+public:
+    bool possibleBipartition(int N, vector<vector<int>>& dislikes) {
+        // 构建图
+        vector<vector<int>> graph(N+1);
+        for (auto& dislike : dislikes) {
+            graph[dislike[0]].push_back( dislike[1] );
+        }
+
+        vector<int> vec(graph.size(), -1);
+        for (int i = 0; i < graph.size(); ++i) { // 节点i
+            for (int j : graph[i]) { // 和节点i 相连的节点j
+                // 两个相连的节点 处在同一集合 则返回false
+                int root1 = find(vec, i);
+                int root2 = find(vec, j);
+                if (root1 == root2) {
+                    return false;
+                }
+                // 将顶点i的所有邻接点 进行合并
+                int root = find(vec, graph[i][0]);
+                if (root != root2) {
+                    vec[root] = root2;
+                }
+            }
+        }
+        return true;
+    }
+
+private:
+    // 在vec中 查找根节点
+    int find(vector<int>& vec, int i){
+        if (vec[i] == -1) {
+            return i;
+        }
+        return vec[i] = find(vec, vec[i]); // 路径压缩
+    }
+};
+*/
