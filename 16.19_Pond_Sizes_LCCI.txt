@@ -1,0 +1,39 @@
+// DFS
+class Solution {
+public:
+    vector<int> pondSizes(vector<vector<int>>& land) {
+        vector<int> res;
+        for (int i = 0; i < land.size(); ++i) {
+            for (int j = 0; j < land[0].size(); ++j) {
+                if (land[i][j] == 0) {
+                    int area = 0;
+                    dfs(land, i, j, area);
+                    res.push_back(area);
+                }
+            }
+        }
+        sort(res.begin(), res.end());
+        return res;
+    }
+
+private:
+    void dfs(vector<vector<int>>& land, int i, int j, int& area) {
+        if (i < 0 || i >= land.size() || j < 0 || j >= land[0].size()) {
+            return;
+        }
+        if (land[i][j] > 0) {
+            return;
+        }
+        
+        land[i][j] = 1;
+        area++;
+        for (int idx = 0; idx < dirX.size(); ++idx) {
+            int xx = i + dirX[idx];
+            int yy = j + dirY[idx];
+            dfs(land, xx, yy, area);
+        }
+    }
+
+    vector<int> dirX {-1, 1,  0, 0, -1, -1,  1, 1};
+    vector<int> dirY { 0, 0, -1, 1, -1,  1, -1, 1};
+};
