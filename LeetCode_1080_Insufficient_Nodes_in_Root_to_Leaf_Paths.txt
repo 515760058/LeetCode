@@ -1,0 +1,30 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+// 在后序遍历中
+class Solution {
+public:
+    TreeNode* sufficientSubset(TreeNode* root, int limit) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        // 对叶子节点的判断
+        if (root->left == nullptr && root->right == nullptr) {
+            return root->val < limit ? nullptr : root; 
+        }
+        // 递归左右子树的情况
+        root->left = sufficientSubset(root->left, limit - root->val);
+        root->right = sufficientSubset(root->right, limit - root->val);
+        // 如果左右子节点都被删除  则当前节点也要删除
+        if (root->left == nullptr && root->right == nullptr) {
+            return nullptr;
+        }
+        return root;
+    }
+};
