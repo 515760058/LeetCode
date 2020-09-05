@@ -1,48 +1,52 @@
-//构造大的网格，DFS
-//https://leetcode-cn.com/problems/regions-cut-by-slashes/solution/c-gou-zao-da-wang-ge-dfs-by-jian-liao/
-
+// 构造大的网格  然后对大网格进行DFS
+// 把每一个网格构造成2*2的田格  其中有斜线的区域是1  空格是0   如下图示：
+//  '\'   '/'    ' '
+//  100   001    000
+//  010   010    000
+//  001   100    000
 class Solution {
 public:
     int regionsBySlashes(vector<string>& grid) {
-        //构造大的网格
         int N = grid.size();
+        // 构造大网格
         vector<vector<int> > bigGrid(3*N, vector<int>(3*N, 0));
         for (int i = 0; i < N; ++i) {
             for (int j = 0; j < N; ++j) {
-                int r = 3 * i;
-                int c = 3 * j;
+                int r = 3 * i + 1;
+                int c = 3 * j + 1;
                 if (grid[i][j] == '/') {
-                    bigGrid[r][c+2] = bigGrid[r+1][c+1] = bigGrid[r+2][c] = 1;
+                    bigGrid[r-1][c+1] = bigGrid[r][c] = bigGrid[r+1][c-1] = 1;
                 } else if (grid[i][j] == '\\') {
-                    bigGrid[r][c] = bigGrid[r+1][c+1] = bigGrid[r+2][c+2] = 1;
+                    bigGrid[r-1][c-1] = bigGrid[r][c] = bigGrid[r+1][c+1] = 1;
                 }
             }
         }
-        //DFS
-        int res = 0;
+        // 对大网格进行DFS 同时抹去这一片区域
+        int cnt = 0;
         for (int i = 0; i < bigGrid.size(); ++i) {
             for (int j = 0; j < bigGrid[0].size(); ++j) {
                 if (bigGrid[i][j] == 0) {
                     dfs(bigGrid, i, j);
-                    ++res;
+                    ++cnt;
                 }
             }
         }
-        return res;
+        return cnt;
     }
 
 private:
-    void dfs(vector<vector<int>>& grid, int i, int j) {
-        int row = grid.size();
-        int col = grid[0].size();
-        if(i < 0 || i >= row || j < 0 || j >= col || grid[i][j]){
+    void dfs(vector<vector<int>>& bigGrid, int i, int j) {
+        if(i < 0 || i >= bigGrid.size() || j < 0 || j >= bigGrid[0].size()){
             return;
         }
-        grid[i][j] = 1;
-        dfs(grid, i-1, j);
-        dfs(grid, i+1, j);
-        dfs(grid, i, j-1);
-        dfs(grid, i, j+1);
+        if (bigGrid[i][j] == 1) {
+            return;
+        }
+        bigGrid[i][j] = 1;
+        dfs(bigGrid, i-1, j);
+        dfs(bigGrid, i+1, j);
+        dfs(bigGrid, i, j-1);
+        dfs(bigGrid, i, j+1);
 
     }
 };
