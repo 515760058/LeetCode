@@ -1,0 +1,43 @@
+// 拓扑排序 (拓扑排序是从入度为0的节点开始的  这里是算出度 是反向图)
+// 出度为0的节点是最终安全的节点
+// 那依次删除出度为0节点及其连接的边  剩下的节点中 出度为0的节点也是安全节点   循环下去直到队列为空找到所有的安全点
+
+// 可以把所有的边的方向都反过来  就是拓扑排序
+class Solution {
+public:
+    vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
+        // 构建反向的图(把所有的边都反过来)  同时计算反向图的每个节点的入度
+        vector<int> inDegree(graph.size(), 0);
+        vector<vector<int>> newGraph(graph.size(), vector<int>{});
+        for (int dst = 0; dst < graph.size(); ++dst) {
+            for (int src : graph[dst]) {
+                newGraph[src].push_back(dst); // 节点src的后继dst   src --> dst
+                ++inDegree[dst]; // 入度
+            }
+        }
+        // 入度为0的节点(是拓扑排序的起点) 放入队列中
+        queue<int> q;
+        for (int i = 0; i < inDegree.size(); ++i) {
+            if (inDegree[i] == 0) {
+                q.push(i);
+            }
+        }
+        // 拓扑排序 保存结果
+        vector<int> res;
+        while (!q.empty()) {
+            int src = q.front();
+            q.pop();
+            res.push_back(src); // 保存结果
+            // 把节点src的边都删掉(后继的入度都减1)
+            for (int dst : newGraph[src]) {
+                --inDegree[dst];
+                if (inDegree[dst] == 0) {
+                    q.push(dst);
+                }
+            }
+        }
+
+        sort(res.begin(), res.end());
+        return res;
+    }
+};
