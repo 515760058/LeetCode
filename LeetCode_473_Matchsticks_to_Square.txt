@@ -1,0 +1,43 @@
+// 参考leetcode698划分为k个相等的子集  这道题相当于是一个特例  把数组划分为4个和相等的子集
+class Solution {
+public:
+    bool makesquare(vector<int>& nums) {
+        if (nums.size() < 4) { // 不足四根火柴
+            return false;
+        }
+        // 总长度 是否是4的倍数
+        int k = 4;
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum % k != 0) {
+            return false;
+        }
+        // 回溯法 划分为4个集合
+        vector<bool> visit(nums.size(), false);
+        return backTrace(nums, k, sum/k, 0, 0, visit);
+    }
+    
+private:
+    bool backTrace(vector<int>& nums, int k, int target, int start, int curSum, vector<bool>& visited) {
+        if (k == 1){ // 只剩一个集合 ok
+            return true;
+        } else if (curSum > target){ // 当前的和已经超过集合最大值了 这个递归不行
+            return false;
+        } else if (curSum == target){ // 当前的集合恰好填满  下一个集合
+            return backTrace(nums, k-1, target, 0, 0, visited);
+        } else {
+            // 遍历可用的数字  取出一个放在当前集合中
+            for (int i = start; i < nums.size(); ++i) {
+                if (visited[i] == false) { // 未使用过这个数
+                    // 使用这个数
+                    visited[i] = true;
+                    bool res = backTrace(nums, k, target, i+1, curSum+nums[i], visited);
+                    if (res) {
+                        return true;
+                    }
+                    visited[i] = false;
+                }
+            }
+        }
+        return false;
+    }
+};
