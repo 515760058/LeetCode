@@ -1,0 +1,23 @@
+// 从员工到领导的遍历方向
+class Solution {
+public:
+    int numOfMinutes(int n, int headID, vector<int>& manager, vector<int>& informTime) {
+        int time = -1;
+        for(int i = 0; i < n; ++i) {
+            // 过滤非叶子节点
+            if (informTime[i] != 0) {
+                continue;
+            }
+            // 叶子节点
+            int curr = i;
+            int sum = 0;
+            while (manager[curr] != -1) {
+                curr = manager[curr];
+                sum += informTime[curr];
+            }
+            // 更新
+            time = max(time, sum);
+        }
+        return time;
+    }
+};
