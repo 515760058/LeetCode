@@ -1,0 +1,43 @@
+/*
+也可以用迭代的方法写出来，当然需要用stack来辅助运算
+使用两个stack  一个用来保存个数  另一个用来保存字符串
+遍历输入字符串  如果遇到数字  我们更新计数变量cnt；
+    如果遇到左中括号 把当前cnt压入数字栈中 把当前t压入字符串栈中；
+    如果遇到右中括号 取出数字栈中顶元素  存入变量k  然后给字符串栈的顶元素循环加上k个t字符串  然后取出顶元素存入字符串t中 
+    如果遇到字母  我们直接加入字符串t中即可
+参见代码如下：
+*/
+class Solution {
+public:
+    string decodeString(string s) {
+        string res;
+        string t;
+        stack<int> num;
+        stack<string> str;
+        int cnt = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] >= '0' && s[i] <= '9') { // 更新次数
+                cnt = 10 * cnt + s[i] - '0';
+            } else if (s[i] == '[') { // 左括号
+                num.push(cnt);
+                str.push(t);
+                cnt = 0;
+                t.clear();
+            } else if (s[i] == ']') { // 右括号
+                int k = num.top();
+                num.pop();
+                // 循环k次
+                for (int j = 0; j < k; ++j) {
+                    str.top() += t;
+                }
+
+                t = str.top(); 
+                str.pop();
+            } else { // 记录字符串
+                t += s[i];
+            }
+        }
+        //正常输入格式下 str可能是空的 可以直接输出t.
+        return str.empty() ? t : str.top();
+    }
+};
