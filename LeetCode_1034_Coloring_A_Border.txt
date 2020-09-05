@@ -1,0 +1,46 @@
+class Solution {
+public:
+    vector<vector<int>> colorBorder(vector<vector<int>>& grid, int r0, int c0, int color) {
+        // 保存连通分量的坐标
+        set<pair<int, int>> idx;
+        vector<vector<int>> visited(grid.size(), vector<int>(grid[0].size(), false));
+        dfs(grid, r0, c0, grid[r0][c0], visited, idx);
+
+        // 遍历连通分量的每个坐标 判断是否是边框
+        set<pair<int, int>> border;
+        for (const pair<int, int>& p : idx) {
+            // 上下左右都在连通分量 那这个点就是中心点
+            bool center = idx.count({p.first-1, p.second}) &&
+                          idx.count({p.first+1, p.second}) &&
+                          idx.count({p.first, p.second-1}) &&
+                          idx.count({p.first, p.second+1});
+            if (!center) {
+                border.insert(p);
+            }
+        }
+
+        // 修改边界点的颜色
+        for (const pair<int, int>& p : border) {
+            grid[p.first][p.second] = color;
+        }
+        return grid;
+    }
+
+private:
+    // 保存连通分量的坐标
+    void dfs(vector<vector<int>>& grid, int i, int j, int oldColor, vector<vector<int>>& visited, set<pair<int, int>>& idx) {
+        if (i < 0 || i >= grid.size() || j < 0 || j >= grid[0].size()) {
+            return;
+        }
+        if (grid[i][j] != oldColor || visited[i][j]) {
+            return;
+        }
+        // 保存坐标 并继续dfs
+        idx.insert( {i, j} );
+        visited[i][j] = true;
+        dfs(grid, i-1, j, oldColor, visited, idx);
+        dfs(grid, i+1, j, oldColor, visited, idx);
+        dfs(grid, i, j-1, oldColor, visited, idx);
+        dfs(grid, i, j+1, oldColor, visited, idx);
+    }
+};
