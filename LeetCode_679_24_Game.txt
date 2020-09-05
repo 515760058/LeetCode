@@ -1,0 +1,81 @@
+/*
+https://leetcode-cn.com/problems/24-game/solution/java-li-yong-quan-pai-lie-by-lil-q/
+第一步：先对数组进行全排列得到数组[a, b, c, d] 一共有24种可能（当然如果有重复数, 排列数会变少）
+第二步：处理四个数，此时 a、b、c、d 都可以代表原先数组中的任意数  称之为 a、b、c、d 等价。 所以选出 a、b 相当于选出任意两数，对这两数采用四种运算后得到三个数 a（由原先的 a、b 计算得出）、b、c，其中 a 与 b、c 不等价
+第三步：处理三个数 由于a和b(c)不等价 有两种情况：a和b(c)运算  b和c运算；
+第四步：处理两个数 a和b不等价。
+
+具体的，如果运算两个数 a和b等价 则只需要考虑四种情况：
+a - b
+a + b
+a * b
+a / b
+如果 a 和 b 不等价，还需要多考虑两种情况：
+b - a
+b / a
+*/
+class Solution {
+public:
+    bool judgePoint24(vector<int>& nums) {
+        return backTrack(nums, 0);
+    }
+
+private:
+// 第一步：求出所有排列，一一验证
+    bool backTrack(vector<int>& nums, int index) {
+        if (index == nums.size()) {
+            return judge(nums[0], nums[1], nums[2], nums[3]);
+        }
+        for (int i = index; i < nums.size(); i++) {
+            swap(nums, index, i);
+            if (backTrack(nums, index+1)) {
+                return true;
+            }
+            swap(nums, index, i);
+        }
+        return false;
+    }
+
+    void swap(vector<int>& nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+
+    // 第二步：由于已经全排列，a、b、c、d 都是等价的，利用四种运算符选出三个数继续
+    bool judge(double a, double b, double c, double d) {
+        return judge(a + b, c, d) ||
+               judge(a - b, c, d) ||
+               judge(a * b, c, d) ||
+               judge(a / b, c, d);
+    }
+
+    // 第三步：a 是由两个数组成的，b、c 只表示一个数；a 与 b、c 不等价，b、c 等价
+    bool judge(double a, double b, double c) {
+        // 情况一：a和b(c) 组合，a和b(c)不等价，- 号和 / 号需要考虑两种情况
+        return judge(a + b, c) ||
+               judge(a - b, c) ||
+               judge(a * b, c) ||
+               judge(a / b, c) ||
+               judge(b - a, c) ||
+               judge(b / a, c) ||
+               // 情况二：b 和 c 组合
+               judge(a, b + c) ||
+               judge(a, b - c) ||
+               judge(a, b * c) ||
+               judge(a, b / c);
+    }
+
+    // 第四步：a和b不等价
+    bool judge(double a, double b) {
+        return abs(a + b - TARGET) < LIMIT ||
+               abs(a - b - TARGET) < LIMIT ||
+               abs(a * b - TARGET) < LIMIT ||
+               abs(a / b - TARGET) < LIMIT ||
+               abs(b - a - TARGET) < LIMIT ||
+               abs(b / a - TARGET) < LIMIT;
+    }
+
+    const int TARGET = 24;
+    const double LIMIT = 0.001;
+};
