@@ -1,0 +1,79 @@
+// 记忆化搜索
+class Solution {
+public:
+    vector<int> loudAndRich(vector<vector<int>>& richer, vector<int>& quiet) {
+        // 构建有向图  src-->dst 表示dst比src更富有
+        vector<vector<int>> graph(quiet.size());
+        for (vector<int>& rich : richer) {
+            graph[rich[1]].push_back(rich[0]);
+        }
+        // 对每个人 记忆化搜索答案
+        vector<int> answer(quiet.size(), -1);
+        for (int i = 0; i < answer.size(); ++i) {
+            dfs(graph, i, quiet, answer);
+        }
+        return answer;
+    }
+
+private:
+    // 记忆化搜索  返回值比person更富有且最安静的人
+    int dfs(vector<vector<int>>& graph, int person, vector<int>& quiet, vector<int>& answer) {
+        // 已经查找过的 直接返回记忆中的结果
+        if (answer[person] != -1) {
+            return answer[person];
+        }
+        // 最富有的人 结果就是他自己
+        if (graph[person].empty()) {
+            answer[person] = person;
+            return person;
+        }
+        // 向下递归 在比自己更富有的人中 找到最安静的
+        int curr = person;
+        for (int nextPerson : graph[person]) {
+            int p = dfs(graph, nextPerson, quiet, answer);
+            if (quiet[p] < quiet[curr]) {
+                curr = p;
+            }
+        }
+        // 别忘了更新自己的结果
+        answer[person] = curr;
+        return curr;
+    }
+};
+
+/*
+// BFS 超时了  
+class Solution {
+public:
+    vector<int> loudAndRich(vector<vector<int>>& richer, vector<int>& quiet) {
+        // 构建有向图  src-->dst 表示dst比src更富有
+        vector<vector<int>> graph(quiet.size());
+        for (vector<int>& rich : richer) {
+            graph[rich[1]].push_back(rich[0]);
+        }
+
+        vector<int> answer;
+        for (int i = 0; i < quiet.size(); ++i) {
+            answer.push_back(i);
+        }
+        for (int i = 0; i < answer.size(); ++i) {
+            // BFS 从起点i出发 向富有的人搜索
+            queue<int> q { {i} };
+            int ans = i;
+            while (!q.empty()) {
+                int person = q.front();
+                q.pop();
+                if (quiet[ans] > quiet[person]) {
+                    ans = person;
+                }
+                // 入队
+                for (int nextPerson : graph[person]) {
+                    q.push(nextPerson);
+                }
+            }
+            answer[i] = ans;
+        }
+        return answer;
+    }
+};
+*/
