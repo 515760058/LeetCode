@@ -1,0 +1,71 @@
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* prev;
+    Node* next;
+    Node* child;
+};
+*/
+
+// 非递归实现
+class Solution {
+public:
+    Node* flatten(Node* head) {
+        Node* cur = head;
+        while (cur != nullptr) {
+            if (cur->child != nullptr) {
+                Node* next = cur->next;
+                Node* last = cur->child;
+                while (last->next != nullptr) {
+                    last = last->next;
+                }
+                cur->next = cur->child;
+                cur->next->prev = cur;
+                cur->child = nullptr;
+                if (next != nullptr) {
+                    last->next = next;
+                    next->prev = last;
+                }
+            }
+            cur = cur->next;
+        }
+        return head;
+    }
+};
+
+/*
+// 脖子左歪45度 多级链表变成了二叉树 输出先序遍历
+
+//  前序遍历保存指针 重新修改指向
+class Solution {
+public:
+    Node* flatten(Node* head) {
+        if (head == nullptr) {
+            return nullptr;
+        }
+        
+        vector<Node*> res;
+        preOrder(head, res);
+        // 修改指向
+        for (int i = 1; i < res.size(); ++i) {
+            res[i-1]->next = res[i];
+            res[i]->prev = res[i-1];
+            res[i]->child = nullptr; // 把child指针都设为nullptr
+        }
+        res[0]->child = nullptr;
+        return res.front();
+    }
+
+private:
+    void preOrder(Node* head, vector<Node*>& res) {
+        if (head == nullptr) {
+            return;
+        }
+        res.push_back(head);
+        preOrder(head->child, res);
+        preOrder(head->next, res);
+    } 
+};
+*/
