@@ -1,0 +1,44 @@
+class Solution {
+public:
+    int shipWithinDays(vector<int>& weights, int D) {
+        int minCapacity = 0;
+        long left = 0;
+        long right = INT_MAX;
+        while (left <= right) {
+            long mid = (left + right) >> 1;
+            if (getDays(weights, mid) <= D) {
+                minCapacity = mid;
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return minCapacity;
+    }
+
+private:
+    // 以载重capacity运输 需要多少天
+    int getDays(vector<int>& weights, int capacity) {
+        int days = 0;
+        int sum = 0;
+        if (weights[0] <= capacity) {
+            sum += weights[0];
+        } else {
+            return INT_MAX;
+        }
+        for (int i = 1; i < weights.size(); ++i) {
+            if (weights[i] > capacity) { // 某个单件货物的重量比capacity大
+                return INT_MAX;
+            }
+            // 还可以装载
+            if (sum + weights[i] <= capacity) {
+                sum += weights[i];
+            } else { // 新的一天装载
+                sum = weights[i];
+                ++days;
+            }
+        }
+        // 最后的货物 还需要一次
+        return sum > 0 ? days + 1 : days;
+    }
+};
