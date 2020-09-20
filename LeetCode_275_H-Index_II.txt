@@ -1,0 +1,36 @@
+// 二分法  citations[idx]及其后面 至少有citations[idx]个数字
+class Solution {
+public:
+    int hIndex(vector<int>& citations) {
+        if (citations.empty()) {
+            return 0;
+        }
+
+        int left = 0;
+        int right = citations.size();
+        int index = -1;
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            if (check(citations, mid)) {
+                index = mid; // mid可以作为指数
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return index;
+    }
+
+private:
+    // 数组最后的x个数字都>= x    则x可以作为指数
+    bool check(vector<int>& citations, int x) {
+        int size = citations.size();
+        if (x > size) {
+            return false;
+        }
+        if (x == 0 || citations[size - x] >= x) {
+            return true;
+        }
+        return false;
+    }
+};
