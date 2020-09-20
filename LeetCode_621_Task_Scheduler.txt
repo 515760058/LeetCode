@@ -1,0 +1,24 @@
+// https://leetcode-cn.com/problems/task-scheduler/solution/tong-zi-by-popopop/
+class Solution {
+public:
+    int leastInterval(vector<char>& tasks, int n) {
+        // 统计词频 并排序
+        vector<int> count(26);
+        for (char task : tasks) {
+            count[task-'A']++;
+        }
+        sort(count.begin(), count.end());
+
+        // 统计有多少个频率最高的字母
+        int maxCount = 0;
+        for (int i = count.size()-1; i >= 0; i--) {
+            if(count[i] != count.back()){
+                break;
+            }
+            maxCount++;
+        }
+
+        // 公式算出的值可能会比数组的长度小 取两者中最大的那个
+        return max((count.back()-1)*(n+1)+maxCount, (int)tasks.size());
+    }
+};
