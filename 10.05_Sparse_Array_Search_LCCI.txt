@@ -1,0 +1,11 @@
+class Solution {
+public:
+    int findString(vector<string>& words, string s) {
+        map<string, int> m; // 由于是稀疏的 将字符串和对应下标保存在map中
+        for (int i = 0; i < words.size(); ++i) {
+            m[words[i]] = i;
+        }
+        // map中是否存在
+        return m.count(s) ? m[s] : -1;
+    }
+};
