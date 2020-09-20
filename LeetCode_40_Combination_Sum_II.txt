@@ -2,30 +2,37 @@
 class Solution {
 public:
     vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
-        set<vector<int>> res;//set去重
+        set<vector<int>> res; // set保存结果 并去重
+        // 回溯法
         vector<int> temp;
-        helper(0, target, temp, candidates, res);
+        backTrace(0, target, temp, candidates, res);
 
-        vector<vector<int>> finalRes(res.begin(), res.end());//set转为vector
+        // 转换结果 set转为vector
+        vector<vector<int>> finalRes(res.begin(), res.end());
         return finalRes;
     }
 
 private:
-    //idx：在candidates数组中的起始下标（每个数字只能使用一次）
-    //target：当前的目标和   temp：当前的组合
-    void helper(int idx, int target, vector<int>& temp, vector<int>& candidates, set<vector<int>>& res){
-        if(target == 0){//一个合法的组合
+    // idx：在candidates数组中的起始下标（每个数字只能使用一次）
+    // target：当前的目标和   temp：当前的组合
+    void backTrace(int idx, int target, vector<int>& temp, vector<int>& candidates, set<vector<int>>& res) {
+        // 当前的和 已经超过目标和了
+        if (target < 0) {
+            return;
+        }
+        // 一个合法的组合
+        if (target == 0) {
+            // 排序后 在集合中去重
             vector<int> aa(temp.begin(), temp.end());
-            sort(aa.begin(), aa.end());//排序后，在集合中去重
+            sort(aa.begin(), aa.end());
             res.insert(aa);
             return;
         }
-        for(int i = idx; i < candidates.size(); ++i){
-            if(target >= candidates[i]){//可以进入下一层
-                temp.push_back(candidates[i]);//放入
-                helper(i+1, target-candidates[i], temp, candidates, res);//下一层
-                temp.pop_back();//弹出
-            }
+        // 从下一个数字开始 进入下一层
+        for (int i = idx; i < candidates.size(); ++i) {
+            temp.push_back(candidates[i]); // 放入
+            backTrace(i+1, target-candidates[i], temp, candidates, res); // 下一个数字 下一层
+            temp.pop_back(); // 弹出
         }
     }
 };
