@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int minDays(vector<int>& bloomDay, int m, int k) {
+        if (m * k > bloomDay.size()) {
+            return -1;
+        }
+        // 二分
+        int days = -1;
+        int left = 0;
+        int right = 1e9;
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            if (check(bloomDay, mid, k) >= m) {
+                days = mid;
+                right = mid -1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return days;
+    }
+
+private:
+    // 第day天  可以获得多少束花
+    int check(vector<int>& bloomDay, int day, int k) {
+        int cnt = 0; // 花束
+        int num = 0; // 连续可以采多少朵
+        for (int bloom : bloomDay) {
+            if (bloom <= day) {
+                num++;
+            } else {
+                num = 0;
+            }
+            // k朵花 构成一束花
+            if (num == k) {
+                num = 0;
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+};
