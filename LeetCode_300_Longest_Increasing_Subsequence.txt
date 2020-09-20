@@ -1,0 +1,48 @@
+/*
+// 动态规划   子序列默认可以不连续  子数组默认是连续的
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        if (nums.size() <= 1) {
+            return nums.size();
+        }
+        // 自己一定是一个子序列
+        vector<int> dp(nums.size(), 1);
+        for (int i = 1; i < nums.size(); ++i) {
+            // 在nums[i]前面找比它小的 组成上升序列 并更新dp[i]的值
+            for (int j = 0; j < i; ++j) {
+                if (nums[j] < nums[i]) {
+                    dp[i] = max(dp[j] + 1, dp[i]);
+                }
+            }
+        }
+        // dp里面的最大值
+        return *max_element(dp.begin(), dp.end());
+    }
+};
+*/
+
+// 二分查找
+/*
+新建数组cell，用于保存最长上升子序列。对原序列进行遍历，将每位元素二分插入cell中。
+    如果cell中元素都比它小，将它插到最后
+    否则，用它覆盖掉比它大的元素中最小的那个。
+总之，思想就是让cell中存储比较小的元素。这样，cell未必是真实的最长上升子序列，但长度是对的。
+
+// 进阶题目: 面试题17.08马戏团人塔    leetcode俄罗斯套娃信封问题
+*/
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        vector<int> res;
+        for (int num : nums) {
+            auto iter = lower_bound(res.begin(), res.end(), num);
+            if (iter == res.end()) {
+                res.push_back(num);
+            } else {
+                *iter = num;
+            }
+        }
+        return res.size();
+    }
+};
