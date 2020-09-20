@@ -1,0 +1,38 @@
+// 二分查找 官方题解
+// 和leetcode668乘法表中第k小的数 是一样的
+class Solution {
+public:
+    int kthSmallest(vector<vector<int>>& matrix, int k) {
+        int n = matrix.size();
+        long left = matrix[0][0]; // 左上角最小的数字
+        long right = matrix[n - 1][n - 1]; // 右下角最大的数字
+        int res = -1;
+        while (left <= right) {
+            long mid = (left + right) >> 1; // 猜一个数字mid
+            if (check(matrix, mid) >= k) { // 满足<=mid的数字 有k个
+                res = mid;
+                right = mid -1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return res;
+    }
+
+private:
+    // 计算矩阵matrix中<=mid的数量
+    int check(vector<vector<int>>& matrix, long mid) {
+        int i = matrix.size() - 1;
+        int j = 0;
+        int num = 0; // 小于等于mid的数的数量
+        while (i >= 0 && j < matrix.size()) {
+            if (matrix[i][j] <= mid) {
+                num += i + 1;
+                j++;
+            } else {
+                i--;
+            }
+        }
+        return num;
+    }
+};
