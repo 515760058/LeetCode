@@ -1,0 +1,27 @@
+// 一维的 leetcode300最长上升子序列
+// 二维的 面试题17.08马戏团人塔(和本题是一样的)
+class Solution {
+public:
+    int maxEnvelopes(vector<vector<int>>& envelopes) {
+        // 先按w从小到大排序 w相同时按h从大到小排序
+        sort(envelopes.begin(), envelopes.end(),
+            [](const vector<int>& e1, const vector<int>& e2){
+                if (e1.front() != e2.front()) { // w
+                    return e1.front() < e2.front();
+                }
+                return e1.back() > e2.back(); // h
+            });
+        // 此时w已经是从小到大了 求解h的最长上升子序列的长度(leetcode300最长上升子序列)
+        vector<int> res;
+        for (vector<int>& envelope : envelopes) {
+            int h = envelope.back();
+            auto iter = lower_bound(res.begin(), res.end(), h);
+            if (iter == res.end()) {
+                res.push_back(h);
+            } else {
+                *iter = h;
+            }
+        }
+        return res.size();
+    }
+};
