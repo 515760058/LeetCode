@@ -1,0 +1,24 @@
+/*  三指针
+核心思想：下一个数值，总是由上一个数值*3或5或7得到的，因此考虑三个数列：
+     * 1、dp[0]*3,dp[1]*3,dp[2]*3,...
+     * 2、dp[0]*5,dp[1]*5,dp[2]*5,...
+     * 3、dp[0]*7,dp[1]*7,dp[2]*7,...
+     * 将上面按照从小到大，合并到一起即可，如何做到这点，则需要设置三个指针，每个指针指向那种类型的最小值即可.
+     * 初始状态：p3=0, p5=0, p7=0
+*/
+class Solution {
+public:
+    int getKthMagicNumber(int k) {
+        vector<int> nums(k, 1);
+        int p3 = 0;
+        int p5 = 0;
+        int p7 = 0;
+        for(int i = 1; i < k; i++){
+            nums[i] = min(min(nums[p3]*3, nums[p5]*5), nums[p7]*7);
+            if (nums[i] == nums[p3]*3) { p3++; }
+            if (nums[i] == nums[p5]*5) { p5++; }
+            if (nums[i] == nums[p7]*7) { p7++; }
+        }
+        return nums.back();
+    }
+};
