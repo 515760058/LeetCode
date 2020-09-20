@@ -1,0 +1,63 @@
+// 感觉是最长上升子序列的升级版本(二维的)
+// 本题同俄罗斯套娃信封问题：https://leetcode-cn.com/problems/russian-doll-envelopes/
+/*
+// 二维dp 这个方法超时了
+class Solution {
+public:
+    int bestSeqAtIndex(vector<int>& height, vector<int>& weight) {
+        // 按身高体重的从小到大排序
+        vector<pair<int, int>> persons;
+        for (int i = 0; i < height.size(); ++i) {
+            persons.push_back( pair<int, int>(height[i], weight[i]) );
+        }
+        sort(persons.begin(), persons.end());
+        // 身高和体重 两个维度的dp
+        vector<int> dp (persons.size(), 1);
+        for (int i = 1; i < dp.size(); ++i) {
+            for (int j = 0; j < i; ++j) {
+                if (persons[j].first < persons[i].first &&
+                    persons[j].second < persons[i].second) {
+                        dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        // 最大值
+        return *max_element(dp.begin(), dp.end());
+    }
+};
+*/
+
+// C++ 动态规划与二分查找，十二行代码搞定
+// https://leetcode-cn.com/problems/circus-tower-lcci/solution/c-dong-tai-gui-hua-yu-er-fen-cha-zhao-shi-er-xing-/
+class Solution {
+public:
+    int bestSeqAtIndex(vector<int>& height, vector<int>& weight) {
+        // 每个人的信息
+        vector<pair<int, int>> persons;
+        for (int i = 0; i < height.size(); ++i) {
+            persons.push_back( pair<int, int>(height[i], weight[i]) );
+        }
+        // 按身高从小到大排序 身高相同时按体重从大到小
+        sort(persons.begin(), persons.end(),
+             [](const pair<int, int>& p1, const pair<int, int>& p2) {
+                 if (p1.first != p2.first) {
+                     return p1.first < p2.first;
+                 }
+                 return p1.second > p2.second;
+            });
+        
+        // persons数组中 身高已经是升序的了 现在只需要判断体重
+        // 求解体重的最大上升子序列的长度(leetcode300最长上升子序列)
+        vector<int> tower;
+        for (auto& person : persons) {
+            int w = person.second;
+            auto iter = lower_bound(tower.begin(), tower.end(), w);  //二分查找第一个大于等于的地方
+            if (iter == tower.end()) {
+                tower.push_back(w);
+            } else {
+                *iter = w;
+            }
+        }
+        return tower.size();
+    }
+};
