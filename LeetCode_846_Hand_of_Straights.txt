@@ -1,0 +1,28 @@
+class Solution {
+public:
+    bool isNStraightHand(vector<int>& hand, int W) {
+        if (hand.size() % W != 0) {
+            return false;
+        }
+
+        map<int, int> cards; // key:牌  value:出现次数
+        for (int card : hand) {
+            cards[card]++;
+        }
+        
+        while (!cards.empty()) {
+            // 删除一个顺子
+            int card = (*cards.begin()).first;
+            for (int i = 0; i < W; ++i) {
+                if (cards.count(card+i) == 0) {
+                    return false;
+                }
+                cards[card+i]--;
+                if (cards[card+i] == 0) {
+                    cards.erase(card+i);
+                }
+            }
+        }
+        return true;
+    }
+};
