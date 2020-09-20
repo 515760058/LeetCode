@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int swimInWater(vector<vector<int>>& grid) {
+        // 左右起始点
+        int left = 0;
+        int right = 0; // grid数组中的最大值
+        for (vector<int>& vec : grid) {
+            right = max(right, *max_element(vec.begin(), vec.end()));
+        }
+        // 二分法 猜测一个水位mid 并判断该水位是否可以
+        int water = right;
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            if (check(grid, mid)) {
+                water = mid;
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return water;
+    }
+
+private:
+    // 水位为waterHeight时  使用dfs验证是否可以到达终点
+    bool check(vector<vector<int>>& grid, int waterHeight) {
+        vector<vector<bool>> visited(grid.size(), vector<bool>(grid[0].size(), false));
+        bool reach = false;
+        dfs(grid, 0, 0, visited, waterHeight, reach);
+        return reach;
+    }
+
+    void dfs(vector<vector<int>>& grid, int i, int j, vector<vector<bool>>& visited, int waterHeight, bool& reach) {
+        // 校验坐标
+        if (i < 0 || i >= grid.size() || j < 0 || j >= grid[0].size()) {
+            return;
+        }
+        // 已访问过该位置 || 该位置比当前水位waterHeight更高,无法通过
+        if (visited[i][j] || grid[i][j] > waterHeight) {
+            return;
+        }
+        // 到达(N-1, N-1)
+        if (i == grid.size()-1 && j == grid[0].size()-1) {
+            reach = true;
+            return;
+        }
+        visited[i][j] = true;
+        dfs(grid, i-1, j, visited, waterHeight, reach);
+        dfs(grid, i+1, j, visited, waterHeight, reach);
+        dfs(grid, i, j-1, visited, waterHeight, reach);
+        dfs(grid, i, j+1, visited, waterHeight, reach);
+    }
+};
