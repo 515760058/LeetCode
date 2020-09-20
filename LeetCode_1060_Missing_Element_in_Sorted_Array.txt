@@ -1,0 +1,18 @@
+// [4,7,9,10] 4~7之间缺失两个元素  7~9之间缺失了一个元素  以此类推
+class Solution {
+public:
+    int missingElement(vector<int>& nums, int k) {
+        int i;
+        for (i = 1; i < nums.size(); ++i) {
+            int missing = nums[i] - nums[i-1] - 1;
+            if (k > missing) {
+                k -= missing;
+            } else {
+                // 答案也可能不在for中 而在nums.back()的后面
+                break;
+            }
+        }
+        // 答案就是在nums[i-1]后面的k个数
+        return nums[i-1] + k;
+    }
+};
