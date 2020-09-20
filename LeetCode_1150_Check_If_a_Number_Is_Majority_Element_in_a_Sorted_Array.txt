@@ -1,0 +1,14 @@
+// 二分法
+// 找 >= target的idx1
+// 找 >  target的idx2
+// 两个idx相减得出target的出现次数
+class Solution {
+public:
+    bool isMajorityElement(vector<int>& nums, int target) {
+        auto iter1 = lower_bound(nums.begin(), nums.end(), target);
+        auto iter2 = upper_bound(nums.begin(), nums.end(), target);
+        //cout << iter1 - nums.begin() << endl;
+        //cout << iter2 - nums.begin() << endl;
+        return (iter2 - iter1) > (nums.size() >> 1);
+    }
+};
