@@ -1,0 +1,37 @@
+// 二分法猜一个距离mid 然后check这个距离是否可以放入 对二分区间做出相应更新
+class Solution {
+public:
+    int maxDistance(vector<int>& position, int m) {
+        sort(position.begin(), position.end());
+        // 二分法
+        int left = 1;
+        int right = position.back() - position.front();
+        int distance = -1;
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            if (check(position, m, mid)) { // 以mid的间隔是可以的
+                distance = mid;
+                left = mid + 1;
+            } else { // mid的间隔不可以
+                right = mid - 1;
+            }
+        }
+        return distance;
+    }
+private:
+    // 在数组position中以间距dist 放入m个球 能否放入
+    bool check(vector<int>& position, int m, int dist) {
+        // 第一个球 放在首位
+        int pre = position.front();
+        int cnt = 1;
+        // 以间距dist 找下一个可以放球的位置 cnt++
+        for (int i = 1; i < position.size(); ++i) {
+            if (position[i] - pre >= dist) {
+                pre = position[i];
+                ++cnt;
+            }
+        }
+        // 放入的球 是否超过m个
+        return cnt >= m;
+    }
+};
