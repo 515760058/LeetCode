@@ -1,0 +1,81 @@
+// to do  多线程下的队列
+class MyCircularQueue {
+public:
+    /** Initialize your data structure here. Set the size of the queue to be k. */
+    MyCircularQueue(int k) : tail(0), head(0), count(0) {
+        nums.resize(k);
+    }
+    
+    /** Insert an element into the circular queue. Return true if the operation is successful. */
+    bool enQueue(int value) {
+        // 队列满了
+        if (count == nums.size()) {
+            return false;
+        }
+        // 队列没满 插入新元素到队尾
+        nums[tail] = value;
+        ++count;
+        ++tail;
+        tail %= nums.size();
+        return true;
+    }
+    
+    /** Delete an element from the circular queue. Return true if the operation is successful. */
+    bool deQueue() {
+        // 队列空了
+        if (count == 0) {
+            return false;
+        }
+        // 队列中有元素 删除队首的元素
+        nums[head] = 0;
+        --count;
+        ++head;
+        head %= nums.size();
+        return true;
+    }
+    
+    /** Get the front item from the queue. */
+    int Front() {
+        if (count == 0) {
+            return -1;
+        }
+        // 队首元素
+        return nums[head];
+    }
+    
+    /** Get the last item from the queue. */
+    int Rear() {
+        if (count == 0) {
+            return -1;
+        }
+        // 队尾元素
+        return nums[(tail-1+nums.size()) % nums.size()];
+    }
+    
+    /** Checks whether the circular queue is empty or not. */
+    bool isEmpty() {
+        return count == 0;
+    }
+    
+    /** Checks whether the circular queue is full or not. */
+    bool isFull() {
+        return count == nums.size();
+    }
+
+private:
+    int head; // 队首索引
+    int tail; // 队尾索引
+    int count; // 元素的数量
+    vector<int> nums;
+};
+
+/**
+ * Your MyCircularQueue object will be instantiated and called as such:
+ * MyCircularQueue* obj = new MyCircularQueue(k);
+ * bool param_1 = obj->enQueue(value);
+ * bool param_2 = obj->deQueue();
+ * int param_3 = obj->Front();
+ * int param_4 = obj->Rear();
+ * bool param_5 = obj->isEmpty();
+ * bool param_6 = obj->isFull();
+ */
