@@ -1,0 +1,32 @@
+// 类似于单调栈？
+class Solution {
+public:
+    string smallestSubsequence(string text) {
+        map<char, bool> visited; // 结果中是否有了该字符
+        map<char, int> cnt; // 每个字符的次数
+        for (char ch : text) {
+            cnt[ch]++;
+            visited[ch] = false;
+        }
+
+        string res;
+        for (char ch : text) {
+            // 栈顶 是否需要出栈
+            while (!res.empty() && // res非空
+                   visited[ch] == false && // 结果中还没有出现ch字符
+                   ch < res.back() && // ch比栈顶字符更小
+                   cnt[res.back()] > 0) // ch后面 还有栈顶字符出现
+                {
+                visited[res.back()] = false;
+                res.pop_back();
+            }
+            // 把字符ch放入res栈中
+            if (visited[ch] == false) {
+                res.push_back(ch);
+                visited[ch] = true;
+            }
+            cnt[ch]--;
+        }
+    	return res;
+    }
+};
