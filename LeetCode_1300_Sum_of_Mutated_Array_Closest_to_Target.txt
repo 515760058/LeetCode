@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int findBestValue(vector<int>& arr, int target) {
+        sort(arr.begin(), arr.end());
+        
+        int sum = 0;
+        for (int i = 0; i < arr.size(); i++) {
+            // 计算平均值 如果从第i个开始所有元素为tmp 此时所有元素和为target
+            double tmp =(double) (target-sum) / (arr.size() - i); 
+            // 题目要求大于tmp的所有值都变成tmp，所以判断第i个元素满不满足， 
+            // 已经排过序了  如果arr[i]>tmp  那么后面的元素也必定>tmp
+            if (arr[i] > tmp) {
+                return int(tmp + 0.4); //返回整数 所以五舍六入
+            }
+            sum += arr[i];
+        }
+        return arr.back(); // 返回最后一个元素
+    }
+};
