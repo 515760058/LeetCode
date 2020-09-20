@@ -1,0 +1,25 @@
+// 双端队列deque
+class RecentCounter {
+public:
+    RecentCounter() {
+
+    }
+    
+    int ping(int t) {
+        d.push_back(t);
+        // 删除3000ms以前的记录
+        while (d.front() < t-3000) {
+            d.pop_front();
+        }
+        return d.size();
+    }
+
+private:
+    deque<int> d;
+};
+
+/**
+ * Your RecentCounter object will be instantiated and called as such:
+ * RecentCounter* obj = new RecentCounter();
+ * int param_1 = obj->ping(t);
+ */
