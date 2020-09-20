@@ -1,0 +1,45 @@
+/*
+ * // This is the custom function interface.
+ * // You should not implement it, or speculate about its implementation
+ * class CustomFunction {
+ * public:
+ *     // Returns f(x, y) for any given positive integers x and y.
+ *     // Note that f(x, y) is increasing with respect to both x and y.
+ *     // i.e. f(x, y) < f(x + 1, y), f(x, y) < f(x, y + 1)
+ *     int f(int x, int y);
+ * };
+ */
+
+// 二分法: 给定一个x 二分查找适合的y值
+class Solution {
+public:
+    vector<vector<int>> findSolution(CustomFunction& customfunction, int z) {
+        vector<vector<int>> res;
+        for (int x = 1; x <= 1000; ++x) {
+            int y = findyY(customfunction, x, z);
+            if (y > 0) {
+                res.push_back( {x, y} );
+            }
+        }
+        return res;
+    }
+
+private:
+    //  给定一个x 二分查找适合的y值 找到就返回y,找不到就返回-1
+    int findyY(CustomFunction& customfunction, int x, int z) {
+        int left = 1;
+        int right = 1000;
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            int temp = customfunction.f(x, mid);
+            if (temp == z) { // 找到y值了(mid)
+                return mid;
+            } else if (temp > z) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return -1;
+    }
+};
