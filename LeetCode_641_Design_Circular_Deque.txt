@@ -1,0 +1,79 @@
+class MyCircularDeque {
+    vector<int> v;
+    int count; // 双端队列中的元素数量
+    int capacity; // 双端队列中的容量
+
+public:
+    /** Initialize your data structure here. Set the size of the deque to be k. */
+    MyCircularDeque(int k) : capacity(k), count(0) { }
+
+    /** Adds an item at the front of Deque. Return true if the operation is successful. */
+    bool insertFront(int value) {
+        // 队列满了
+        if (count >= capacity) {
+            return false;
+        }
+        // 在队首插入元素
+        v.insert(v.begin(), value);
+        ++count;
+        return true;
+    }
+
+    /** Adds an item at the rear of Deque. Return true if the operation is successful. */
+    bool insertLast(int value) {
+        if (count >= capacity) return false;
+        v.push_back(value);
+        ++count;
+        return true;
+    }
+
+    /** Deletes an item from the front of Deque. Return true if the operation is successful. */
+    bool deleteFront() {
+        // 队列空了
+        if (count == 0) {
+            return false;
+        }
+        // 删除队首元素
+        v.erase(v.begin());
+        --count;
+        return true;
+    }
+
+    /** Deletes an item from the rear of Deque. Return true if the operation is successful. */
+    bool deleteLast() {
+        // 队列空了
+        if (count == 0) {
+            return false;
+        }
+        // 
+        v.pop_back();
+        --count;
+        return true;
+    }
+
+    /** Get the front item from the deque. */
+    int getFront() {
+        if (count == 0) {
+            return -1;
+        }
+        return v[0];
+    }
+
+    /** Get the last item from the deque. */
+    int getRear() {
+        if (count == 0) {
+            return -1;
+        }
+        return v[count - 1];
+    }
+
+    /** Checks whether the circular deque is empty or not. */
+    bool isEmpty() {
+        return count == 0;
+    }
+
+    /** Checks whether the circular deque is full or not. */
+    bool isFull() {
+    	return count == capacity; 
+    }
+};
