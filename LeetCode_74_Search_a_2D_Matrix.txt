@@ -1,0 +1,24 @@
+class Solution {
+public:
+    bool searchMatrix(vector<vector<int>>& matrix, int target) {
+        if (matrix.empty()) {
+            return false;
+        }
+
+        int row = matrix.size();
+        int col = matrix[0].size();
+        // 从右上角开始 向左/下移动
+        int idxX = 0;
+        int idxY = col - 1;
+        while (idxX < row && idxY >= 0) {
+            if (matrix[idxX][idxY] == target) { // 找到了
+                return true;
+            } else if (matrix[idxX][idxY] > target) { // 左移一列
+                --idxY;
+            } else { // 下移一行
+                ++idxX;
+            }
+        }
+        return false;
+    }
+};
