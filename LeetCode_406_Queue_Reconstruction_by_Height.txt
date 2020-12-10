@@ -32,10 +32,10 @@ public:
         vector<vector<int>> res(people.size());
         for (vector<int>& p : people) {
             // 安排位置
-            int idx = index[p[1]];
-            res[idx] = p;
+            int position = index[p[1]];
+            res[position] = p;
             // 删除这个位置
-            auto iter = find(index.begin(), index.end(), idx);
+            auto iter = find(index.begin(), index.end(), position);
             index.erase(iter); 
         }
         return res;
