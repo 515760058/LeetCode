@@ -1,0 +1,27 @@
+// 974. 和可被 K 整除的子数组
+class Solution {
+public:
+    int minSubarray(vector<int>& nums, int p) {
+        // 求和 求模
+        long long sum = accumulate(nums.begin(), nums.end(), 0LL);
+        int mod = sum % p;
+        if (mod == 0) {
+            return 0;
+        }
+        
+        sum = 0;
+        int ans = nums.size();
+        // 前缀和
+        unordered_map<int,int> mp; // 利用hash表记录相邻的同余位置
+        mp[0] = -1;
+        for (int i = 0; i < nums.size(); i++){
+            sum += nums[i];
+            int currMod = (sum - mod + p) % p; // 注意取模的计算
+            if (mp.count(currMod)) {
+                ans = min(ans, i-mp[currMod]);
+            }
+            mp[sum%p] = i;
+        }
+        return ans == nums.size() ? -1 : ans;
+    }
+};
