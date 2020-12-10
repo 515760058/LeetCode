@@ -1,0 +1,75 @@
+// 二分查找 + DFS
+class Solution {
+public:
+    int minimumEffortPath(vector<vector<int>>& heights) {
+        int effort = 0;
+        int left = 0;
+        int right = max2array(heights);
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            if (check(heights, mid)) {
+                effort = mid;
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return effort;
+    }
+
+private:
+    // 给定体力effort 判断能否DFS到右下角
+    bool check(vector<vector<int>>& heights, int effort) {
+        bool reach = false;
+        vector<vector<bool>> visited(heights.size(), vector<bool>(heights[0].size(), false));
+        dfs(heights, 0, 0, effort, visited, reach);
+        //cout << "effort=" << effort << ", reach=" << reach << endl;
+        return reach;
+    }
+
+    vector<int> dx = {-1, 1, 0, 0};
+    vector<int> dy = {0, 0, -1, 1};
+
+    void dfs(vector<vector<int>>& heights, int i, int j, int effort, vector<vector<bool>>& visited, bool& reach) {
+        // 到达右下角
+        if (i == heights.size()-1 && j == heights[0].size()-1) {
+            reach = true;
+            return;
+        }
+        // 访问了当前节点
+        visited[i][j] = true;
+        // 向四个方向遍历
+        for (int idx = 0; idx < dx.size(); ++idx) {
+            // 下一个位置
+            int nextX = i + dx[idx];
+            int nextY = j + dy[idx];
+            // 下一个位置坐标有效  没有访问过下一个位置   差值<=体力值
+            if (valid(heights, nextX, nextY) &&
+                !visited[nextX][nextY] &&
+                abs(heights[nextX][nextY] - heights[i][j]) <= effort)
+            {
+                dfs(heights, nextX, nextY, effort, visited, reach);
+            }
+        }
+    }
+
+    // 判断[i, j]是否有效
+    bool valid(vector<vector<int>>& heights, int i, int j) {
+        int row = heights.size();
+        int col = heights[0].size();
+        if (i >= 0 && i < row && j >= 0 && j < col) {
+            return true;
+        }
+        return false;
+    }
+
+    // 二维矩阵的最大值
+    int max2array(vector<vector<int>>& heights) {
+        int res = INT_MIN;
+        for (auto& row : heights) {
+            int temp = *max_element(row.begin(), row.end());
+            res = max(res, temp);
+        }
+        return res;
+    }
+};
