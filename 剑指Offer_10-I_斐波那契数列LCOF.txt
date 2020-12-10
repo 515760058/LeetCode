@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int fib(int n) {
+        if (n <= 1) {
+            return n;
+        }
+        vector<int> f(n+1);
+        f[0] = 0;
+        f[1] = 1;
+        for (int i = 2; i < f.size(); ++i) {
+            f[i] = f[i-1] + f[i-2];
+            // 求余数比较耗时 使用减法。 还可以避免数值过大而溢出
+            if (f[i] >= 1000000007) {
+                f[i] -= 1000000007;
+            }
+        }
+        return f.back();
+    }
+};
