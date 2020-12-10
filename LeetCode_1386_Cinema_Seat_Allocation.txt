@@ -1,0 +1,31 @@
+// 每行最多两组家庭,可选的位置分别为{2,3,4,5}{4,5,6,7}{6,7,8,9}
+// 使用vector<vector>来统计矩阵已经占用的位置导致空间复杂度过大，因此用一个unordered_map<int, set<int>>来保存
+// set仍然很麻烦，因此改用int代替，对int使用位运算来记录和判断
+// 时间复杂度，如果每行都判断，可能超时，因为行数可能非常大
+// 只判断reservedSeats中，即存在已经预订了座位的那些行，而其它行必定可以有两组家庭
+// 还是位运算方便
+class Solution {
+public:
+    int maxNumberOfFamilies(int n, vector<vector<int>>& reservedSeats) {
+        unordered_map<int, int> record;  // key：行  value:当做位图来用 对应行的预约情况
+        for(auto &vec : reservedSeats) {
+            record[vec[0]] |= (1 << (vec[1]-1));
+        }
+
+        int a = 0b0111111110;
+        int b = 0b0000011110;
+        int c = 0b0111100000;
+        int d = 0b0001111000;
+
+        // 没有人预约的行 每行可以安排两个家庭
+        int total = (n - record.size()) * 2;
+        
+        for (const auto &p : record) {
+            if ((p.second & a) == 0) { total += 2; continue; }
+            if ((p.second & b) == 0) { total += 1; continue; }
+            if ((p.second & c) == 0) { total += 1; continue; }
+            if ((p.second & d) == 0) { total += 1; continue; }
+        }
+        return total;
+    }
+};
