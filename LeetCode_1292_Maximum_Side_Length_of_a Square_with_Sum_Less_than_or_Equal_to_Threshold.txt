@@ -1,0 +1,44 @@
+// 二维矩阵的前缀和 + 二分
+// 二维前缀和 https://www.cnblogs.com/LMCC1108/p/10753451.html
+class Solution {
+public:
+    int maxSideLength(vector<vector<int>>& mat, int threshold) {
+        int row = mat.size();
+        int col = mat[0].size();
+        // 前缀和
+        vector<vector<int>> prefix(row+1, vector(col+1, 0));
+        for (int i = 1; i <= row; ++i) {
+            for (int j = 1; j <= col; ++j) {
+                prefix[i][j] = prefix[i-1][j] + prefix[i][j-1] + mat[i-1][j-1] - prefix[i-1][j-1];
+            }
+        }
+        // 二分
+        int res = 0;
+        int left = 0;
+        int right = min(row, col);
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            if (check(prefix, threshold, mid)) {
+                res = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return res;
+    }
+
+private:
+    // 给定一个边长len  判断能否找到符合threshold的正方形
+    bool check(vector<vector<int>>& prefix, int threshold, int len) {
+        for (int i = len; i < prefix.size(); ++i) {
+            for (int j = len; j < prefix[0].size(); ++j) {
+                int areaSum = prefix[i][j] - prefix[i-len][j] - prefix[i][j-len] + prefix[i-len][j-len];
+                if (areaSum <= threshold) { // 可以找到边长为len的正方形 符合阈值
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
