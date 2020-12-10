@@ -1,0 +1,15 @@
+// 下一个排列
+class Solution {
+public:
+    int nextGreaterElement(int n) {
+        string str = to_string(n);
+        next_permutation(str.begin(), str.end());
+        // 字符串转long
+        long val = stol(str);
+        // 溢出 || 没有下一个排列
+        if (val > INT_MAX || val <= n) {
+            return -1;
+        }
+        return val;
+    }
+};
