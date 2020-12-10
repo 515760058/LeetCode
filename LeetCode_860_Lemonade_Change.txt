@@ -1,0 +1,25 @@
+class Solution {
+public:
+    bool lemonadeChange(vector<int>& bills) {
+        int five = 0;
+        int ten = 0;
+        for (int bill : bills) {
+            if (bill == 5) { // 收到的是5元
+                five++;
+            } else if (bill == 10) { // 收到的是10元
+                five--;
+                ten++;
+            } else if (ten > 0) { // 收到的是20元 并且自己手中有10元面值的
+                ten--;
+                five--;
+            } else { // 收到的是20元 并且自己手中没有10元面值的
+                five -= 3;
+            }
+            // 检查手中的钱
+            if (five < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
