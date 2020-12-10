@@ -1,0 +1,30 @@
+class Solution {
+public:
+    double myPow(double x, int n) {
+        if (x == 0) {
+            return 0;
+        }
+        if (n >= 0) {
+            return power(x, n);
+        }
+        // n<0时  x^n即(1/x)^(-n)
+        long temp = n; // 假设n是-128  那么转成正数就是128就会溢出  因此要转成long类型
+        return power(1/x, -temp);
+    }
+
+private:
+    //递归方式的快速幂
+    double power(double x, long n) {
+        if (n == 0) {
+            return 1;
+        }
+        double r = power(x, n>>1);
+
+        //指数n为奇数，则需要多乘一个底数。因为上行代码计算n/2时，若n为奇数，精度丢失向下取整（相当于少乘一个x）
+        if (n & 1) { // n是奇数
+            return r * r * x;
+        } else {
+            return r * r;
+        }
+    }
+};
