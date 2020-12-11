@@ -183,6 +183,36 @@ Return false;
 - leetcode947. 移除最多的同行或同列石头
 - leetcode785. 判断二分图(BFS染色 并查集)
 
+## 优先队列 (最大堆/大顶堆  最小堆/小顶堆)
+- #include <queue>
+- priority_queue<int> p; // 大顶堆 优先弹出最大的值
+- priority_queue<int, vector<int>, greater<int> > p; // 小顶堆 优先弹出最小的值
+- 自定义：
+'''
+struct cmp{
+    bool operator()(Node a, Node b){
+        if(a.x == b.x) {
+	    return a.y>b.y;
+	}
+	return a.x>b.x;
+    }
+};
+
+priority_queue<Node, vector<Node>, cmp> p;
+'''
+- 相关操作函数
+'''
+T q.top() 访问队头元素
+bool q.empty() 队列是否为空
+size_t q.size() 返回队列内元素个数
+void q.push() 插入元素到队尾 (并排序)
+void q.pop() 弹出队头元素(最大或者最小的值)
+
+emplace 原地构造一个元素并插入队列
+swap 交换内容
+'''
+### 典型题目
+- leetcode 649 Dota2参议院
 
 
 ## 单调栈
