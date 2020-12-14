@@ -1,0 +1,44 @@
+// 相似题目：LeetCode 358 K距离间隔重排字符串
+class Solution {
+public:
+    vector<int> rearrangeBarcodes(vector<int>& barcodes) {
+        // 统计每个条形码出现的次数
+        map<int, int> codeFreq; // key:条形码  value:出现次数
+        for (int barcode : barcodes) {
+            codeFreq[barcode]++;
+        }
+        // 建立优先队列 大顶堆
+        priority_queue<pair<int, int>> heap;  // <次数, 条形码>
+        for (auto& c : codeFreq) {
+            heap.push(pair<int, int>(c.second, c.first));
+        }
+
+        vector<int> res;
+        queue<int> window; // 间隔窗口
+        while (!heap.empty()) {
+            // 取出一个条码
+            int barcode = heap.top().second;
+            heap.pop();
+            // 保存结果
+            res.push_back(barcode);
+            // 删除一次该条码的次数
+            codeFreq[barcode]--;
+            // 处理间隔
+            window.push(barcode);
+            if (window.size() > interval) {
+                // 取出前k次保存的条码
+                int bar = window.front();
+                window.pop();
+                // 这个条码还有剩余次数 就再放入优先队列中
+                if (codeFreq[bar] > 0) {
+                    heap.push(pair<int, int>(codeFreq[bar], bar));
+                }
+            }
+        }
+        return res;
+    }
+
+private:
+    // 相邻的条形码不能相等 也就是间隔1
+    static const int interval = 1;
+};
