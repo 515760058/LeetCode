@@ -1,4 +1,6 @@
 // https://leetcode-cn.com/problems/task-scheduler/solution/tong-zi-by-popopop/
+
+// 升级版：leetcode1054 距离相等的条形码 中等 优先队列(堆)
 class Solution {
 public:
     int leastInterval(vector<char>& tasks, int n) {
