@@ -1,0 +1,23 @@
+/*  key : value
+
+    aet : ["ate","eat","tea"],
+    ant : ["nat","tan"],
+    abt : ["bat"]
+*/
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        map<string, vector<string>> m;
+        for(string& str : strs){
+            string s = str;
+            sort(s.begin(), s.end()); // 对key排序
+            m[s].push_back( str ); // 查找key 保存这个字符串
+        }
+        // 结果
+        vector<vector<string>> res;
+        for(auto& it : m){
+            res.push_back(it.second);
+        }
+        return res;
+    }
+};
