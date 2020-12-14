@@ -1,0 +1,45 @@
+// leetcode 621 任务调度器  中等 (本题是621的升级版)
+// leetcode 1054 距离相等的条形码 
+
+class Solution {
+public:
+    string CombineChars(string s, int k) {
+        // 统计每个字符出现的次数
+        int lefts[26] = {0};
+        for (auto c : s) {
+          lefts[c - 'a']++;
+        }
+        
+        // 建立优先队列 大顶堆
+        priority_queue<pair<int, int>> heap;  // <次数, 字符>
+        for (int i = 0; i < 26; ++i) {
+            if (lefts[i] > 0) {
+               heap.push(pair<int, int>(lefts[i], i));
+            }
+        }
+
+        string res;
+        queue<int> window; // 间隔窗口
+        while (!heap.empty()) {
+            // 取出字母
+            int ch = heap.top().second;
+            heap.pop();
+            // 保存结果
+            res.push_back(ch);
+            // 删除一次该条码的次数
+            lefts[ch]--;
+            // 处理间隔
+            window.push(ch);
+            if (window.size() >= k) {
+                // 取出前k次保存的字母
+                int m = window.front();
+                window.pop();
+                // 这个条码还有剩余次数 就再放入优先队列中
+                if (lefts[m] > 0) {
+                    heap.push(pair<int, int>(lefts[m], m));
+                }
+            }
+        }
+        return res.size() == s.size() ? res : "";
+    }
+};
