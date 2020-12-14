@@ -1,9 +1,6 @@
-// leetcode 621 任务调度器  中等 (本题是621的升级版)
-// leetcode 1054 距离相等的条形码 
-
 class Solution {
 public:
-    string CombineChars(string s, int k) {
+    string rearrangeString(string s, int k) {
         // 统计每个字符出现的次数
         int lefts[26] = {0};
         for (auto c : s) {
@@ -25,7 +22,7 @@ public:
             int ch = heap.top().second;
             heap.pop();
             // 保存结果
-            res.push_back(ch);
+            res.push_back(ch+'a');
             // 删除一次该条码的次数
             lefts[ch]--;
             // 处理间隔
@@ -43,3 +40,4 @@ public:
         return res.size() == s.size() ? res : "";
     }
 };
+
