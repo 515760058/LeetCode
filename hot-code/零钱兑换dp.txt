@@ -1,0 +1,102 @@
+322. 零钱兑换
+// dp[i]表示 金额为i时，需要的最少硬币数量
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        vector<int> dp(amount+1, amount+1);
+        dp[0] = 0;
+        for (int i = 0; i < dp.size(); ++i) {
+            // 计算dp[i]
+            for (int coin : coins) {
+                if (i - coin < 0) {
+                    continue;
+                }
+                dp[i] = min(dp[i], dp[i-coin]+1);
+            }
+        }
+        if (dp[amount] == amount+1) {
+            return -1;
+        }
+        return dp[amount];
+    }
+};
+
+
+
+322. 零钱兑换
+// 递归 + 备忘录
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        unordered_map<int, int> mem;
+        return helper(coins, amount, mem);
+    }
+
+private:
+    int helper(vector<int>& coins, int amount, unordered_map<int, int>& mem) {
+        if (amount < 0) { // 该子问题无解
+            return -1;
+        }
+        if (amount == 0) { // 该子问题恰好解决
+            return 0;
+        }
+        if (mem.count(amount)) { // 以前解决过该子问题,直接使用结果
+            return mem[amount];
+        }
+        // 递归下去 查找amount对应的最优解
+        long res = INT_MAX;
+        for (int coin : coins) {
+            long num = helper(coins, amount-coin, mem);
+            if (num != -1) {
+                res = min(res, num + 1);
+            }
+        }
+        // 保存中间结果
+        mem[amount] = (res == INT_MAX ? -1 : res); // 如果res == INT_MAX 说明子问题都无解，所以amount也对应无解
+        return mem[amount];
+    }
+};
+
+
+
+
+518. 零钱兑换 II
+// dp
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        
+    }
+};
+
+
+
+518. 零钱兑换 II
+// 暴力递归法 超时
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        set<vector<int>> res;
+        vector<int> temp;
+        helper(amount, coins, temp, res);
+        return res.size();
+    }
+
+private:
+    void helper(int amount, vector<int>& coins, vector<int> temp, set<vector<int>>& res) {
+        if (amount < 0) {
+            return;
+        }
+        if (amount == 0) { // 有一个可行的组合方案
+            sort(temp.begin(), temp.end()); // 排序后放入集合中去重
+            res.insert(temp);
+            return;
+        }
+        for (int coin : coins) {
+            temp.push_back(coin);
+            helper(amount-coin, coins, temp, res);
+            temp.pop_back();
+        }
+    }
+};
+
