@@ -1,0 +1,80 @@
+//  198打家劫舍  
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        vector<int> dp(nums.size()+2, 0);
+        for (int i = nums.size()-1; i >= 0; --i) {
+            //当前dp[i]的最大值有两个来源：  抢了这一家 只能选后后一家      不抢这一家 选后一家
+            dp[i] = max(dp[i+2] + nums[i], dp[i+1]);  
+        }
+        return dp[0];
+    }
+};
+
+
+
+//  213 打家劫舍 II
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        if (nums.size() <= 1) {
+            return rob198(nums);
+        }
+        // 拆成两个区间
+        vector<int> nums1(nums.begin()+1, nums.end());
+        nums.pop_back();
+        return max(rob198(nums), rob198(nums1));
+    }
+
+private:
+    // leetcode198题的答案
+    int rob198(vector<int>& nums) {
+        vector<int> dp(nums.size()+2, 0);
+        for (int i = nums.size()-1; i >= 0; --i) {
+            //当前dp[i]的最大值有两个来源：  抢了这一家 只能选后后一家      不抢这一家 选后一家
+            dp[i] = max(dp[i+2] + nums[i], dp[i+1]);  
+        }
+        return dp[0];
+    }
+};
+
+
+
+//  337 打家劫舍 III
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int rob(TreeNode* root) {
+        unordered_map<TreeNode*, int> mem; //备忘录
+        return helper(root, mem);
+    }
+
+private:
+    int helper(TreeNode* root, unordered_map<TreeNode*, int>& mem) {
+        if (root == nullptr) {
+            return 0;
+        }
+        if (mem.count(root)) {
+            return mem[root];
+        }
+        // 抢这个节点 递归到它的子子层
+        int do_it = root->val + 
+            (root->left == nullptr ? 0 : (helper(root->left->left, mem) + helper(root->left->right, mem))) +
+            (root->right == nullptr ? 0 : (helper(root->right->left, mem) + helper(root->right->right, mem)));
+        // 不抢这个节点 递归到它的子层
+        int not_do = helper(root->left, mem) + helper(root->right, mem);
+        // 最大值 保存在备忘录中
+        int res = max(do_it, not_do);
+        mem[root] = res;
+        return res;
+    }
+};
+
