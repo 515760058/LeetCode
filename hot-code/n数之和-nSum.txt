@@ -1,0 +1,218 @@
+// 1. 两数之和
+class Solution {
+public:
+    //使用map
+    vector<int> twoSum(vector<int>& nums, int target) {
+        map<int, int> m; //key：数字   value：数字的下标
+        for(int i = 0; i < nums.size(); ++i){
+            // 先判断这个数和以前出现过的数字 是否成立
+            int a = target - nums[i];
+            if (m.count(a)) {
+                //对两个下标比较一下大小，然后return
+                if (i < m[a]){
+                    return {i, m[a]};
+                }else{
+                    return {m[a], i};
+                }
+            }
+            // 把这个数字及其下标放进去
+            m[nums[i]] = i;
+        }
+        return {};
+    }
+};
+
+
+
+
+
+// 15. 三数之和
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        return threeSum(nums, 0);
+    }
+
+private:
+    // 三数之和是target
+    vector<vector<int>> threeSum(vector<int>& nums, int target) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> res;
+        for (int i = 0; i < nums.size(); ++i) {
+            // 计算nums[i]和剩下的两数之和
+            vector<vector<int>> sum2 = twoSum(nums, i+1, target-nums[i]);
+            for (auto& vec : sum2) {
+                vec.push_back(nums[i]);
+                res.push_back(vec);
+            }
+            // 跳过相同的nums[i]
+            while (i < nums.size()-1 && nums[i] == nums[i+1]) {
+                ++i;
+            }
+        }
+        return res;
+    }
+
+    // nums[start, end)  计算两数之和是target
+    vector<vector<int>> twoSum(vector<int>& nums, int start, int target) {
+        int left = start;
+        int right = nums.size() - 1;
+        vector<vector<int>> res;
+        while (left < right) {
+            int small = nums[left];
+            int big = nums[right];
+            int sum = small + big;
+            if (sum == target) {
+                res.push_back( {small, big} );
+                // while是消除重复元素
+                while (left < right && nums[left] == small) {
+                    ++left;
+                }
+                while (left < right && nums[right] == big) {
+                    --right;
+                }
+            } else if (sum > target) {
+                while (left < right && nums[right] == big) {
+                    --right;
+                }
+            } else if (sum < target) {
+                while (left < right && nums[left] == small) {
+                    ++left;
+                }
+            }
+        }
+        return res;
+    }
+};
+
+
+
+
+
+// 16. 最接近的三数之和
+// 暴力法
+class Solution {
+public:
+    int threeSumClosest(vector<int>& nums, int target) {
+        int gap = INT_MAX;//间隔
+        int sum;
+        for(int i = 0; i < nums.size(); ++i){
+            for(int j = i+1; j < nums.size(); ++j){
+                for(int k = j+1; k < nums.size(); ++k){
+                    int temp = nums[i] + nums[j] + nums[k];
+                    if(abs(temp-target) < gap){//间隔更小，则和更接近target
+                        gap = abs(temp - target);
+                        sum = temp;
+                    }
+                }
+            }
+        }
+        return sum;
+    }
+};
+
+//
+class Solution {
+public:
+    int threeSumClosest(vector<int>& nums, int target) {
+        sort(nums.begin(), nums.end());
+
+        int closestNum = nums[0] + nums[1] + nums[2];
+        for (int i = 0; i < nums.size() - 2; i++) {
+            int l = i + 1;
+            int r = nums.size() - 1;
+            while (l < r) {
+                int threeSum = nums[l] + nums[r] + nums[i];
+                if (abs(threeSum - target) < abs(closestNum - target)) {
+                    closestNum = threeSum;
+                }
+                if (threeSum > target) {
+                    r--;
+                } else if (threeSum < target) {
+                    l++;
+                } else {
+                    // 如果已经等于target的话, 肯定是最接近的
+                    return target;
+                }
+            }
+        }
+        return closestNum;
+    }
+};
+
+
+
+
+
+
+
+// 18. 四数之和
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> res;
+        for (int i = 0; i < nums.size(); ++i) {
+            vector<vector<int>> sum3 = threeSum(nums, i+1, target-nums[i]);
+            for (auto& vec : sum3) {
+                vec.push_back(nums[i]);
+                res.push_back(vec);
+            }
+            // 跳过相同的nums[i]
+            while (i < nums.size()-1 && nums[i] == nums[i+1]) {
+                ++i;
+            }
+        }
+        return res;
+    }
+
+private:
+    // 三数之和是target
+    vector<vector<int>> threeSum(vector<int>& nums, int start, int target) {
+        vector<vector<int>> res;
+        for (int i = start; i < nums.size(); ++i) {
+            // 计算nums[i]和剩下的两数之和
+            vector<vector<int>> sum2 = twoSum(nums, i+1, target-nums[i]);
+            for (auto& vec : sum2) {
+                vec.push_back(nums[i]);
+                res.push_back(vec);
+            }
+            // 跳过相同的nums[i]
+            while (i < nums.size()-1 && nums[i] == nums[i+1]) {
+                ++i;
+            }
+        }
+        return res;
+    }
+
+    // nums[start, end)  计算两数之和是target
+    vector<vector<int>> twoSum(vector<int>& nums, int start, int target) {
+        int left = start;
+        int right = nums.size() - 1;
+        vector<vector<int>> res;
+        while (left < right) {
+            int small = nums[left];
+            int big = nums[right];
+            int sum = small + big;
+            if (sum == target) {
+                res.push_back( {small, big} );
+                // while是消除重复元素
+                while (left < right && nums[left] == small) {
+                    ++left;
+                }
+                while (left < right && nums[right] == big) {
+                    --right;
+                }
+            } else if (sum > target) {
+                while (left < right && nums[right] == big) {
+                    --right;
+                }
+            } else if (sum < target) {
+                while (left < right && nums[left] == small) {
+                    ++left;
+                }
+            }
+        }
+        return res;
+    }
+};
