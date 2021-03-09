@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int superEggDrop(int k, int n) {
+        map<string, int> mem;
+        return dp(k, n, mem);
+    }
+
+private:
+    int dp(int K, int N, map<string, int>& mem) {
+        if (K == 1) { return N; } // 只有1个鸡蛋  N层楼只能线性搜索N次
+        if (N == 0) { return 0; } // 没有楼层了，不需要次数了
+
+        string key = toString(K, N);
+        // 查找备忘录
+        if (mem.count(key)) {
+            return mem[key];
+        }
+        
+        int res = INT_MAX;
+        for (int i = 1; i <= N; ++i) {
+                            // dp(K, N-i, mem) 表示当前第i层实验，鸡蛋没碎，那依然有K个鸡蛋去尝试剩下的N-i层楼 (排除了当前楼层及下面的楼层)
+                            // dp(K-1, i-1, mem)  表示当前第i层实验，鸡蛋碎了，那只有K-1个鸡蛋去尝试剩下的i-1层楼(排除了当前楼层及上面的楼层)
+                            // +1是当前这次扔鸡蛋的操作
+            res = min(res, max(dp(K, N-i, mem), dp(K-1, i-1, mem)) + 1);
+        }
+        // 保存在备忘录中
+        mem[key] = res;
+        return res;
+    }
+
+    string toString(int k, int n) {
+        return to_string(k) + "+" + to_string(n);
+    }
+
+};
+
