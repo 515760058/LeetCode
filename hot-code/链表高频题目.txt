@@ -1,0 +1,210 @@
+141. 环形链表 判断链表是否有环
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        ListNode* fast = head;
+        ListNode* slow = head;
+        while (fast && fast->next) {
+            fast = fast->next->next; // 快指针每次走两步
+            slow = slow->next;       // 慢指针每次走一步
+            if (fast == slow) {      // 快慢指针相遇，就是有环
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        unordered_set<ListNode*> s; // 保存节点的地址
+        while (head != nullptr) {
+            if (s.count(head)) {   // 发现以前的节点
+                return true;
+            }
+            s.insert(head);
+            head = head->next;
+        }
+        return false;
+    }
+};
+
+
+
+142. 环形链表 II    寻找环形链表的第一个节点
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        ListNode* fast = head;
+        ListNode* slow = head;
+        while (fast && fast->next) {
+            fast = fast->next->next; // 快指针每次走两步
+            slow = slow->next;       // 慢指针每次走一步
+            if (fast == slow) {      // 快慢指针相遇 存在环
+                // 一定会在环的入口点相遇
+                ListNode* slow2 = head; // 再定义一个慢指针 两个慢指针每次走一步 必定会在入口点相遇
+                while (slow2 != slow) {
+                    slow2 = slow2->next;
+                    slow = slow->next;
+                }
+                return slow2;
+            }
+        }
+        return nullptr;
+    }
+};
+
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        unordered_set<ListNode*> s; // 保存节点的地址
+        while (head != nullptr) {
+            if (s.count(head)) {   // 第一次发现以前的节点 就是入口节点
+                return head;
+            }
+            s.insert(head);
+            head = head->next;
+        }
+        return nullptr;
+    }
+};
+
+
+
+剑指 Offer 24. 反转链表 （全部节点）
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        //借助栈
+        stack<int> s;
+        ListNode* p = head;
+        while (p != nullptr) {
+            s.push(p->val);
+            p = p->next;
+        }
+        p = head;
+        while (p != nullptr) {
+            p->val = s.top();
+            s.pop();
+            p = p->next;
+        }
+        return head;
+    }
+};
+
+// 迭代
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode* pre = nullptr; // 前一个节点
+        ListNode* cur = head;    // 当前节点
+        ListNode* temp = nullptr;
+
+        while (cur != nullptr) {
+            temp = cur->next; // 临时保存下一个节点
+            cur->next = pre; // 当前节点 指向 前一个节点
+            // 向后移动
+            pre = cur;
+            cur = temp;
+        }
+        return pre;
+    }
+};
+
+
+92. 反转链表 II   （反转从位置 m 到 n 的链表） 一趟扫描
+输入: 1->2->3->4->5->NULL, m = 2, n = 4     1 ≤ m ≤ n ≤ 链表长度。
+输出: 1->4->3->2->5->NULL
+class Solution {
+public:
+    ListNode* reverseBetween(ListNode* head, int left, int right) {
+        // 创建一个虚拟节点 放在链表头部
+        ListNode* dummy = new ListNode(-1);
+        dummy->next = head;
+        // 走过前面的节点
+        ListNode* pre = dummy;
+        for (int i = 1; i < left; ++i) {
+            pre = pre->next;
+        }
+
+        head = pre->next;
+        for (int i = left; i < right; ++i) {
+            ListNode* temp = head->next; // 临时保存下一个节点
+            head->next = temp->next;
+            temp->next = pre->next;
+            pre->next = temp;
+        }
+        // 返回头结点
+        head = dummy->next;
+        delete dummy;
+        return head;
+    }
+};
+方法二：
+// 使用栈  保存[m, n]区间的节点  然后再恢复回去
+
+
+
+
+剑指 Offer 25. 合并两个排序的链表  （归并排序链表）
+// 迭代版本
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode* dummy = new ListNode(-1);
+        ListNode* pre = dummy;
+        while (l1 != nullptr && l2 != nullptr) {
+            if (l1->val <= l2->val) {
+                pre->next = l1;
+                pre = pre->next;
+                l1 = l1->next;
+            } else {
+                pre->next = l2;
+                pre = pre->next;
+                l2 = l2->next;
+            }
+        }
+        // 某一条链表先结束了 判断还剩下哪一条
+        if (l1 != nullptr) {
+            pre->next = l1;
+        }
+        if (l2 != nullptr) {
+            pre->next = l2;
+        }
+        // 返回头节点dummy->next
+        pre = dummy->next;
+        delete dummy;
+        return pre;
+    }
+};
+
+// 递归版本
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        if (l1 == nullptr){
+            return l2;
+        }
+        if (l2 == nullptr){
+            return l1;
+        }
+
+        if (l1->val > l2->val){
+            l2->next = mergeTwoLists(l1, l2->next);
+            return l2;
+        } else {
+            l1->next = mergeTwoLists(l1->next, l2);
+            return l1;
+        }
+    }
+};
+
+
+
+
+
+
+
+
+
