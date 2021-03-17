@@ -65,3 +65,43 @@ public:
          return root;
     }
 };
+
+
+
+
+889. 根据前序和后序遍历构造二叉树
+class Solution {
+public:
+    TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {
+        //递归模板，关键是把 pre 与 post 数组分出左子树部分与右子树部分
+        return helper(pre, 0, pre.size()-1, post, 0, post.size()-1);
+    }
+
+private:
+    TreeNode* helper(vector<int>& pre, int pre_start, int pre_end, vector<int>& post, int post_start, int post_end){
+        if(pre_start > pre_end || post_start > post_end){
+            return nullptr;
+        }
+        //post[post_end]是根节点的值
+        TreeNode* root = new TreeNode(post[post_end]);
+        if(post_end == post_start) return root;
+
+        //pre: 根节点 左子树部分 右子树部分
+        //post：左子树部分 右子树部分 根节点
+        //pre[pre_start+1]是左子树根，据此找到其在post中的index
+        int index = post_start;
+        while(post[index] != pre[pre_start+1]){
+            index++;
+        }
+        //然后根据分界线index可以划分pre与post左右子树部分
+        //post: post_start:index左 ; index+1:post_end-1 右; post_end 根
+        //pre: pre_start根 ; pre_start+1:pre_start+1+ (index-post_start); pre_end-(post_end-1-index-1) :pre_end
+
+        root->left = helper(pre,pre_start+1,pre_start+1+ (index-post_start), post, post_start, index);
+        root->right = helper(pre, pre_end-(post_end-1-index-1), pre_end, post, index+1, post_end-1);
+
+        return root;
+    }
+};
+
+
