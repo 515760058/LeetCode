@@ -1,0 +1,152 @@
+144. 二叉树的前序遍历 （使用栈）
+class Solution {
+public:
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> result;
+        stack<TreeNode*> s;
+        if (root != nullptr) {
+            s.push(root);
+        }
+        while (!s.empty()) {
+            // 访问节点
+            TreeNode* temp = s.top();
+            s.pop();
+            result.push_back(temp->val);
+            // 先放右子树 后弹出
+            if (temp->right != nullptr) {
+                s.push(temp->right);
+            }
+            // 后放左子树 先弹出
+            if (temp->left != nullptr) {
+                s.push(temp->left);
+            }
+        }
+        return result;
+    }
+};
+
+
+
+
+94. 二叉树的中序遍历 （使用栈）
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> result;
+        stack<TreeNode*> s;
+        TreeNode* p = root;
+        while (!s.empty() || p != nullptr) {
+            if (p != nullptr) { // 尽量向左子树走  直到p是null
+                s.push(p);
+                p = p->left;
+            } else {
+                // p是null 表示左子树走到底了 访问当前节点
+                p = s.top();
+                s.pop();
+                result.push_back(p->val);
+                // 向右走一步 （到了右子树之后 还要尽量向左子树走）
+                p = p->right;
+            }
+        }
+        return result;
+    }
+};
+
+
+
+
+145. 二叉树的后序遍历 （使用栈）
+class Solution {
+public:
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> reslut;
+
+        stack<TreeNode*> s;
+        TreeNode* cur = root;
+        TreeNode* p = nullptr; //用来记录上一节点
+        while(!s.empty() || cur != nullptr){
+            while(cur != nullptr){
+                s.push(cur);
+                cur = cur->left;
+            }
+            cur = s.top();
+//            后序遍历的过程中在遍历完左子树跟右子树cur都会回到根结点。所以当前不管是从左子树还是右子树回到根结点都不应该再操作了，应该退回上层。
+//            如果是从右边再返回根结点，应该回到上层。
+            //主要就是判断出来的是不是右子树，是的话就可以把根节点=加入到reslut了
+            if(cur->right == nullptr || cur->right == p){
+                reslut.push_back(cur->val);
+                s.pop();
+                p = cur;
+                cur = nullptr;
+            }else{
+                cur = cur->right;
+            }
+        }
+        return reslut;
+    }
+};
+
+
+
+
+102. 二叉树的层序遍历
+// 递归版
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> level;
+        preOrder(root, 0, level); // 根节点的深度视为0
+        return level;
+    }
+
+private:
+    // 先序遍历 递归
+    void preOrder(TreeNode *root, int depth, vector<vector<int>> &level) {
+        if (root == nullptr) {
+            return;
+        }
+        // 如果第一次出现此深度 就在level的末尾新增一个空数组
+        if (depth >= level.size()) {
+            level.push_back(vector<int> {});
+        }
+        // 把深度为depth的节点 放在相应的层
+        level[depth].push_back(root->val);
+        preOrder(root->left, depth + 1, level); // 左子树 下一层深度
+        preOrder(root->right, depth + 1, level); // 右子树 下一层深度
+    }
+};
+
+// 迭代版  （使用队列）
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        if (root == nullptr) {
+            return res;
+        }
+        queue<TreeNode*> q;
+        q.push(root);
+        while(!q.empty()) {
+            vector<int> tmp; // 准备保存一层的数据
+            // 遍历一层
+            int len = q.size();
+            for(int i = 0; i < len; i++){
+                // 访问节点
+                TreeNode* node = q.front();
+                q.pop();
+                tmp.push_back(node->val);
+                // 保存其左右子树
+                if(node->left != nullptr) {
+                    q.push(node->left);
+                }
+                if(node->right != nullptr) {
+                    q.push(node->right);
+                }
+            }
+            // 保存一层的数据
+            res.push_back(tmp);
+        }
+        return res;
+    }
+};
+
