@@ -268,6 +268,56 @@ public:
 
 
 
+
+23. 合并K个升序链表
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if (lists.empty()) {
+            return nullptr;
+        }
+        ListNode* result = lists[0];
+        // result依次和lists[i]进行两两合并
+        for (int i = 1; i < lists.size(); ++i) {
+            result = mergeTwoLists(result, lists[i]);
+        }
+        return result;
+    }
+
+private:
+    // 剑指 Offer 25. 合并两个排序的链表  （归并排序链表）
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode* dummy = new ListNode(-1);
+        ListNode* pre = dummy;
+        while (l1 != nullptr && l2 != nullptr) {
+            if (l1->val <= l2->val) {
+                pre->next = l1;
+                pre = pre->next;
+                l1 = l1->next;
+            } else {
+                pre->next = l2;
+                pre = pre->next;
+                l2 = l2->next;
+            }
+        }
+        // 某一条链表先结束了 判断还剩下哪一条
+        if (l1 != nullptr) {
+            pre->next = l1;
+        }
+        if (l2 != nullptr) {
+            pre->next = l2;
+        }
+        // 返回头节点dummy->next
+        pre = dummy->next;
+        delete dummy;
+        return pre;
+    }
+};
+
+
+
+
+
 25. K 个一组翻转链表
 class Solution {
 public:
