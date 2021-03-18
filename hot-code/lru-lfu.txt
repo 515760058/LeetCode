@@ -1,0 +1,133 @@
+146. LRU 缓存机制
+class LRUCache {
+private:
+    struct Node {
+        int key;
+        int value;
+    };
+
+    map<int, list<Node>::iterator> m;
+    list<Node> mylist;
+    int capacity;
+
+public:
+    LRUCache(int capacity) {
+        this->capacity = capacity;
+    }
+    
+    int get(int key) {
+        // 不在缓存中
+        if (!m.count(key)) {
+            return -1;
+        }
+        // 在缓存中
+        int value = (m[key])->value;
+        // 更新这个数据在lru中的位置
+        mylist.erase(m[key]);
+        mylist.push_front( Node{key, value} );
+        m[key] = mylist.begin();
+        return value;
+    }
+    
+    void put(int key, int value) {
+        // 缓存里面有这个key：更新位置和数据
+        if (m.count(key)) {
+            mylist.erase(m[key]);
+            mylist.push_front( Node{key, value} );
+            m[key] = mylist.begin();
+            return;
+        }
+        
+        // 缓存里面没有这个key：增加key (注意缓存的容量是否已满)
+        if (mylist.size() >= capacity) { // 缓存已满，删除一个最老的数据
+            m.erase(mylist.back().key);
+            mylist.pop_back();
+        }
+        // 增加新数据
+        mylist.push_front( Node{key, value} );
+        m[key] = mylist.begin();
+    }
+};
+
+
+
+
+
+
+460. LFU 缓存
+class LFUCache {
+private:
+    // 缓存的节点信息
+    struct Node {
+        int key;
+        int val;
+        int freq;
+        Node(int _key,int _val,int _freq) : key(_key), val(_val), freq(_freq) { }
+    };
+
+private:
+    int capacity; // 缓存容量
+    unordered_map<int, list<Node>::iterator> keyTable; // key:缓存的key value:在链表中的迭代器
+    unordered_map<int, list<Node>> freqTable;  // key:频率 value:对应的节点链表
+
+public:
+    LFUCache(int _capacity) {
+        capacity = _capacity;
+    }
+    
+    int get(int key) {
+        auto it = keyTable.find(key);
+        // 缓存中没有此数据 直接返回-1
+        if (it == keyTable.end()) {
+            return -1;
+        }
+        // 更新访问顺序: 在freq的链表中删除 并插入到freq+1的链表中
+        list<Node>::iterator nodeIt = it->second;
+        int val = nodeIt->val;
+        int freq = nodeIt->freq;
+        // 在freq的链表中删除
+        freqTable[freq].erase(nodeIt);
+        if (freqTable[freq].empty()) { // 当前链表为空, 在哈希表中删除
+            freqTable.erase(freq);
+        }
+        // 插入到freq+1中
+        ++freq;
+        freqTable[freq].push_front(Node(key, val, freq));
+        keyTable[key] = freqTable[freq].begin();
+        // 返回value
+        return val;
+    }
+    
+    void put(int key, int value) {
+        if (capacity <= 0) {
+            return;
+        }
+        // key已经存在缓存中 只需要调整访问顺序并更新值
+        if (get(key) != -1) { // get函数已经调整了访问顺序
+            keyTable[key]->val = value;
+            return;
+        }
+        // 缓存中没有: 插入新的数据
+        // 缓存已满 需要先删除一个(频率最低且最旧的)节点
+        int freq = 1;
+        if (keyTable.size() >= capacity) {
+            // 找一个频率最小值
+            while (!freqTable.count(freq)) {
+                ++freq;
+            }
+            // 链表末尾是该频率的最旧节点
+            int old = freqTable[freq].back().key;
+            // 删除节点
+            freqTable[freq].pop_back();
+            keyTable.erase(old);
+            if (freqTable[freq].empty()) {
+                freqTable.erase(freq);
+            }
+        }
+        // 插入新数据到链表头部 freq必然是1
+        freq = 1;
+        freqTable[freq].push_front(Node(key, value, freq));
+        keyTable[key] = freqTable[freq].begin();
+    }
+};
+
