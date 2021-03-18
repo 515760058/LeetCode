@@ -1,0 +1,47 @@
+class Codec {
+public:
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        stringstream ss; // 保存字符串结果
+        serializeCore(root, ss);
+        return ss.str();
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        stringstream ss(data);
+        return deserializeCore(ss);
+    }
+
+private:
+    // 前序遍历 序列化一棵二叉树
+    void serializeCore(TreeNode* root, stringstream& ss) {
+        if (root == nullptr) {
+            ss << "$ "; // $占位符号
+            return;
+        }
+        // 前序
+        ss << root->val << " ";
+        serializeCore(root->left, ss);
+        serializeCore(root->right, ss);
+    }
+
+    // 根据前序遍历字符串 重建二叉树
+    TreeNode* deserializeCore(stringstream& ss) {
+        if (ss.fail()) {
+            return nullptr;
+        }
+        // 获取根节点(前序序列的第一个字符)
+        string str;
+        ss >> str;
+        // 根节点是否有效
+        if (str == "$") {
+            return nullptr;
+        }
+        // 创建当前节点
+        TreeNode* node = new TreeNode( atoi(str.c_str()) );
+        node->left = deserializeCore(ss);
+        node->right = deserializeCore(ss);
+        return node;
+    }
+};
