@@ -257,3 +257,34 @@ public:
         return res;
     }
 };
+
+
+
+
+327. 区间和的个数
+
+
+
+1326. 灌溉花园的最少水龙头数目（区间覆盖）
+// 还需要理解一下：
+class Solution {
+public:
+    int minTaps(int n, vector<int>& ranges) {
+        vector<long> dp(10100, INT_MAX);
+        dp[0] = 0;
+        for(int i = 0; i < ranges.size(); i++){
+            // 当前水龙头覆盖的范围[l, r]
+            int l = max(0, i-ranges[i]);
+            int r = min(n, i+ranges[i]);
+            // 只使用前i个水龙头 dp[j]表示最少的水龙头数量
+            for(int j = l; j <= r; j++) {
+                dp[j] = min(dp[j], dp[l]+1); 
+            }
+        }
+        if (dp[n] == INT_MAX) {
+            return -1;
+        }
+        return dp[n];
+    }
+};
+
