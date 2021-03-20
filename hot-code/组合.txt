@@ -1,0 +1,191 @@
+77. 组合  (给定数字不重复)
+class Solution {
+public:
+    vector<vector<int>> combine(int n, int k) {
+        //准备数组
+        vector<int> nums(n);
+        for (int i = 0; i < nums.size(); ++i){
+            nums[i] = i + 1; 
+        }
+        //回溯
+        vector<vector<int>> res;
+        vector<int> temp;
+        backTrace(0, k, temp, nums, res);
+        return res;
+    }
+
+private:
+    //idx：nums数组的起始下标   
+    //temp：一个临时组合    k：临时组合的size是否是k
+    void backTrace(int idx, int k, vector<int>& temp, vector<int>& nums, vector<vector<int>>& res){
+        // 一个合法的组合
+        if (temp.size() == k){
+            res.push_back(temp);
+            return;
+        }
+        // 向下一层回溯
+        for (int i = idx; i < nums.size(); ++i){
+            temp.push_back(nums[i]); // 放入这个数
+            backTrace(i+1, k, temp, nums, res); // 从下一个位置开始 进入下一层
+            temp.pop_back(); // 弹出
+        }
+    }
+};
+
+
+
+
+39. 组合总和
+给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+【数字可以无限使用】  所有数字（包括 target）都是正整数
+class Solution {
+public:
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        set<vector<int>> res;//使用set, 去除重复的组合
+        vector<int> temp;
+        helper(temp, target, candidates, res);
+
+        vector<vector<int>> finalRes(res.begin(), res.end());//set<vector<int>>转为vector<vector<int>>类型
+        return finalRes;
+    }
+
+private:
+    // temp：当前的数组  target：当前的目标和
+    void helper(vector<int>& temp, int target, vector<int>& candidates, set<vector<int>>& res){
+        if (target < 0) {
+            return;
+        }
+        if(target == 0){//找到一个合法组合temp
+            vector<int> aa = temp;
+            sort(aa.begin(), aa.end());//排序，放入set中去重
+            res.insert(aa);
+        }
+        for(int i = 0; i < candidates.size(); ++i){
+            if(target >= candidates[i]){//该数字可以放入，进入下一层
+                temp.push_back(candidates[i]);//放入该数字
+                helper(temp, target-candidates[i], candidates, res);//下一层
+                temp.pop_back();//弹出
+            }
+        }
+    }
+};
+
+
+
+
+
+40. 组合总和 II
+给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+【candidates中的每个数字在每个组合中只能使用一次】  所有数字（包括目标数）都是正整数。
+class Solution {
+public:
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        set<vector<int>> res; // set保存结果 并去重
+        // 回溯法
+        vector<int> temp;
+        backTrace(0, target, temp, candidates, res);
+
+        // 转换结果 set转为vector
+        vector<vector<int>> finalRes(res.begin(), res.end());
+        return finalRes;
+    }
+
+private:
+    // idx：在candidates数组中的起始下标（每个数字只能使用一次）
+    // target：当前的目标和   temp：当前的组合
+    void backTrace(int idx, int target, vector<int>& temp, vector<int>& candidates, set<vector<int>>& res) {
+        // 当前的和 已经超过目标和了
+        if (target < 0) {
+            return;
+        }
+        // 一个合法的组合
+        if (target == 0) {
+            // 排序后 在集合中去重
+            vector<int> aa(temp.begin(), temp.end());
+            sort(aa.begin(), aa.end());
+            res.insert(aa);
+            return;
+        }
+        // 从下一个数字开始 进入下一层
+        for (int i = idx; i < candidates.size(); ++i) {
+            temp.push_back(candidates[i]); // 选择该元素
+            backTrace(i+1, target-candidates[i], temp, candidates, res); // 下一个数字 下一层
+            temp.pop_back(); // 撤销选择该元素 向下遍历
+        }
+    }
+};
+
+
+
+
+216. 组合总和 III
+找出所有相加之和为 n 的 k 个数的组合。组合中只允许含有 1 - 9 的正整数，并且每种组合中不存在重复的数字。
+说明：所有数字都是正整数。
+class Solution {
+public:
+    vector<vector<int>> combinationSum3(int k, int n) {
+        vector<int> candicates = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        vector<vector<int>> res;
+        vector<int> temp;
+        helper(0, k, n, temp, candicates, res);
+        return res;
+    }
+
+private:
+    //idx：在candicates数组的起始下标（不存在重复的数字）
+    //target：当前的目标和    temp：当前的组合
+    void helper(int idx, int k, int target, vector<int>& temp, vector<int>& candicates, vector<vector<int>>& res){
+        if (target < 0) {
+            return;
+        }
+        if(target == 0 && temp.size() == k) { //一个合法的组合
+            res.push_back(temp);
+            return;
+        }
+        for(int i = idx; i < candicates.size(); ++i){
+            if(target >= candicates[i]){
+                temp.push_back(candicates[i]); // 选择该元素 
+                helper(i+1, k, target-candicates[i], temp, candicates, res);
+                temp.pop_back();               // 撤销选择该元素
+            }
+        }
+    }
+};
+
+
+
+
+
+377. 组合总和 Ⅳ
+给你一个由 不同 整数组成的数组 nums ，和一个目标整数 target 。请你从 nums 中找出并返回总和为 target 的元素组合的个数。
+// 背包问题
+
+// 超时
+class Solution {
+public:
+    int combinationSum4(vector<int>& nums, int target) {
+        set<vector<int>> res;
+        vector<int> temp;
+        helper(target, temp, nums, res);
+        return res.size();
+    }
+
+private:
+    //idx：在candicates数组的起始下标（不存在重复的数字）
+    //target：当前的目标和    temp：当前的组合
+    void helper(int target, vector<int>& temp, vector<int>& candicates, set<vector<int>>& res){
+        if (target < 0) {
+            return;
+        }
+        if(target == 0) { //一个合法的组合
+            res.insert(temp);
+            return;
+        }
+        for(int i = 0; i < candicates.size(); ++i){
+            temp.push_back(candicates[i]); // 选择该元素 
+            helper(target-candicates[i], temp, candicates, res);
+            temp.pop_back();               // 撤销选择该元素
+        }
+    }
+};
+
