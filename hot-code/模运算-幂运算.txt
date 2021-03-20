@@ -1,0 +1,86 @@
+50. Pow(x, n)
+class Solution {
+public:
+    double myPow(double x, int n1) {
+        long n = n1;
+        if(n == 0){
+            return 1.0;
+        }
+        if(n < 0){
+            return 1.0 / myPowCore(x, -n);
+        }
+        return myPowCore(x, n);
+    }
+
+private:    
+    //幂指数n 是正整数
+    double myPowCore(double x, long n){
+        // 递归的结束情况
+        if(n == 0) { return 1.0; }
+        if(n == 1) { return x; }
+        // 计算一半
+        double res = myPowCore(x, n/2);
+        if (n & 0x1) { //n是奇数
+            return res*res*x;
+        } else {       //n是奇数
+            return res*res;
+        }
+    }
+};
+
+
+
+372. 超级次方
+// 计算a的b次方  并对mod取模
+class Solution {
+public:
+    int superPow(int a, vector<int>& b) {
+        // 递归的结束点
+        if (b.empty()) {
+            return 1;
+        }
+        // 取出最后一个数
+        int last = b.back();
+        b.pop_back();
+        // 将原问题化简 缩小规模递归求解
+        int part1 = myPow(a, last);
+        int part2 = myPow(superPow(a, b), 10);
+        // 合并出结果
+        return part1 * part2 % MOD;
+    }
+
+private:
+    const static int MOD = 1337;
+    // 计算a的k次方 然后对MOD求模
+    int myPow(int a, int k) {
+        a %= MOD;
+        int res = 1;
+        for (int i = 0; i < k; ++i) {
+            res *= a;    // 这里有乘法 是潜在的溢出点
+            res %= MOD;  // 对乘法结果取模
+        }
+        return res;
+    }
+};
+
+
+
+
+
+1780. 判断一个数字是否可以表示成三的幂的和
+// 转化为3进制数，如果某一位出现2则不满足要求
+class Solution {
+public:
+    bool checkPowersOfThree(int n) {
+        while (n > 0) {
+            if (n % 3 == 2) {
+                return false;
+            }
+            n /= 3;
+        }
+        return true;
+    }
+};
+
+
+

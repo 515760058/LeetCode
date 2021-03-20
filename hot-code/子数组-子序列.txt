@@ -1,0 +1,139 @@
+剑指 Offer 42. 连续子数组的最大和
+最大子数组
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        if (nums.empty()) {
+            return 0;
+        }
+        int res = nums[0];
+        int tmp = nums[0];
+        for(int i = 1; i < nums.size(); i++) {
+            if (tmp > 0) { // 如果前面的tmp还是正数 说明对后面还有积极作用
+                tmp += nums[i];
+            } else { // 前面的tmp是0或负数  可以直接丢弃了
+                tmp = nums[i];
+            }
+            res = max(res, tmp);
+        }
+        return res;
+    }
+};
+
+
+
+
+300. 最长递增子序列
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        if (nums.size() <= 1) {
+            return nums.size();
+        }
+
+        vector<int> dp(nums.size(), 1); // 初始值为1 自己一定是一个子序列
+        for (int i = 1; i < nums.size(); ++i) {
+            // 计算dp[i] : 在nums[i]前面找比它小的 组成上升序列 并更新dp[i]的值
+            for (int j = 0; j < i; ++j) {
+                if (nums[j] < nums[i]) {
+                    dp[i] = max(dp[j] + 1, dp[i]);
+                }
+            }
+        }
+        // dp里面的最大值
+        return *max_element(dp.begin(), dp.end());
+    }
+};
+
+
+
+354. 俄罗斯套娃信封问题
+class Solution {
+public:
+    int maxEnvelopes(vector<vector<int>>& envelopes) {
+        // 先按w从小到大排序 w相同时按h从大到小排序
+        sort(envelopes.begin(), envelopes.end(),
+            [](const vector<int>& e1, const vector<int>& e2){
+                if (e1.front() != e2.front()) {   // w
+                    return e1.front() < e2.front();
+                }
+                return e1.back() > e2.back();     // h
+            });
+        
+        // 此时w已经是从小到大了 求解h的最长上升子序列的长度(leetcode300最长上升子序列)
+        vector<int> res;
+        for (vector<int>& envelope : envelopes) {
+            int h = envelope.back();
+            auto iter = lower_bound(res.begin(), res.end(), h);
+            if (iter == res.end()) {
+                res.push_back(h);
+            } else {
+                *iter = h;
+            }
+        }
+        return res.size();
+    }
+};
+
+
+面试题 17.08. 马戏团人塔
+class Solution {
+public:
+    int bestSeqAtIndex(vector<int>& height, vector<int>& weight) {
+        // 每个人的信息
+        vector<pair<int, int>> persons;
+        for (int i = 0; i < height.size(); ++i) {
+            persons.push_back( pair<int, int>(height[i], weight[i]) );
+        }
+        // 按身高从小到大排序 身高相同时按体重从大到小
+        sort(persons.begin(), persons.end(),
+             [](const pair<int, int>& p1, const pair<int, int>& p2) {
+                 if (p1.first != p2.first) {
+                     return p1.first < p2.first;
+                 }
+                 return p1.second > p2.second;
+            });
+        
+        // persons数组中 身高已经是升序的了 现在只需要判断体重
+        // 求解体重的最大上升子序列的长度(leetcode300最长上升子序列)
+        vector<int> tower;
+        for (auto& person : persons) {
+            int w = person.second;
+            auto iter = lower_bound(tower.begin(), tower.end(), w);  //二分查找第一个大于等于的地方
+            if (iter == tower.end()) {
+                tower.push_back(w);
+            } else {
+                *iter = w;
+            }
+        }
+        return tower.size();
+    }
+};
+
+
+
+
+
+1143. 最长公共子序列  (两个字符串的最长公共子序列的长度)
+class Solution {
+public:
+    int longestCommonSubsequence(string text1, string text2) {
+        int len1 = text1.size();
+        int len2 = text2.size();
+        // dp[i][j] 表示text1[0...i]和text2[0...j]的最长公共子序列的长度
+        vector<vector<int>> dp(len1+1, vector<int>(len2+1, 0));
+        for (int i = 1; i <= len1; i++) {
+            for (int j = 1; j <= len2; j++) {
+                if (text1[i-1] == text2[j-1]) {   // 又找到一个lcs字符
+                    dp[i][j] = dp[i-1][j-1] + 1;  // 左上角 直接+1
+                } else {
+                    dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
+};
+
+

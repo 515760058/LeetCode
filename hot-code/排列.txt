@@ -1,0 +1,165 @@
+46. 全排列    
+// 给定一个没有重复数字的序列，返回其所有可能的全排列。
+class Solution {
+public:
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<bool> visited(nums.size(), false);//每个数字是否使用过
+        vector<vector<int>> res;
+        vector<int> temp;
+        helper(visited, temp, nums, res);//回溯
+        return res;
+    }
+
+private:
+    void helper(vector<bool>& visited, vector<int>& temp, vector<int>& nums, vector<vector<int>>& res){
+        if(temp.size() == nums.size()){//所有数字都有了，合法的排列
+            res.push_back(temp);
+            return;
+        }
+        for(int i = 0; i < nums.size(); ++i){
+            if(visited[i] == false){//该数字没被使用过
+                visited[i] = true;
+                temp.push_back(nums[i]);
+                helper(visited, temp, nums, res); //放入该数字，进入下一层
+                temp.pop_back();
+                visited[i] = false;
+            }
+        }
+    }
+};
+
+
+
+
+47. 全排列 II
+给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。
+//和46题一样，只是改成了set去重
+class Solution {
+public:
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        vector<bool> visited(nums.size(), false);//每个数字是否使用过
+        set<vector<int>> res;   //使用set去重
+        vector<int> temp;
+        helper(visited, temp, nums, res);//回溯
+
+        vector<vector<int>> finalRes(res.begin(), res.end()); //set转vector
+        return finalRes;
+    }
+
+private:
+    void helper(vector<bool>& visited, vector<int>& temp, vector<int>& nums, set<vector<int>>& res){
+        if(temp.size() == nums.size()){//所有数字都有了，合法的排列
+            res.insert(temp);
+            return;
+        }
+        for(int i = 0; i < nums.size(); ++i){
+            if(visited[i] == false){//该数字没被使用过
+                visited[i] = true;
+                temp.push_back(nums[i]);
+                helper(visited, temp, nums, res);//放入该数字，进入下一层
+                temp.pop_back();
+                visited[i] = false;
+            }
+        }
+    }
+};
+
+
+
+31. 下一个排列
+class Solution {
+/*
+方法一：      i j   k
+    举例：6 5 4 8 7 5 1
+    首先肯定从后面开始看，1和5调换了没有用。
+    7、5和1调换了也没有效果，因此而发现了8、7、5、1是递减的。
+    如果想要找到下一个排列，找到递增的位置是关键。
+    因为在这里才可以使其增长得更大。
+    于是找到了4，显而易见4过了是5而不是8或者7更不是1。
+    因此就需要找出比4大但在这些大数里面最小的值，并将其两者调换。
+    那么整个排列就成了：6 5 5 8 7 4 1
+    然而最后一步将后面的8 7 4 1做一个递增。
+方法二： 
+    在C++标准库中还有一个函数next_permutation，其正是用于求一个数字序列的下一个排序。
+    void nextPermutation(vector<int> &num) {  
+        next_permutation( num.begin(), num.end() );  
+    }  
+*/
+public:
+    void nextPermutation(vector<int>& nums) {
+            int j = nums.size() - 1;
+            //从后向前查找第一个相邻升序的元素对(i,j)。这里 i=2，j=3，对应的值为 4，8
+            while (j > 0 && nums[j-1] >= nums[j]){
+                j--;
+            }
+            if(j == 0) { // 这时组成的最大的数字了
+                sort(nums.begin(), nums.end());//变成最小的数字
+                return ;
+            }
+
+            //然后在 [j,end)中 从后向前查找第一个大于A[i]的值A[k]。这里 A[i]是4，故A[k]是5
+            int k = nums.size() - 1;
+            while (k >= j){
+                if (nums[k] > nums[j-1]){
+                    break;
+                }
+                k--;
+            }
+            //交换 A[i]和A[k]
+            int temp = nums[j - 1];
+            nums[j - 1] = nums[k];
+            nums[k] = temp;
+            //递增排序j及其后面的序列  8 7 4 1 -> 1 4 7 8
+            sort(nums.begin()+j, nums.end());
+    }
+};
+
+
+
+60. 排列序列
+// 给出集合 [1,2,3,...,n], 返回其第k个排列
+class Solution {
+public:
+    string getPermutation(int n, int k) {
+        // 生成排列的元素
+        vector<int> nums(n);
+        for(int i = 0; i < n; ++i){
+            nums[i] = i + 1;
+        }
+        // 回溯法产生n个结果
+        vector<bool> visited(nums.size(), false);//每个数字是否使用过
+        vector<int> temp;
+        string res;
+        helper(visited, temp, nums, k, res);//回溯
+        return res;
+    }
+
+private:
+    void helper(vector<bool>& visited, vector<int>& temp, vector<int>& nums, int& k, string& res){
+        if(k <= 0){//已经找到第k个排列
+            return;
+        }
+        if(temp.size() == nums.size()){ // 一个合法排列
+            --k;
+            if(k == 0){//把第k个排列记录在res中
+                for(int n : temp){
+                    res += to_string(n);
+                }
+            }
+            //cout << k << "  "  << str << endl;
+            return;
+        }
+        for(int i = 0; i < nums.size(); ++i){
+            if(visited[i] == false){ //该数字没被使用过
+                visited[i] = true;
+                temp.push_back(nums[i]);
+                helper(visited, temp, nums, k, res); //放入该数字，进入下一层
+                temp.pop_back();
+                visited[i] = false;
+            }
+        }
+    }
+};
+
+
+

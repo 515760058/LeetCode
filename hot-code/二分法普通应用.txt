@@ -1,0 +1,130 @@
+875. 爱吃香蕉的珂珂
+class Solution {
+public:
+    int minEatingSpeed(vector<int>& piles, int H) {
+        int left = 1;
+        int right = *max_element(piles.begin(), piles.end());
+        // 二分 查找一个最小的res
+        int res = 0;
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            if (check(piles, mid) <= H) {
+                res = mid;
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return res;
+    }
+
+private:
+    // 以每小时k根香蕉的速度 吃完piles需要多少小时
+    int check(vector<int>& piles, int k) {
+        int hour = 0;
+        for (int pile : piles) {
+            hour += pile / k;
+            if (pile % k) {
+                hour++;
+            }
+        }
+        return hour;
+    }
+};
+
+
+
+
+
+
+1011. 在 D 天内送达包裹的能力
+class Solution {
+public:
+    int shipWithinDays(vector<int>& weights, int D) {
+        if (weights.empty()) {
+            return 0;
+        }
+        int minCapacity = 0;
+        long left = 0;
+        long right = INT_MAX;
+        while (left <= right) {
+            long mid = (left + right) >> 1;
+            if (getDays(weights, mid) <= D) {
+                minCapacity = mid;
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return minCapacity;
+    }
+
+private:
+    // 以载重capacity运输 需要多少天
+    int getDays(vector<int>& weights, int capacity) {
+        int days = 1; // 至少要1天
+        int sum = 0; // 当天最多装载的货物量
+        for (int weight : weights) {
+            // 某个单件货物的重量weight比capacity还大 永远不可能完成...
+            if (weight > capacity) {
+                return INT_MAX;
+            }
+            // 今天还可以装载weight
+            if (sum + weight <= capacity) {
+                sum += weight;
+            } else { // 今天装不下weight 必须新的一天装载
+                sum = weight;
+                ++days;
+            }
+        }
+        return days;
+    }
+};
+
+
+
+
+1482. 制作 m 束花所需的最少天数
+class Solution {
+public:
+    int minDays(vector<int>& bloomDay, int m, int k) {
+        int left = 0;
+        int right = *max_element(bloomDay.begin(), bloomDay.end());
+        // 二分 查找最小的day
+        int days = -1;
+        while (left <= right) {
+            int mid = (left + right) >> 1;
+            if (check(bloomDay, mid, k) >= m) {
+                days = mid;
+                right = mid -1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return days;
+    }
+
+private:
+    // 第day天  可以获得多少束花
+    int check(vector<int>& bloomDay, int day, int k) {
+        int cnt = 0; // 花束
+        int num = 0; // 连续num朵花
+        for (int bloom : bloomDay) {
+            if (bloom <= day) {
+                num++;
+            } else {
+                num = 0;
+            }
+            // 连续的k朵花 可以构成一束花
+            if (num == k) {
+                num = 0;
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+};
+
+
+
+

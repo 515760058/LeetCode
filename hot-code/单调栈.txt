@@ -1,0 +1,60 @@
+739. 每日温度
+// 详细易懂的讲解单调栈 https://leetcode-cn.com/problems/daily-temperatures/solution/javadan-diao-zhan-ni-xu-bian-li-by-hyh-2/
+class Solution {
+public:
+    vector<int> dailyTemperatures(vector<int>& T) {
+        vector<int> res(T.size());
+        stack<int> s; // 单调栈  存放数组的下标
+        for(int i = T.size() - 1; i >=0; --i){//逆序遍历  这样才能知道后续更高的温度下标
+            //弹出栈中更低的温度（下标）
+            while(!s.empty() && T[i] >= T[s.top()]){//栈不为空 && 当前温度 >= 栈中的温度
+                s.pop();
+            }
+            //判断当前温度和后面更高温度的距离   此时T[s.top()]比当前温度更高
+            if(s.empty()){
+                res[i] = 0;
+            }else{
+                res[i] = s.top() - i;
+            }
+            //当前温度的下标入栈
+            s.push(i);
+        }
+        return res;
+    }
+};
+
+
+// 循环数组呢？
+
+
+
+
+503. 下一个更大元素 II
+给定一个循环数组（最后一个元素的下一个元素是数组的第一个元素），输出每个元素的下一个更大元素。数字 x 的下一个更大的元素是按数组遍历顺序，这个数字之后的第一个比它更大的数，这意味着你应该循环地搜索它的下一个更大的数。如果不存在，则输出 -1。
+class Solution {
+public:
+    vector<int> nextGreaterElements(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> res(n, -1);
+        stack<int> s; // 单调栈
+        for (int i = 0; i < 2 * n; i++) {
+            while (!s.empty() && nums[i%n] > nums[s.top()]) {
+                int idx = s.top();  s.pop();
+                res[idx] = nums[i%n];
+            }
+            s.push(i % n);
+        }
+        return res;
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
