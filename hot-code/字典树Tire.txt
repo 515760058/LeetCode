@@ -1,3 +1,165 @@
+208. 实现 Trie (前缀树)
+class Trie {
+public:
+    /* 析构函数 删除字典树中的所有节点 */
+    ~Trie() {
+        for (int i = 0; i < LETTER_NUM; ++i) {
+            if (data[i] != nullptr) {
+                delete(data[i]);
+                data[i] = nullptr;
+            }
+        }
+    }
+    /* 向字典树中插入一个单词 */
+    void insert(string word) {
+        Trie* node = this;
+        for (char c : word) {
+            if (node->data[c - 'a'] == nullptr) {
+                node->data[c - 'a'] = new Trie();
+            }
+            node = node->data[c - 'a'];
+        }
+        (node->is_string)++; // 增加一次计数
+        node->word = word; // 记录下该单词
+    }
+    /* 在字典树中查找是否存在word */
+    bool search(string word) {
+        Trie* node = this;
+        for (char c : word) {
+            if (node->data[c - 'a'] == nullptr) {
+                return false;
+            }
+            node = node->data[c - 'a'];
+        }
+        return node->is_string > 0;
+    }
+    /* 在字典树中查找是否存在以prefix开头的单词 */
+    bool startsWith(string prefix) {
+        Trie* node = this;
+        for (char c : prefix) {
+            if (node->data[c - 'a'] == nullptr) {
+                return false;
+            }
+            node = node->data[c - 'a'];
+        }
+        return true;
+    }
+public:
+    /* 在字典树中删除单词word */
+    void deleteWord(string word) {
+        // 查找到单词以后
+        Trie* node = this;
+        for (char c : word) {
+            if (node->data[c - 'a'] == nullptr) {
+                return;
+            }
+            node = node->data[c - 'a'];
+        }
+        if (node->is_string > 0) {
+            (node->is_string)--;
+        }
+    }
+public:
+    /* 模糊查询 word中可以含有.来替代任一个小写字母   leetcode211添加与搜索单词 */
+    bool fuzzySearch(string word) {
+        return find_word(this, word, 0);
+    }
+private:
+    bool find_word(Trie* node, string& word, int idx) {
+        if(idx == word.size()) {
+            return node->is_string > 0;
+        }
+        if (word[idx] == '.') { // 通配符.
+            for(int i = 0; i < LETTER_NUM; ++i) {
+                if(node->data[i] != nullptr) {
+                    bool res = find_word(node->data[i], word, idx+1);
+                    if (res) {
+                        return true;
+                    }
+                }
+            }
+        } else { // 固定的字符 
+            int ch = word[idx] - 'a';
+            if(node->data[ch] != nullptr) {
+                return find_word(node->data[ch], word, idx+1);
+            }
+        }
+        return false;
+    }
+public:
+    // 在字典树中查找能匹配该单词的最短前缀   leetcode648单词替换
+    string searchPrefix(string& word) {
+        Trie* node = this;
+        for (char c : word) {
+            if (node->is_string > 0) { // 第一次找到匹配的前缀
+                return node->word;
+            }
+            int ch = c - 'a';
+            if (node->data[ch] == nullptr) {
+                return "";
+            }
+            node = node->data[ch];
+        }
+        return "";
+    }
+
+private:
+    static const int LETTER_NUM = 26;
+
+    string word = "";
+    int is_string = 0;  // 该单词出现的次数
+    Trie* data[LETTER_NUM] = {nullptr}; // 保存下一层的LETTER_NUM个Trie*指针
+};
 
 
+
+
+
+211. 添加与搜索单词 - 数据结构设计
+class WordDictionary {
+private:
+    Trie myTrie;
+public:
+    /** Initialize your data structure here. */
+    WordDictionary() { }
+    
+    /** Adds a word into the data structure. */
+    void addWord(string word) {
+        myTrie.insert(word);
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    bool search(string word) {
+        return myTrie.fuzzySearch(word);
+    }
+};
+
+
+
+648. 单词替换
+class Solution {
+private:
+    Trie myTrie;
+public:
+    string replaceWords(vector<string>& dict, string sentence) {
+        // 将词根插入前缀树
+        for (string& word : dict) {
+            myTrie.insert(word);
+        }
+        // 提取sentence中的每个单词，并在字典树中查找最短前缀，最后组装结果
+        stringstream ss(sentence);
+        string word;
+        string res;
+        while(ss >> word) {
+            string str = myTrie.searchPrefix(word); // 查找该单词的最短前缀
+            if (str == "") { // 没有前缀 直接追加原单词
+                res += word + " ";
+            } else {         // 有前缀 追加前缀
+                res += str  + " ";
+            }
+        }
+        res.erase(res.end() - 1); // 删除最后一个空格
+        return res;
+    }
+};
 
