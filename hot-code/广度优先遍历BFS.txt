@@ -1,3 +1,433 @@
+994. 腐烂的橘子
+class Solution {
+public:
+    int orangesRotting(vector<vector<int>>& grid) {
+        // 使用腐烂橘子 初始化队列
+        queue<pair<int, int>> fresh;
+        queue<pair<int, int>> que;
+        for (int i = 0; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[0].size(); ++j) {
+                if (grid[i][j] == 2) { // 烂橘橘子的坐标 入队
+                    que.push( {i, j} );
+                }
+                if (grid[i][j] == 1) { // 记录新鲜橘子
+                    fresh.push( {i, j} );
+                }
+            }
+        }
+        // 当队列为空(没有烂橘子)时：存在新鲜橘子那就永远不能感染(返回-1)  不存在新鲜橘子时就返回0 
+        if (que.empty()) {
+            return fresh.empty() ? 0 : -1; 
+        }
+        // BFS
+        int minute = -1;
+        while (!que.empty()) {
+            int size = que.size();
+            for (int i = 0; i < size; ++i) {
+                pair<int, int> currPos = que.front();
+                que.pop();
+                // 基于当前位置 计算下一个位置
+                for (int idx = 0; idx < dx.size(); ++idx) {
+                    int nextX = currPos.first + dx[idx];
+                    int nextY = currPos.second + dy[idx];
+                    // 校验下一个位置的坐标
+                    if (nextX < 0 || nextX >= grid.size() || nextY < 0 || nextY >= grid[0].size()) {
+                        continue;
+                    }
+                    // 下一个位置是烂橘子(已感染的橘子)和空格  已经处理过了
+                    if (grid[nextX][nextY] != 1) {
+                        continue;
+                    }
+                    // 下一个位置是未被感染的正常橘子 现在开始感染
+                    grid[nextX][nextY] = 2;
+                    // 下一个位置入队
+                    que.push( {nextX, nextY} );
+                }
+            }
+            ++minute;
+        }
+
+        // 经过BFS感染之后, 如果还存在新鲜橘子 则返回-1
+        for (int i = 0; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[0].size(); ++j) {
+                if (grid[i][j] == 1) {
+                    return -1;
+                }
+            }
+        }
+        // 返回最小分钟
+        return minute;
+    }
+
+private:
+    // 上下左右 四个方向
+    vector<int> dx {-1, 1, 0, 0};
+    vector<int> dy {0, 0, -1, 1};
+};
+
+
+
+1162. 地图分析
+//  这一题的本质是‘leetcode 994腐烂的橘子’    陆地就是初始的烂橘子  什么时候可以把所有的海洋都感染成陆地?
+class Solution {
+public:
+    int maxDistance(vector<vector<int>>& grid) {
+        // 把所有的陆地放入队列
+        queue<pair<int, int>> q;
+        for (int i = 0; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[0].size(); ++j) {
+                if (grid[i][j] == 1) {
+                    q.push( {i, j} );
+                }
+            }
+        }
+
+        if (q.empty() || q.size() == grid.size()*grid[0].size()) {
+            return -1;
+        }
+        // BFS 以陆地为基础 一圈一圈的向外扩展
+        int level = -1;
+        while (!q.empty()) {
+            // 外圈的每一圈
+            for (int k = q.size(); k > 0; --k) {
+                pair<int, int> p = q.front();
+                q.pop();
+                // 上下左右 四个方向
+                for (int i = 0; i < dirC.size(); ++i) {
+                    // 下一个坐标
+                    int r = p.first + dirR[i];
+                    int c = p.second + dirC[i];
+                    // 校验下一个坐标的有效性
+                    if (r < 0 || r >= grid.size() || c < 0 || c >= grid[0].size()) {
+                        continue;
+                    }
+                    // 下一个位置是陆地(已经遍历过了)
+                    if (grid[r][c] == 1) {
+                        continue;
+                    }
+                    // 下一个位置是海洋 改成陆地并放入队列中
+                    grid[r][c] = 1;
+                    q.push( {r, c} );
+                }
+            }
+            level++;
+        }
+        return level;
+    }
+
+private:
+    vector<int> dirR = {-1, 1, 0, 0};
+    vector<int> dirC = {0, 0, -1, 1};
+};
+
+
+
+
+1765. 地图中的最高点
+class Solution {
+private:
+    // 上下左右
+    int dx[4] = {-1, 0, 1,  0};
+    int dy[4] = { 0, 1, 0, -1};
+
+public:
+    vector<vector<int>> highestPeak(vector<vector<int>>& a) {
+        int row = a.size();
+        int col = a[0].size();
+        vector<vector<int>> ans(row, vector<int>(col, -1)); // 单元格高度
+        queue<pair<int, int>> q; // 初始化水的坐标(x, y)
+        for(int i = 0; i < row; ++i){
+            for(int j = 0; j < col; ++j){
+                if (a[i][j] == 1) { // 该单元格是水
+                    ans[i][j] = 0;  // 高度是0
+                    q.push( {i, j} ); // 队列的起点
+                }
+            }
+        }
+        int high = 0;
+        while(!q.empty()){
+            high++;
+            // 处理一层
+            for(int k = q.size(); k > 0; --k){
+                auto [x, y] = q.front();
+                q.pop();
+                // 向上下左右扩散
+                for (int i = 0; i < 4; ++i) {
+                    int nextX = x + dx[i];
+                    int nextY = y + dy[i];
+                    // 检查下一个位置的坐标
+                    if (nextX < 0 || nextX >= row || nextY < 0 || nextY >= col) {
+                        continue;
+                    }
+                    // 已经处理过了
+                    if (ans[nextX][nextY] != -1) {
+                        continue;
+                    }
+                    // 设置下一个单元格的高度
+                    ans[nextX][nextY] = high;
+                    q.push( {nextX, nextY} );
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+
+
+
+
+752. 打开转盘锁
+class Solution {
+public:
+    int openLock(vector<string>& deadends, string target) {
+        // visited去重 同时记录其前一个节点
+        map<string, string> visited;
+        for (string& dead : deadends) {
+            visited[dead] = "";
+        }
+        string start = "0000";
+        if (visited.count(start)) {
+            return -1;
+        }
+        // 开始BFS
+        queue<string> q;
+        q.push(start);
+        visited[start] = "";
+        while(!q.empty()) {
+            string str = q.front();
+            q.pop();
+            // 到达目标点
+            if (str == target) {
+                break;
+            }
+            // 遍历str的每个字符 旋转一下 得出下一个数字
+            for(int i = 0; i < str.size(); ++i) {
+                string temp1 = plusOne(str, i);
+                if (visited.count(temp1) == 0) {
+                    q.push(temp1);
+                    visited[temp1] = str;
+                }
+                string temp2 = minusOne(str, i);
+                if (visited.count(temp2) == 0) {
+                    q.push(temp2);
+                    visited[temp2] = str;
+                }
+            }
+        }
+        // 恢复序列
+        // 不能到达target点
+        if (visited.count(target) == 0) {
+            return -1;
+        }
+        // 可以到达target点
+        vector<string> res;
+        while (target != "") {
+            res.push_back(target);
+            target = visited[target];
+        }
+        reverse(res.begin(), res.end());
+        //for (auto r : res) {
+        //    cout << r << "-->";
+        //}
+        return res.size() - 1; //不包含起始点"0000"
+    }
+
+private:
+    string plusOne(string s, int i) {
+        (s[i] == '9') ? s[i] = '0' : ++s[i];
+        return s;
+    }
+    string minusOne(string s, int i) {
+        (s[i] == '0') ? s[i] = '9' : --s[i];
+        return s;
+    }
+};
+
+
+
+
+127. 单词接龙     求最短转换序列的长度
+class Solution {
+public:
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        unordered_set<string> s(wordList.begin(), wordList.end()); // 转为集合 便于判断
+        // 如果endWord不在字典中 就不可能进行转换
+        if (s.count(endWord) == 0) {
+            return 0;
+        }
+        // 使用队列的BFS
+        queue<string> que;
+        que.push(beginWord); // 起始单词
+        // visited去重 同时记录上一个节点
+        map<string, string> visited;
+        visited[beginWord] = "";
+
+        while(!que.empty()){
+            string word = que.front();
+            que.pop();
+            //新单词就是endWord
+            if(word == endWord) {
+                break;
+            }
+            // 以该单词为基础 修改一个字母(遍历改成a-z) 得出所有的合法新单词
+            for(int i = 0; i < word.size(); ++i){
+                string newWord = word;
+                for(char ch = 'a'; ch <= 'z'; ++ch) {
+                    newWord[i] = ch;
+                    // 判断新单词的合法性
+                    if (s.count(newWord) == 0) {
+                        continue;
+                    }
+                    // 已经出现过这个单词
+                    if(visited.count(newWord)) {
+                        continue;
+                    }
+                    // 新单词加到queue 并记录其上一个节点
+                    que.push(newWord);
+                    visited[newWord] = word;
+                }
+            }
+        }
+        // 永远没有访问到endWord (不能转换到endword)
+        if (visited.count(endWord) == 0) {
+            return 0;
+        }
+        // 恢复最短序列
+        vector<string> res;
+        while (endWord != "") {
+            res.push_back(endWord);
+            endWord = visited[endWord];
+        }
+        reverse(res.begin(), res.end());
+        // 最短序列的长度
+        return res.size();
+    }
+};
+
+
+
+126. 单词接龙 II （求所有的转换序列：太难了）
+
+
+
+773. 滑动谜题
+class Solution {
+private:
+    struct State {
+        State(string& _str, int _idx, int _step) {
+            str = _str;
+            idx = _idx;
+            step = _step;
+        }
+        string str; //谜板状态
+        int idx;    //当前状态‘0’的下标
+        int step;   //当前状态的移动步数
+    };
+
+    /*  定义2x3数组的位置:
+        0 | 1 | 2
+        3 | 4 | 5   */
+    vector<vector<int>> next = {
+        {1, 3},    //当‘0’在位置0时，可以往位置1或3移动
+        {0, 2, 4}, //当‘0’在位置1时，可以往位置0或2或4移动
+        {1, 5},    //......
+        {0, 4}, 
+        {1, 3, 5}, 
+        {2, 4},
+    };
+
+public:
+    int slidingPuzzle(vector<vector<int>>& board) {
+        string dest = "123450";
+        // 使用字符串 表示棋盘状态
+        string start = "";
+        for (int i = 0; i < 2; i++){
+            for (int j = 0; j < 3; j++){
+                start += to_string(board[i][j]);
+            }
+        }
+        if(start == dest){
+            return 0;
+        }
+        // 开始BFS
+        queue<State> q;
+        q.push( State(start, start.find("0"), 0) );//起始状态
+        set<string> record {start}; //set去重 记录出现过的谜板状态
+        while(!q.empty()){
+            State state = q.front();
+            q.pop();
+            string& str = state.str;
+            // 把当前的'0' 交换到下一个可能的状态
+            for(int nextIdx : next[state.idx]){
+                string temp = str;
+                swap(temp[nextIdx], temp[state.idx]);
+                // 如果交换后的temp 正好是答案
+                if(temp == dest){
+                    return state.step + 1;
+                }
+                // 校验以前是否出现过该状态，并push到队列
+                if(record.count(temp) == 0){
+                    record.insert(temp);
+                    q.push( State(temp, nextIdx, state.step+1) );
+                }
+            }
+        }
+        return -1;
+   }
+};
+
+
+
+854. 相似度为 K 的字符串
+class Solution {
+public:
+    int kSimilarity(string s1, string s2) {
+        if (s1 == s2) {
+            return 0;
+        }
+        queue<string> q;
+        q.push(s1);
+        set<string> s;
+        s.insert(s1);
+        int step = 0; // 交换的操作次数
+        while (!q.empty()) {
+            step++;
+            // 依次取出该层的x个字符串
+            for (int x = q.size(); x > 0; x--) {
+                string tmp = q.front();
+                q.pop();
+                // 交换操作需要两个字符  现在找str和s2第一个不相等的字符的下标i
+                int i = 0;
+                while (tmp[i] == s2[i]) {
+                    i++;
+                }
+                // 找第二个字符的下标j
+                for (int j = i+1; j < tmp.length(); j++) {
+                    // 对应相等的字符不能交换  找到的第二个字符要等于对应的s2[j]
+                    if (tmp[j] == s2[j] || tmp[j] != s2[i]) {
+                        continue;
+                    }
+                    // 交换
+                    string nextStr = tmp;
+                    swap(nextStr[i], nextStr[j]);
+                    // 交换过后 正好是结果
+                    if (nextStr == s2) {
+                        return step;
+                    }
+                    // 检查是否出现过  并保存到队列中
+                    if (s.count(nextStr) == 0) {
+                        s.insert(nextStr);
+                        q.push(nextStr);
+                    }
+                }
+            }
+        }
+        return step;
+    }
+};
+
+
 
 
 
