@@ -1,8 +1,125 @@
-shared_ptr
+// 共享式智能指针的简易模板实现
+template <typename T>   // 使用模板
+class SharedPtr {
+private:
+    int* mRefCnt; //引用计数
+    T*   mPtr;    //保存的原始指针
+public:
+    // 构造函数：用普通指针初始化智能指针
+    explicit
+    SharedPtr(T* p) : mPtr(p) {
+        mRefCnt = new int(1); // 引用计数初始为1
+    }
+    // 拷贝构造函数：用指针指针初始化智能指针
+    SharedPtr(const SharedPtr& sp) : mPtr(sp.mPtr), mRefCnt(sp.mRefCnt) {
+        ++(*mRefCnt); // 引用计数自增1
+    }
+    // 拷贝赋值运算符
+    SharedPtr& operator= (const SharedPtr& sp) {
+        if (this == &sp) { // 自我赋值
+            return *this;
+        }
+        // 处理双方的引用计数
+        ++(*sp.mRefCnt); // 对方的引用计数自增1
+        --(*mRefCnt);    //自己的引用计数自减1
+        if (*mRefCnt == 0) {
+            delete mPtr;
+            delete mRefCnt;
+        }
+        mPtr = sp.mPtr;
+        mRefCnt = sp.mRefCnt;
+        return *this;
+    }
+    // 析构函数
+    ~SharedPtr() {
+        --(*mRefCnt); // 引用计数自减1
+        if (*mRefCnt == 0) {
+            delete mPtr;
+            delete mRefCnt;
+        }
+        mPtr = nullptr;
+        mRefCnt = nullptr;
+    }
+    // 重载指针->运算符   像普通的指针一样
+    T* operator->() const { return mPtr; }
+    // 重载解引用运算符   像普通的指针一样
+    T& operator*() const { return *mPtr; }
+
+    // 智能指针的一些函数
+    T* get() const { return mPtr; }
+};
+
+    // 改进1：可以指定删除器  todo
+    // 改进2： todo
 
 
 
 
-unique_ptr
+
+
+// 独占式智能指针的简易模板实现
+独占式智能指针 不允许拷贝 只能移动
+template<typename T>
+class UniquePtr {
+private:
+    T* mPtr;
+public:
+    // 构造函数
+    explicit
+    UniquePtr(T* ptr = nullptr) : mPtr(ptr) {}
+    // 析构函数
+    ~UniquePtr() {
+        if(mPtr != nullptr) { delete mPtr; }
+    }
+    // 移动构造 (转移对象的所有权)
+    UniquePtr(UniquePtr && sp) noexcept : mPtr(sp.mPtr) {
+        sp.mPtr = nullptr;
+    }
+    // 移动赋值 (转移对象的所有权)
+    UniquePtr& operator= (UniquePtr && sp) noexcept {
+        if (this == &sp) { // 自我赋值
+            return *this;
+        }
+        // 释放本对象
+        if (mPtr != nullptr) {
+            delete mPtr;
+        }
+        mPtr = sp.mPtr;
+        sp.mPtr = nullptr;
+        return *this;
+    }
+
+    // 禁止拷贝构造函数（不允许）
+    UniquePtr(const UniquePtr &p) = delete;
+    // 禁止拷贝赋值运算符（不允许）
+    UniquePtr& operator=(const UniquePtr &p) = delete;
+
+    // 重载指针->运算符   像普通的指针一样
+    T* operator->()const { return mPtr; }
+    // 重载解引用运算符   像普通的指针一样
+    T& operator*() const { return *mPtr; }
+
+    // 智能指针的一些函数
+    // 重置智能指针
+    void reset(const T* ptr = nullptr) {
+        if(mPtr != nullptr) {
+            delete mPtr;
+        }
+        mPtr = ptr;
+    }
+    // 该智能指针放弃对象的所有权: 令智能指针指向nullptr，但是并没投free对象，返回对象的指针
+    T* release() {
+        T* res = mPtr;
+        mPtr = nullptr;
+        return res;
+    }
+    //
+    T* get() const noexcept { return mPtr; }
+    //
+    void swap(UniquePtr& sp) {
+        std::swap(mPtr, sp.mPtr);
+    }
+};
+
 
 
