@@ -1,0 +1,88 @@
+200. 岛屿数量
+class Solution {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int count = 0;
+        for(int i = 0; i < grid.size(); ++i){
+            for(int j = 0; j < grid[0].size(); ++j){
+                if( grid[i][j] == '1'){
+                    ++count; // 统计该岛屿
+                    DFS(grid, i, j); // 抹去该岛屿
+                }
+            }
+        }
+        return count;
+    }
+
+private:
+    //深度搜索 把那个岛屿改成0（从地图上抹去）
+    void DFS(vector<vector<char>>& grid, int i, int j){
+        // 检验下标 判断数据
+        if(i < 0 || i >= grid.size() || j < 0 || j >= grid[0].size()) {
+            return;
+        }
+        if (grid[i][j] == '0') {
+            return;
+        }
+
+        grid[i][j] = '0'; // 抹去
+        DFS(grid, i-1, j); // 上
+        DFS(grid, i+1, j); // 下
+        DFS(grid, i, j-1); // 左
+        DFS(grid, i, j+1); // 右
+    }
+};
+
+
+
+130. 被围绕的区域
+// step1：先找边界上的O,利用DFS把边界O相连通的O都改成其他字母(比如改成A)
+// step2：把剩余的O该改成X  
+// step3: 最后把A改成O 恢复原来的边界O
+class Solution {
+public:
+    void solve(vector<vector<char>>& board) {
+        if (board.empty()) {
+            return;
+        }
+        // step1 最外面一圈
+        for (int i = 0; i < board.size(); ++i) {
+            for (int j = 0; j < board[0].size(); ++j){
+                if (i == 0 || i == board.size()-1 || j == 0 || j == board[0].size()-1) { // 最外面一圈
+                    DFS(board, i, j);
+                }
+            }
+        }
+        //step2 & step3
+        for(int i = 0; i < board.size(); ++i){
+            for(int j = 0; j < board[0].size(); ++j){
+                if(board[i][j] == 'O'){
+                    board[i][j] = 'X';
+                }
+                if(board[i][j] == 'A'){
+                    board[i][j] = 'O';
+                }
+            }
+        }
+    }
+
+private:
+    //DFS把和边界O连通的O都改成其他字母(比如改成A)
+    void DFS(vector<vector<char>>& board, int i, int j){
+        if(i < 0 || i >= board.size() || j < 0 || j >= board[0].size()){
+            return;
+        }
+        if (board[i][j] != 'O') {
+            return;
+        }
+        board[i][j] = 'A'; // 把边界的O都改成A
+        DFS(board, i+1, j);
+        DFS(board, i-1, j);
+        DFS(board, i, j+1);
+        DFS(board, i, j-1);
+    }
+};
+
+
+
+
