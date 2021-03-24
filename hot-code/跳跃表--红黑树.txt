@@ -1,5 +1,144 @@
 跳跃表SkipList
 
+#include<vector>
+#include<random>
+#include<iostream>
+#include<ctime>
+// 1206. 设计跳表 ：实现了search查找 add插入 erase删除 三个方法
+// 链接：https://leetcode-cn.com/problems/design-skiplist/solution/c-jian-yi-de-shi-xian-by-snowdreams-ka2y/
+class Skiplist {
+private:
+    // 链表节点的结构体
+    struct SkiplistNode {
+        int val;
+        std::vector<SkiplistNode*> forward;
+        // 构造函数
+        SkiplistNode(int _val, int level) : val(_val), forward(level) {};
+    };
+
+    static constexpr int max_level = 16; // 层数
+    static constexpr double skiplist_p = 0.25; //
+    SkiplistNode* head; // 头结点
+
+    std::default_random_engine e; // 随机数引擎
+    // 随机产生一个层数
+    int randomLevel() {
+        int v = 1;
+        std::uniform_real_distribution<double> u(0, 1);
+        while(u(e) < skiplist_p && v < max_level) {
+            ++v;
+        }
+        return v;
+    }
+
+public:
+    // 构造函数
+    Skiplist()  : head(new SkiplistNode(0, max_level)), e(std::time(0)) { }
+    // 析构函数
+    ~Skiplist() {
+        while(head->forward[0]) {
+            auto tmp = head->forward[0];
+            head->forward[0] = head->forward[0]->forward[0];
+            delete tmp;
+        }
+        delete head;
+    }
+    
+    Skiplist(const Skiplist&) = delete; // 禁止拷贝构造
+    Skiplist& operator=(const Skiplist&) = delete; // 禁止拷贝赋值操作符
+    
+    // 查找元素 存在返回true 否则返回false
+    bool search(int target) {
+        SkiplistNode* x = head;
+        for (int i = head->forward.size()-1; i >= 0; --i) {
+            while (x->forward[i] && x->forward[i]->val < target) {
+                x = x->forward[i];
+            }
+            if (x->forward[i] && x->forward[i]->val == target) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // 插入一个元素
+    void add(int num) {
+        SkiplistNode* update[max_level]{};
+        auto x = head;
+        for (int i = head->forward.size()-1; i >= 0; --i) {
+            while (x->forward[i] && x->forward[i]->val < num) {
+                x = x->forward[i];
+            }
+            update[i] = x;
+        }
+
+        int level = randomLevel();
+        SkiplistNode* node = new SkiplistNode(num, level);
+        for (int i = level-1; i >= 0; --i) {
+            auto tmp = update[i]->forward[i];
+            update[i]->forward[i] = node;
+            node->forward[i] = tmp;
+        }
+    }
+    
+    // 删除一个元素 元素存在泽删除返回true  元素不存在则返回false
+    bool erase(int num) {
+        SkiplistNode* update[max_level]{};
+        auto x = head;
+        for (int i = head->forward.size()-1; i >= 0; --i) {
+            while (x->forward[i] && x->forward[i]->val < num) {
+                x = x->forward[i];
+            }
+            update[i] = x;
+        }
+        if (x->forward[0] && x->forward[0]->val == num) {
+            auto to_del = x->forward[0];
+            for(int i = to_del->forward.size()-1; i >= 0; --i) {
+                update[i]->forward[i] = to_del->forward[i];
+            }
+            delete to_del;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+private:
+    // 赋值函数 打印这个跳表
+    void print_skiplist() {
+        for(int i = max_level-1; i >= 0; --i) {
+            std::cout << "level " << i << ": ";
+            auto node = head;
+            std::cout << "head -> ";
+            while (node->forward[i]) {
+                std::cout << node->forward[i]->val << " -> ";
+                node = node->forward[i];
+            }
+            std::cout << "NIL" << std::endl;
+        }
+    }
+    // 辅助函数 打印跳表的某个level
+    void print_skiplist_level(int level) {
+        int i = level;
+        std::cout << "level " << i << ": ";
+        auto node = head;
+        std::cout << "head -> ";
+        while (node->forward[i]) {
+            std::cout << node->forward[i]->val << " -> ";
+            node = node->forward[i];
+        }
+        std::cout << "NIL" << std::endl;
+    }
+};
+
+
+/**
+ * Your Skiplist object will be instantiated and called as such:
+ * Skiplist* obj = new Skiplist();
+ * bool param_1 = obj->search(target);
+ * obj->add(num);
+ * bool param_3 = obj->erase(num);
+ */
 
 
 
