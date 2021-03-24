@@ -1,0 +1,73 @@
+剑指 Offer 10- II 青蛙跳台阶问题  
+
+55. 跳跃游戏
+给定一个非负整数数组 nums ，你最初位于数组的 第一个下标 。
+数组中的每个元素代表你在该位置可以跳跃的最大长度。
+判断你是否能够到达最后一个下标。
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        if (nums.size() <= 1) {
+            return true;
+        }
+        int maxArrive = 0;//最远能到达的位置
+        for (int i = 0; i < nums.size(); ++i) {
+            // 当前站在位置i上, 更新最远能到达的位置
+            maxArrive = max(maxArrive, i+nums[i]);
+            // 已经到达了终点
+            if(maxArrive >= nums.size()-1){ 
+                return true;
+            }
+            // 站在位置i 但是最远也只能到达位置当前的位置i 则失败
+            if(maxArrive <= i){
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+
+45. 跳跃游戏 II
+给定一个非负整数数组，你最初位于数组的第一个位置。
+数组中的每个元素代表你在该位置可以跳跃的最大长度。
+你的目标是使用最少的跳跃次数到达数组的最后一个位置。（假设你总是可以到达数组的最后一个位置。）
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        int len = nums.size();
+        vector<int> dp(len, INT_MAX); // dp[i]表示跳跃到位置i的最少次数
+        dp[0] = 0; // 位置0 不需要跳跃次数
+        for (int i = 0; i < len; ++i) {
+            // 当前在位置i  更新下一步可以跳到的位置j
+            for (int k = 1; k <= nums[i]; ++k) {
+                int j = i + k; // 可以跳到位置j
+                if (j < len) {
+                    dp[j] = min(dp[j], dp[i]+1); // 更新到达位置j的最少跳跃次数  从dp[i]跳1次到dp[j]
+                }
+            }
+        }
+        return dp.back();
+    }
+};
+
+
+
+1306. 跳跃游戏 III
+
+1345 跳跃游戏 IV  
+
+1340 跳跃游戏 V  
+
+1696 跳跃游戏 VI  
+
+1654. 到家的最少跳跃次数
+
+LCP 09 最小跳跃次数  
+
+403. 青蛙过河
+
+1377. T 秒后青蛙的位置（树）
+
+
+
