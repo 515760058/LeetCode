@@ -499,3 +499,91 @@ private:
 
 
 
+
+61. 旋转链表
+给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
+class Solution {
+public:
+    ListNode* rotateRight(ListNode* head, int k) {
+        if (head == nullptr || k == 0) {
+            return head;
+        }
+        // 求长度 同时得出尾节点tmp
+        ListNode* tmp = head;
+        int len = 1;
+        while (tmp->next) {
+            len++;
+            tmp = tmp->next;
+        }
+        k = len - k % len; // 新的k   从尾节点向后跑k步
+
+        tmp->next = head; // 首位相连 形成环
+        // 从原来的尾节点 继续向后跑k步
+        for (int step = 0; step < k; ++step) {
+            tmp = tmp->next;
+        }
+        head = tmp->next; // 新的首节点
+        tmp->next = nullptr; // 断开环
+        return head;
+    }
+};
+
+
+
+
+148. 排序链表  sort
+// 使用归并排序  nlogn
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        if (head == nullptr || head->next == nullptr) {
+            return head;
+        }
+        // 快慢指针找中间节点slow
+        ListNode* fast = head;
+        ListNode* slow = head;
+        while ((fast->next) && (fast->next->next)) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        //cout << slow->val << ", " << fast->val << endl;
+        // 从中间节点slow 断开
+        fast = slow->next; // fast指向后半段
+        slow->next = nullptr; // 前半段和后半段 断开
+        // 递归的排序
+        ListNode* l1 = sortList(head);
+        ListNode* l2 = sortList(fast);
+        return mergeTwoSortedList(l1, l2); // 归并排序
+    }
+
+private:
+    // 归并 两个有序链表
+    ListNode* mergeTwoSortedList(ListNode* l1, ListNode* l2) {
+        ListNode* dummy = new ListNode(-1);
+        ListNode* pre = dummy;
+        while (l1 && l2) {
+            if (l1->val <= l2->val) {
+                pre->next = l1;
+                pre = pre->next;
+                l1 = l1->next;
+            } else {
+                pre->next = l2;
+                pre = pre->next;
+                l2 = l2->next;
+            }
+        }
+        // 某一条链表先结束了 判断还剩下哪一条
+        if (l1 != nullptr) {
+            pre->next = l1;
+        }
+        if (l2 != nullptr) {
+            pre->next = l2;
+        }
+        // 返回头节点dummy->next
+        pre = dummy->next;
+        delete dummy;
+        return pre;
+    }
+};
+
+
