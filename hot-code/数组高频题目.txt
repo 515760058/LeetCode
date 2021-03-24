@@ -129,7 +129,32 @@ public:
 
 
 645. 错误的集合（缺失和重复的元素）
-手机照片 补上
+class Solution {
+public:
+    vector<int> findErrorNums(vector<int>& nums) {
+        // 找重复的
+        int repet = -1;
+        for (int i = 0; i < nums.size(); ++i) {
+            int idx = abs(nums[i]) - 1;
+            if (nums[idx] < 0) { // 已经出现过 记录重复数字
+                repet = idx + 1;
+            } else {
+                nums[idx] = -nums[idx]; //第一次出现 加上负号  标记为已访问过
+            }
+        }
+        // 找缺失的  缺失的数字  其转为下标后  
+        int miss = -1;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i] > 0) {
+                miss = i + 1;
+                break;
+            }
+        }
+        return {repet, miss};
+    }
+};
+
+
 
 
 969. 煎饼排序
