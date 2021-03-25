@@ -1,0 +1,19 @@
+877. 石子游戏
+偶数堆石子   先手的一定能赢
+// https://leetcode-cn.com/problems/stone-game/solution/shi-zi-you-xi-by-leetcode-solution/
+// 偶数堆  固定分为第一组和第二组   先手可以控制自己一直拿某一组
+class Solution {
+public:
+    bool stoneGame(vector<int>& piles) {
+        return true;
+    }
+};
+
+
+
+1140. 石子游戏 II
+1406. 石子游戏 III
+1510. 石子游戏 IV
+1563. 石子游戏 V
+1686. 石子游戏 VI
+1690. 石子游戏 VII
