@@ -54,12 +54,164 @@ public:
 
 
 1306. 跳跃游戏 III
+这里有一个非负整数数组 arr，你最开始位于该数组的起始下标 start 处。当你位于下标 i 处时，你可以跳到 i + arr[i] 或者 i - arr[i]。
+请你判断自己是否能够跳到对应元素值为 0 的 任一 下标处。
+class Solution {
+public:
+    // BFS
+    bool canReach(vector<int>& arr, int start) {
+        queue<int> q; // 队列中存放的是下标
+        q.push(start);
+        set<int> visited; // 已访问过的下标
+        visited.insert(start);
+        while (!q.empty()) {
+            int idx = q.front();
+            q.pop();
+            // 到达元素0
+            if (arr[idx] == 0) {
+                return true;
+            }
+            // 放入下一个有效的位置(没有访问过)
+            for (int i = 0; i < dir.size(); ++i) {
+                int next = idx + arr[idx] * dir[i];
+                if (0 <= next && next < arr.size() && visited.count(next) == 0) {
+                    q.push(next);
+                    visited.insert(next);
+                }
+            }
+        }
+        return false;
+    }
 
-1345 跳跃游戏 IV  
+private:
+    // 加 或者 减
+    vector<int> dir = {1, -1};
+};
 
-1340 跳跃游戏 V  
 
-1696 跳跃游戏 VI  
+1345. 跳跃游戏 IV
+给你一个整数数组 arr ，你一开始在数组的第一个元素处（下标为 0）。
+每一步，你可以从下标 i 跳到下标：
+    i + 1 满足：i + 1 < arr.length
+    i - 1 满足：i - 1 >= 0
+    j 满足：arr[i] == arr[j] 且 i != j
+请你返回到达数组最后一个元素的下标处所需的 最少操作次数 。
+class Solution {
+public:
+    int minJumps(vector<int>& arr) {
+        if (arr.size() <= 1) {
+            return 0;
+        }
+        // 离散化(不进行离散化就会超时):  值相同的一段元素只需要头和尾，例如1 7 7 7 7 7 7 11，可以离散化为 1 7 7 11
+        vector<int> tmp;
+        for (int i = 0, j; i < arr.size(); i++){//离散化
+            tmp.push_back(arr[i]);
+            for (j = i; i + 1 < arr.size() && arr[i + 1] == arr[j]; i++) {
+                ;
+            }
+            if (i - j > 1) {
+                tmp.push_back(arr[i]);
+            }
+        }
+
+        // 数字  对应的若干下标
+        map<int, set<int>> num2idx;
+        for (int i = 0; i < tmp.size(); ++i) {
+            num2idx[tmp[i]].insert(i);
+        }
+        // BFS
+        queue<int> q; // 队列中存放的是下标
+        q.push(0);
+        unordered_set<int> visited; // 已访问过的下标
+        visited.insert(0);
+        int endIdx = tmp.size() - 1;
+        int step = 0; // 步数
+        while (!q.empty()) {
+            for (int k = q.size(); k > 0; --k) {
+                int idx = q.front();
+                q.pop();
+                // 到达最后元素
+                if (idx == endIdx) {
+                    return step;
+                }
+                // 放入下一个有效的位置(没有访问过)
+                for (int i = 0; i < dir.size(); ++i) {
+                    int nextIdx = idx + dir[i];
+                    if (0 <= nextIdx && nextIdx < tmp.size() && visited.count(nextIdx) == 0) {
+                        q.push(nextIdx);
+                        visited.insert(nextIdx);
+                    }
+                }
+                // 放入下一个相等值的(未访问过的)下标
+                set<int>& nextIdxes = num2idx[tmp[idx]];
+                for (int nextIdx : nextIdxes) {
+                    if (!visited.count(nextIdx)) {
+                        q.push(nextIdx);
+                        visited.insert(nextIdx);
+                    }
+                }
+
+            }
+            ++step;
+        }
+        return -1;
+    }
+
+private:
+    // 加 或者 减
+    vector<int> dir = {1, -1};
+};
+
+
+
+1340. 跳跃游戏 V
+
+
+
+
+1696. 跳跃游戏 VI
+给你一个下标从 0 开始的整数数组 nums 和一个整数 k 。
+一开始你在下标 0 处。每一步，你最多可以往前跳 k 步，但你不能跳出数组的边界。也就是说，你可以从下标 i 跳到 [i + 1， min(n - 1, i + k)] 包含 两个端点的任意位置。
+你的目标是到达数组最后一个位置（下标为 n - 1 ），你的 得分 为经过的所有数字之和。
+请你返回你能得到的 最大得分 。
+class Solution {
+public:
+/*
+    int maxResult(vector<int>& nums, int k) {
+        // 动态规划  超时
+        vector<int> dp(nums.size(), INT_MIN);
+        dp[0] = nums[0];
+        for (int i = 1; i < nums.size(); ++i) {
+            // 前面k个位置 最大的得分
+            for (int j = max(0, i - k); j < i; ++j) {
+                dp[i] = max(dp[i], dp[j]);
+            }
+            // 加上当前的得分
+            dp[i] += nums[i];
+        }
+        return dp.back();
+    }
+*/
+    int maxResult(vector<int>& nums, int k) {
+        // 动态规划 + multiset滑动窗口  PASS
+        vector<int> dp(nums.size(), INT_MIN);
+        dp[0] = nums[0];
+        multiset<int> win; // 滑动窗口 保存前面k个位置的最大得分
+        win.insert(dp[0]);
+        for (int i = 1; i < nums.size(); ++i) {
+            // 前面k个位置的最大得分   再加上当前的分数
+            dp[i] = (*win.rbegin()) + nums[i];
+            // 滑动窗口的最大限制是k个元素
+            if (i >= k) {
+                win.erase(win.find(dp[i-k]));
+            }
+            // 插入当前位置i对应的分数
+            win.insert(dp[i]);  
+        }
+        return dp.back();
+    }
+};
+
 
 1654. 到家的最少跳跃次数
 
