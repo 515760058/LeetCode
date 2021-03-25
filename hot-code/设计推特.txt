@@ -1,76 +1,53 @@
 355. 设计推特
 class Twitter {
 private:
-
-    struct Message {
-        int msg; // 推文内容
-        int time; // 发布时间
-        Message(int _msg, int _time) : msg(_msg), time(_time) {} // 构造函数
-        bool operator< (const Message& m) const {
-            return time < m.time;
+    // 推特消息
+    struct Tweet {
+        int tweetId;
+        int time;
+        Tweet(int _tweetId, int _time) {
+            tweetId = _tweetId;
+            time = _time;
+        }
+        bool operator< (const Tweet& t) const { // 重载< 给优先队列使用
+            return time < t.time;
         }
     };
 
-    struct User {
-        int id;             // 用户id
-        set<int> followed;  // 该用户的关注列表
-        list<Message> msgs; // 该用户发布的推文
-        // 构造函数
-        User () { }
-        // 初始化
-        void init(int _id) {
-            id = _id;
-            follow(_id); // 自己关注自己
-        }
-        // 关注userId
-        void follow(int userId) {
-            followed.insert(userId);
-        }
-        // 取关userId
-        void unfollow(int userId) {
-            followed.erase(userId);
-        }
-        // 发布推特
-        void post(int msg, int time) {
-            msgs.push_front( Message(msg, time) );
-        }
-    };
-    
-    int timestamp = 0;
-    map<int, User> users; // 所有的用户  key:用户id  value:用户的信息
+    map<int, set<int>> userFollow; // key:用户id  value:该用户的关注的人
+    map<int, list<Tweet>> userTweets; // key:用户id  value:该用户发表的推特消息
 
+    int timestamp = 0; // 时间戳
 public:
     /** Initialize your data structure here. */
     Twitter() { }
     
     /** Compose a new tweet. */
     void postTweet(int userId, int tweetId) {
-        if (!users.count(userId)) {
-            users[userId] = User();
-            users[userId].init(userId);
-        }
-        users[userId].post(tweetId, timestamp++);
+        userTweets[userId].push_front( Tweet(tweetId, timestamp++) );
+        userFollow[userId].insert(userId);
     }
     
     /** Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent. */
     vector<int> getNewsFeed(int userId) {
         vector<int> res;
-        if (!users.count(userId)) {
-            return res;
-        }
-        set<int>& foll = users[userId].followed; // 关注列表
-        // 每个关注的用户 最多取10条推文 加入到优先队列中
-        priority_queue<Message> pq;
-        for (int id : foll) {
-            list<Message>& msgs = users[id].msgs;
+        priority_queue<Tweet> pq;
+        // 获取该用户关注的人
+        set<int>& followee = userFollow[userId];
+        for (int id : followee) {
+            // 从每个关注用户中 最多获取10条消息 放在优先队列中
+            if (!userTweets.count(id)) { 
+                continue;
+            }
+            list<Tweet>& msgs = userTweets[id];
             auto iter = msgs.begin();
             for (int i = 0; i < 10 && iter != msgs.end(); ++i, ++iter) {
                 pq.push(*iter);
             }
         }
-        // 从优先队列中 取出10条推文
+        // 从优先队列中 最多取出10条消息 作为结果
         for (int i = 0; i < 10 && (!pq.empty()); ++i) {
-            res.push_back( pq.top().msg );
+            res.push_back( pq.top().tweetId );
             pq.pop();
         }
         return res;
@@ -78,20 +55,18 @@ public:
     
     /** Follower follows a followee. If the operation is invalid, it should be a no-op. */
     void follow(int followerId, int followeeId) {
-        if (!users.count(followerId)) {
-            return;
-        }
-        users[followerId].follow(followeeId);
+        userFollow[followerId].insert(followeeId);
     }
     
     /** Follower unfollows a followee. If the operation is invalid, it should be a no-op. */
     void unfollow(int followerId, int followeeId) {
-        if (!users.count(followerId)) {
+        if (followerId == followeeId) { // 不能取关自己
             return;
         }
-        users[followerId].unfollow(followeeId);
+        userFollow[followerId].erase(followeeId);
     }
 };
+
 
 /**
  * Your Twitter object will be instantiated and called as such:
