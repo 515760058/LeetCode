@@ -265,6 +265,46 @@ public:
 
 
 1654. 到家的最少跳跃次数
+class Solution {
+    struct Point {
+        int now; // 当前的位置
+        int step;
+        bool rear; // rear表示 上一部是往后跳的然后到达当前位置的
+        Point(int _now, int _step, bool _rear) {
+            now = _now;
+            step = _step;
+            rear = _rear;
+        }
+    };
+
+public:
+    int minimumJumps(vector<int>& forbidden, int a, int b, int x) {
+        unordered_set<int> hash(forbidden.begin(), forbidden.end());
+        // 设置一个最远能到到的点，否则可以一直向前跳，永远停不下来！
+        int end = max(x, *max_element(forbidden.begin(), forbidden.end())) + a + b; 
+        // BFS
+        queue<Point> q;
+        q.push( Point(0, 0, 0) );
+        while(!q.empty()){
+            auto p = q.front();
+            q.pop();
+            // 到达终点
+            if(p.now == x) {
+                return p.step;
+            }
+            if (p.now < end && (!hash.count(p.now+a))) {
+                hash.insert(p.now+a);
+                q.push( Point(p.now+a, p.step+1, 0));
+            }
+            // 上一步是向前跳的 && p.now-b有效 && 未到达过p.now-b
+            if (p.rear == 0 && p.now-b > 0 && (!hash.count(p.now-b))) {
+                q.push( Point(p.now-b, p.step+1, 1));
+            }
+        }
+        return -1;
+    }
+};
+
 
 LCP 09 最小跳跃次数  
 
