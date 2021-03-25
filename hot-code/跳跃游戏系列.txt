@@ -165,7 +165,58 @@ private:
 
 
 1340. 跳跃游戏 V
+给你一个整数数组 arr 和一个整数 d 。每一步你可以从下标 i 跳到：
+    i + x ，其中 i + x < arr.length 且 0 < x <= d 。
+    i - x ，其中 i - x >= 0 且 0 < x <= d 。
+除此以外，你从下标 i 跳到下标 j 需要满足：arr[i] > arr[j] 且 arr[i] > arr[k] ，其中下标 k 是所有 i 到 j 之间的数字（更正式的，min(i, j) < k < max(i, j)）。
+你可以选择数组的任意下标开始跳跃。请你返回你 最多 可以访问多少个下标。
 
+//一维dp.先按高度把索引排序,从低到高开始做dp, 每个索引i找到左右边界L,R    dp[i] = max(dp[L : R]) + 1.
+class Solution {
+private:
+    struct Data {
+        int height;
+        int idx;
+        bool operator< (const Data& d) const {
+            return height < d.height;
+        }
+    };
+public:
+    int maxJumps(vector<int>& arr, int d) {
+        if (arr.empty()) {
+            return 0;
+        }
+        int n = arr.size();
+        vector<Data> temp(n);
+        for (int i = 0; i < n; i++) {
+            temp[i].height = arr[i];
+            temp[i].idx = i;
+        }
+        // 按高度从小到大排序
+        sort(temp.begin(), temp.end());
+        // 开始dp
+        vector<int> dp(n, 0);
+        for (Data& data : temp) {
+            int index = data.idx; //编号
+            dp[index] = 1; // 每个位置 可以跳到的位置最少都是1
+            //向左找更矮的j 来更新的dp[index]
+            for (int j = index - 1; j >= index - d && j >= 0; j--) {
+                if (arr[j] >= arr[index]) {
+                    break;
+                }
+                dp[index] = max(dp[index], dp[j]+1);
+            }
+            //向右找更矮的j 来更新的dp[index]
+            for (int j = index + 1; j <= index + d && j < n; j++) {
+                if (arr[j] >= arr[index]) {
+                    break;
+                }
+                dp[index] = max(dp[index], dp[j]+1);
+            }
+        }
+        return *max_element(dp.begin(), dp.end()); // dp数组中的最大值
+    }
+};
 
 
 
