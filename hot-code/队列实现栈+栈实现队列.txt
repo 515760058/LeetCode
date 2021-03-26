@@ -1,1 +1,89 @@
+225. 用队列实现栈
+class MyStack {
+private:
+    queue<int> q; // 始终使用这个队列保存数据
+    queue<int> qTemp; // 临时使用这个队列 倒腾一下
+
+public:
+    /** Initialize your data structure here. */
+    MyStack() { }
+    
+    /** Push element x onto stack. */
+    void push(int x) {
+        q.push(x);
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    int pop() {
+        // 临时把数据倒腾到qTemp中  q只保留一个
+        while (q.size() > 1) {
+            int value = q.front();
+            q.pop();
+            qTemp.push(value);
+        }
+        // 剩下的一个 要弹出的数据
+        int value = q.front();
+        q.pop();
+        // 交换
+        swap(q, qTemp);
+        return value;
+    }
+    
+    /** Get the top element. */
+    int top() {
+        int value = this->pop(); //借助于pop方法 拿出最后一个数据
+        q.push(value); // 再放回去
+        return value;
+    }
+    
+    /** Returns whether the stack is empty. */
+    bool empty() {
+        return q.empty();
+    }
+};
+
+
+
+232. 用栈实现队列
+class MyQueue {
+private:
+    stack<int> stIn;    // push元素 直接放到这个栈
+    stack<int> stOut; // 这个栈里 负责pop元素
+public:
+    /** Initialize your data structure here. */
+    MyQueue() {}
+
+    /** Push element x to the back of queue. */
+    void push(int x) {
+        stIn.push(x);
+    }
+
+    /** Removes the element from in front of queue and returns that element. */
+    int pop() {
+        // 只有当stOut为空的时候，再从stIn里导入数据（导入stIn全部数据）
+        if (stOut.empty()) {
+            // 从stIn导入数据直到stIn为空
+            while(!stIn.empty()) {
+                stOut.push(stIn.top());
+                stIn.pop();
+            }
+        }
+        // 从stOut栈 输出元素
+        int result = stOut.top();
+        stOut.pop();
+        return result;
+    }
+
+    /** Get the front element. */
+    int peek() {
+        int res = this->pop(); // 直接使用已有的pop函数
+        stOut.push(res); // 因为pop函数弹出了元素res，所以再添加回去
+        return res;
+    }
+
+    /** Returns whether the queue is empty. */
+    bool empty() {
+        return stIn.empty() && stOut.empty();
+    }
+};
 
