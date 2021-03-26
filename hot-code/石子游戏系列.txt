@@ -12,8 +12,165 @@ public:
 
 
 1140. 石子游戏 II
+亚历克斯和李继续他们的石子游戏。许多堆石子 排成一行，每堆都有正整数颗石子 piles[i]。游戏以谁手中的石子最多来决出胜负。
+亚历克斯和李轮流进行，亚历克斯先开始。最初，M = 1。
+在每个玩家的回合中，该玩家可以拿走剩下的 前 X 堆的所有石子，其中 1 <= X <= 2M。然后，令 M = max(M, X)。
+游戏一直持续到所有石子都被拿走。
+假设亚历克斯和李都发挥出最佳水平，返回亚历克斯可以得到的最大数量的石头。
+
+// 链接：https://leetcode-cn.com/problems/stone-game-ii/solution/java-dong-tai-gui-hua-qing-xi-yi-dong-17xing-by-lg/
+class Solution {
+public:
+    int stoneGameII(vector<int>& piles) {
+        int len = piles.size();
+        int sum = 0;
+        vector<vector<int>> dp(len, vector<int>(len+1, 0));
+        for (int i = len-1; i >= 0; i--) {
+            sum += piles[i];
+            for (int M = 1; M <= len; M++) {
+                if (i + 2*M >= len) {
+                    dp[i][M] = sum;
+                } else {
+                    for (int x = 1; x <= 2*M; x++) {
+                        dp[i][M] = max(dp[i][M], sum - dp[i+x][max(M, x)]);
+                    }
+                }
+            }
+        }
+        return dp[0][1];
+    }
+};
+
+
+
+
 1406. 石子游戏 III
+
+
+
 1510. 石子游戏 IV
+Alice 和 Bob 两个人轮流玩一个游戏，Alice 先手。
+一开始，有 n 个石子堆在一起。每个人轮流操作，正在操作的玩家可以从石子堆里拿走 任意 非零 平方数 个石子。
+如果石子堆里没有石子了，则无法操作的玩家输掉游戏。
+给你正整数 n ，且已知两个人都采取最优策略。如果 Alice 会赢得比赛，那么返回 True ，否则返回 False
+class Solution {
+public:
+    bool winnerSquareGame(int n) {
+        vector<bool> dp(n+1); // dp[i]表示当有i个石子时 先手是否能赢
+        dp[0] = false; // 0个石子时  先手就是输
+        for (int i = 1; i <= n; ++i){
+            // 计算dp[i]
+            // 先手尝试拿走j*j个石子  尽量营造"剩下的i-j*j个石子(必输的情况)"推给对方  从而尽量保证i个石子时自己能赢
+            for (int j = 1; j*j <= i; ++j) {
+                dp[i] = (!dp[i-j*j]) || dp[i];
+            }
+        }
+        return dp[n];
+    }
+};
+
+
+
 1563. 石子游戏 V
+几块石子 排成一行 ，每块石子都有一个关联值，关联值为整数，由数组 stoneValue 给出。
+游戏中的每一轮：Alice 会将这行石子分成两个 非空行（即，左侧行和右侧行）；Bob 负责计算每一行的值，即此行中所有石子的值的总和。Bob 会丢弃值最大的行，Alice 的得分为剩下那行的值（每轮累加）。如果两行的值相等，Bob 让 Alice 决定丢弃哪一行。下一轮从剩下的那一行开始。
+只 剩下一块石子 时，游戏结束。Alice 的分数最初为 0 。
+返回 Alice 能够获得的最大分数 。
+// 链接：https://leetcode-cn.com/problems/stone-game-v/solution/shi-zi-you-xi-v-by-leetcode-solution/
+class Solution {
+public:
+    int stoneGameV(vector<int>& stoneValue) {
+        int n = stoneValue.size();
+        vector<vector<int>> f(n, vector<int>(n, 0));
+        return dfs(stoneValue, 0, n-1, f);
+    }
+
+private:
+    int dfs(const vector<int>& stoneValue, int left, int right, vector<vector<int>>& f) {
+        if (left == right) { // 递归结束
+            return 0;
+        }
+        if (f[left][right]) { // 备忘录
+            return f[left][right];
+        }
+        // [l, r]的前缀和
+        int sum = accumulate(stoneValue.begin()+left, stoneValue.begin()+right+1, 0);
+        int suml = 0; // 表示区间[l, i]的和
+        for (int i = left; i < right; ++i) {
+            suml += stoneValue[i]; // 区间[l, i]的和
+            int sumr = sum - suml; // 区间[i+1, r]的和
+            if (suml < sumr) {
+                // 保留[l, i]  并更新最大的f[left][right]
+                f[left][right] = max(f[left][right], dfs(stoneValue, left, i, f) + suml);
+            } else if (suml > sumr) {
+                // 保留[i+1, r]  并更新最大的f[left][right]
+                f[left][right] = max(f[left][right], dfs(stoneValue, i+1, right, f) + sumr);
+            } else {
+                // 自己选择一个更大的dfs结果
+                f[left][right] = max(f[left][right], max(dfs(stoneValue, left, i, f), dfs(stoneValue, i+1, right, f)) + suml);
+            }
+        }
+        return f[left][right];
+    }
+};
+
+
+
 1686. 石子游戏 VI
+Alice 和 Bob 轮流玩一个游戏，Alice 先手。
+一堆石子里总共有 n 个石子，轮到某个玩家时，他可以 移出 一个石子并得到这个石子的价值。Alice 和 Bob 对石子价值有 不一样的的评判标准 。双方都知道对方的评判标准。
+给你两个长度为 n 的整数数组 aliceValues 和 bobValues 。aliceValues[i] 和 bobValues[i] 分别表示 Alice 和 Bob 认为第 i 个石子的价值。
+所有石子都被取完后，得分较高的人为胜者。如果两个玩家得分相同，那么为平局。两位玩家都会采用 最优策略 进行游戏。
+请你推断游戏的结果，用如下的方式表示：
+如果 Alice 赢，返回 1 。 如果 Bob 赢，返回 -1 。 如果游戏平局，返回 0 。
+class Solution {
+private:
+    struct Data {
+        int aliceValue;
+        int bobValue;
+        bool operator< (const Data& d) const { // 按总价值 从大到小排序
+            return (aliceValue + bobValue) > (d.aliceValue + d.bobValue);
+        }
+    };
+
+public:
+    // 每个石头的总价值是alice和bob价值的加和，如果alice拿走一块石子，相当于alice多拥有了aliceValues[i]点钱，然后又扣了Bob bobValues[i]点钱。
+    int stoneGameVI(vector<int>& aliceValues, vector<int>& bobValues) {
+        int n = aliceValues.size();
+        vector<Data> arr(n);
+        for (int i = 0; i < n; i++) {
+            arr[i].aliceValue = aliceValues[i];
+            arr[i].bobValue = bobValues[i];
+        }
+        // 按总价值排序 
+        sort(arr.begin(), arr.end());
+
+        // 两个人轮流拿石子
+        int alice = 0;
+        int bob = 0;
+        for(int i = 0; i < n; i++){
+            if ((i&0x1) == 0) { // alice先手
+                alice += arr[i].aliceValue;
+            } else {
+                bob += arr[i].bobValue;
+            }
+        }
+
+        if (alice > bob) {
+            return 1;
+        } else if (alice < bob) {
+            return -1;
+        }
+        // 平局
+        return 0;
+    }
+};
+
+
+
 1690. 石子游戏 VII
+石子游戏中，爱丽丝和鲍勃轮流进行自己的回合，爱丽丝先开始 。
+有 n 块石子排成一排。每个玩家的回合中，可以从行中 移除 最左边的石头或最右边的石头，并获得与该行中剩余石头值之 和 相等的得分。当没有石头可移除时，得分较高者获胜。
+鲍勃发现他总是输掉游戏（可怜的鲍勃，他总是输），所以他决定尽力 减小得分的差值 。爱丽丝的目标是最大限度地 扩大得分的差值 。
+给你一个整数数组 stones ，其中 stones[i] 表示 从左边开始 的第 i 个石头的值，如果爱丽丝和鲍勃都 发挥出最佳水平 ，请返回他们 得分的差值 。
+
