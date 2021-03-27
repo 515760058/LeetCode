@@ -2,26 +2,32 @@
 class Solution {
 public:
     TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
-        return helper(preorder, 0, preorder.size() - 1, inorder, 0, inorder.size() - 1);
+        if (preorder.empty()) {
+            return nullptr;
+        }
+        // 在中序遍历中 每个元素的下标 便于后面查找
+        map<int, int> m;
+        for(int i = 0; i < inorder.size(); ++i){
+            m[inorder[i]] = i;
+        }
+        // 开始重建
+        return buildTree(m, preorder, 0, preorder.size()-1, inorder, 0, inorder.size()-1);
     }
 
 private:
-    TreeNode* helper(vector<int>& preorder, int l1, int r1, vector<int>& inorder, int l2, int r2) {
-        if (r1 < l1) {
+    TreeNode* buildTree(map<int, int>& m, vector<int>& preorder, int preBeg, int preEnd, vector<int>& inorder, int inBeg, int inEnd) {
+        if (preBeg > preEnd || inBeg > inEnd) {
             return nullptr;
         }
-        // 根节点
-        auto root = new TreeNode(preorder[l1]);
-        // 分片
-        int mid = l2;
-        while (inorder[mid] != preorder[l1]) {
-            ++mid;
-        }
-        // 递归下去
-        root->left = helper(preorder, l1 + 1, l1 + mid - l2, inorder, l2, mid - 1);
-        root->right = helper(preorder, l1 + mid - l2 + 1, r1, inorder, mid + 1, r2);
-        // 返回根节点
-        return root;
+        // 前序的第一个节点 就是根节点
+        TreeNode* node = new TreeNode(preorder[preBeg]);
+        // 左子树的节点数量
+        int leftLen = m[preorder[preBeg]] - inBeg;
+        // 重建左子树
+        node->left = buildTree(m, preorder, preBeg+1, preBeg+leftLen, inorder, inBeg, inBeg+leftLen-1);
+        // 重建右子树
+        node->right = buildTree(m, preorder, preBeg+1+leftLen, preEnd, inorder, inBeg+leftLen+1, inEnd);
+        return node;
     }
 };
 
