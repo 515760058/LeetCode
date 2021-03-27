@@ -70,6 +70,36 @@ public:
     }
 };
 
+
+
+剑指 Offer 11. 旋转数组的最小数字
+class Solution {
+public:
+    int minArray(vector<int>& numbers) {
+        int res = INT_MAX;
+        // 二分
+        int left = 0;
+        int right = numbers.size() - 1;
+        while (left <= right) {
+            int mid = left + ((right-left) >> 1);
+            res = min(res, numbers[mid]); // 更新最小值
+            // 选择区间
+            if (numbers[mid] > numbers[right]) { // 最小值在后半区间
+                left = mid + 1;
+            } else if (numbers[mid] < numbers[right]) { // 最小值在前半区间
+                right = mid - 1;
+            } else { // numbers[mid] == numbers[right]
+                --right;
+            } 
+        }
+        return res;
+    }
+};
+
+
+
+
+
 26. 删除有序数组中的重复项   （每个数字最多出现一次）
 class Solution {
 public:
