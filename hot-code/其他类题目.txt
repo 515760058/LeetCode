@@ -1,0 +1,45 @@
+855. 考场就座
+在考场里，一排有 N 个座位，分别编号为 0, 1, 2, ..., N-1 。
+当学生进入考场后，他必须坐在能够使他与离他最近的人之间的距离达到最大化的座位上。如果有多个这样的座位，他会坐在编号最小的座位上。(另外，如果考场里没有人，那么学生就坐在 0 号座位上。)
+
+// 这道题，我们维护一张排好序的set集合，集合用来保存已经有位置的座位序号，每次找到最大距离的最小坐标即可.
+// 当人离开的时候，我们把位置删掉即可，具体代码如下 ：
+class ExamRoom {
+private:
+    int lastSeat; // 最后一个座位编号
+    set<int> room_seat; // 坐了人的座位编号
+public:
+    ExamRoom(int N) : lastSeat(N-1) {}
+    
+    int seat() {
+        // 没人的时候  直接分配第一个位置
+        if (room_seat.empty()) {
+            room_seat.insert(0);
+            return 0;
+        }
+        // 有人的时候 
+        int seat = 0; // 要找的空座位编号 初始化为0号
+        int preSeat = *room_seat.begin(); // 前一个有人的座位编号 第一个座位0肯定有人
+        int distance = preSeat - seat; // 两个有人的座位之间的距离  距离的初始值是0
+        for(auto it = room_seat.begin(); it != room_seat.end(); ++it){
+            if ( (*it-preSeat)/2 > distance) { // 两个有人的座位之间的距离是否更大？
+                distance = (*it-preSeat) / 2;
+                seat = preSeat + distance;
+            }
+            preSeat = *it;
+        }
+        // 检查最后一个座位
+        if(lastSeat - preSeat > distance) {
+            seat = lastSeat;
+        }
+        // 把这个座位 "坐"上人
+        room_seat.insert(seat);
+        return seat;
+    }
+    
+    void leave(int p) {
+        room_seat.erase(p);
+    }
+};
+
+
