@@ -1,60 +1,69 @@
-739. 每日温度
+下一个更大数字  O(n)的时间复杂度
+给定一个数组nums [2,1,2,4,3]  返回每个元素后面第一个更大的元素，没有更大的元素就填上-1  答案：[4,2,4,-1,-1]
+    vector<int> dailyTemperatures(vector<int>& nums) {
+        vector<int> res(nums.size());
+        stack<int> s; // 单调栈  存放数组元素
+        for(int i = nums.size() - 1; i >= 0; --i){//逆序遍历  这样才能知道后续更大的元素
+            //弹出栈中比当前数字nums[i] 更小的元素
+            while(!s.empty() && s.top() <= nums[i]){//栈不为空 && 栈顶元素<=当前元素
+                s.pop();
+            }
+            // nums[i]后面 第一个更大的元素就是s.top()
+            res[i] = s.empty() ? -1 : s.top();
+            //当前元素入栈  等待后续可能被弹出
+            s.push(nums[i]);
+        }
+        return res;
+    }
+
+
+
+
+503. 下一个更大元素 II     （循环数组）
+给定一个循环数组（最后一个元素的下一个元素是数组的第一个元素），
+输出每个元素的下一个更大元素。数字x的下一个更大的元素是按数组遍历顺序，这个数字之后的第一个比它更大的数，这意味着你应该循环地搜索它的下一个更大的数。如果不存在，则输出 -1。
+class Solution {
+public:
+    vector<int> nextGreaterElements(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> res(n);
+        stack<int> s; // 单调栈
+        for (int i = 2*n-1; i >= 0; --i) {  //依然是从后向前遍历 但是将原始的数组长度翻倍 从而解决循环的问题
+            // 弹出栈中比nums[i%n]更小的元素
+            while (!s.empty() && s.top() <= nums[i%n]) {
+                s.pop();
+            }
+            // 更新i对应的更大的元素
+            if (i < n) {
+                res[i] = s.empty() ? -1 : s.top();
+            }
+            // 当前元素入栈
+            s.push(nums[i%n]);
+        }
+        return res;
+    }
+};
+
+
+
+739. 每日温度  （下标）   虽然两个循环 但是是O(n)时间复杂度
 // 详细易懂的讲解单调栈 https://leetcode-cn.com/problems/daily-temperatures/solution/javadan-diao-zhan-ni-xu-bian-li-by-hyh-2/
 class Solution {
 public:
     vector<int> dailyTemperatures(vector<int>& T) {
         vector<int> res(T.size());
-        stack<int> s; // 单调栈  存放数组的下标
+        stack<int> s; // 单调栈  存放数组元素的下标
         for(int i = T.size() - 1; i >=0; --i){//逆序遍历  这样才能知道后续更高的温度下标
             //弹出栈中更低的温度（下标）
-            while(!s.empty() && T[i] >= T[s.top()]){//栈不为空 && 当前温度 >= 栈中的温度
+            while(!s.empty() && T[s.top()] <= T[i]){//栈不为空 && 栈顶温度<=当前温度
                 s.pop();
             }
-            //判断当前温度和后面更高温度的距离   此时T[s.top()]比当前温度更高
-            if(s.empty()){
-                res[i] = 0;
-            }else{
-                res[i] = s.top() - i;
-            }
-            //当前温度的下标入栈
+            //当前温度和后面更高温度的下标距离   此时T[s.top()]比当前温度更高
+            res[i] = s.empty() ? 0 : (s.top() - i);
+            //当前温度下标 入栈
             s.push(i);
         }
         return res;
     }
 };
-
-
-// 循环数组呢？
-
-
-
-
-503. 下一个更大元素 II
-给定一个循环数组（最后一个元素的下一个元素是数组的第一个元素），输出每个元素的下一个更大元素。数字 x 的下一个更大的元素是按数组遍历顺序，这个数字之后的第一个比它更大的数，这意味着你应该循环地搜索它的下一个更大的数。如果不存在，则输出 -1。
-class Solution {
-public:
-    vector<int> nextGreaterElements(vector<int>& nums) {
-        int n = nums.size();
-        vector<int> res(n, -1);
-        stack<int> s; // 单调栈
-        for (int i = 0; i < 2 * n; i++) {
-            while (!s.empty() && nums[i%n] > nums[s.top()]) {
-                int idx = s.top();  s.pop();
-                res[idx] = nums[i%n];
-            }
-            s.push(i % n);
-        }
-        return res;
-    }
-};
-
-
-
-
-
-
-
-
-
-
 

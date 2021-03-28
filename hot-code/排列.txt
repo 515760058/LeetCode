@@ -116,6 +116,28 @@ public:
 
 
 
+556. 下一个更大元素 III
+给你一个正整数 n ，请你找出符合条件的最小整数，其由重新排列 n 中存在的每位数字组成，并且其值大于 n 。如果不存在这样的正整数，则返回 -1 。
+注意 ，返回的整数应当是一个 32 位整数 ，如果存在满足题意的答案，但不是 32 位整数 ，同样返回 -1 。
+输入：n = 12   输出：21
+输入：n = 21   输出：-1
+class Solution {
+public:
+    int nextGreaterElement(int n) {
+        string str = to_string(n);
+        next_permutation(str.begin(), str.end());
+        // 字符串转long
+        long val = stol(str);
+        // 溢出 || 没有下一个排列
+        if (val > INT_MAX || val <= n) {
+            return -1;
+        }
+        return val;
+    }
+};
+
+
+
 60. 排列序列
 // 给出集合 [1,2,3,...,n], 返回其第k个排列
 class Solution {
