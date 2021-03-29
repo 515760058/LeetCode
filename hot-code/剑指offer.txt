@@ -250,3 +250,496 @@ public:
 
 
 
+剑指 Offer 29. 顺时针打印矩阵
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        vector<int> res;
+        if (matrix.empty()) {
+            return res;
+        }
+        int top = 0; 
+        int left = 0;
+        int bottom = matrix.size() - 1;
+        int right = matrix[0].size() -1;
+        while (top <= bottom || left <= right) {
+            // 上面的一行top 从左向右
+            for (int i = left; i <= right; ++i) {
+                res.push_back(matrix[top][i]);
+            }
+            if (++top > bottom) { break; }
+            // 右边的一行right 从上到下
+            for (int i = top; i <= bottom; ++i) {
+                res.push_back(matrix[i][right]);
+            }
+            if (--right < left) { break; }
+            // 下面的一行bottom  从右向左
+            for (int i = right; i >= left; --i) {
+                res.push_back(matrix[bottom][i]);
+            }
+            if (--bottom < top) { break; }
+            // 左边的一行left 从下到上
+            for (int i = bottom; i >= top; --i) {
+                res.push_back(matrix[i][left]);
+            }
+            if (++left > right) { break; }
+        }
+        return res;
+    }
+};
+
+
+
+剑指 Offer 40. 最小的k个数
+class Solution {
+public:
+    vector<int> getLeastNumbers(vector<int>& arr, int k) {
+        if (k == 0) {
+            return {};
+        }
+        multiset<int> s; // 模拟一个堆
+        for (int n : arr) {
+            if (s.size() < k) {
+                s.insert(n);
+            } else {
+                int big = *s.rbegin(); // 堆中最大的数字
+                // 更新
+                if (big > n) {
+                    s.erase(s.find(big));
+                    s.insert(n);
+                }
+            }
+        }
+        vector<int> res(s.begin(), s.end());
+        return res;
+    }
+};
+
+
+剑指 Offer 18. 删除链表的节点
+class Solution {
+public:
+    ListNode* deleteNode(ListNode* head, int val) {
+        ListNode* dummy = new ListNode(1);
+        dummy->next = head;
+        ListNode* cur = dummy;
+        while(cur && cur->next) {
+            if(cur->next->val == val) {
+                cur->next = cur->next->next;
+                break;
+            }
+            cur=cur->next;
+        }
+        head = dummy->next;
+        delete dummy;
+        return head;
+    }
+};
+
+
+剑指 Offer 41. 数据流中的中位数
+class MedianFinder {
+private:
+    priority_queue<int, vector<int>, less<int>> maxHeap;    // 最大堆，存储左边一半小的数据，堆顶为最大值
+    priority_queue<int, vector<int>, greater<int>> minHeap; // 最小堆，存储右边一半大的数据，堆顶为最小值
+
+public:
+    MedianFinder() {}
+
+    // 维持堆数据平衡，并保证左边堆的最大值小于或等于右边堆的最小值
+    void addNum(int num) {
+        // 当两堆的数据个数相等时候，左边堆添加元素 采用的方法是先把数据插入右边堆，然后将右堆顶的数据插入到左边堆，这样保证左边堆插入的元素始终是右边堆的最小值
+        // 同理左边数据多，往右边堆添加数据的时候，先将数据放入左边堆，选出然后把左堆的最大值放到右边堆中
+        if (maxHeap.size() == minHeap.size()) {
+            minHeap.push(num);
+            int top = minHeap.top(); minHeap.pop();
+            maxHeap.push(top);
+        } else {
+            maxHeap.push(num);
+            int top = maxHeap.top(); maxHeap.pop();
+            minHeap.push(top);
+        }
+    }
+    
+    double findMedian() {
+        if (maxHeap.size() == minHeap.size()) {
+            return (maxHeap.top() + minHeap.top()) * 1.0 / 2;
+        } else {
+            return maxHeap.top() * 1.0;
+        }
+    }
+};
+
+
+
+138. 复制带随机指针的链表      剑指 Offer 35. 复杂链表的复制
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        map<Node*, Node*> m;
+        m[nullptr] = nullptr;
+        // 第一遍 创建节点保存对应地址
+        Node* curr = head;
+        while (curr) {
+            m[curr] = new Node(curr->val); // 创建对应节点 存到map中
+            // 下一个节点
+            curr = curr->next;
+        }
+        // 修改新节点的指针
+        curr = head;
+        while (curr) {
+            Node* newNode = m[curr]; // 对应的新节点
+            newNode->next = m[curr->next];
+            newNode->random = m[curr->random];
+            // 下一个节点
+            curr = curr->next;
+        }
+        return m[head];
+    }
+};
+
+
+
+剑指 Offer 36. 二叉搜索树与双向链表
+class Solution {
+public:
+    Node* treeToDoublyList(Node* root) {
+        if (root == nullptr) {
+            return NULL;
+        }   
+        Node* head = nullptr; // head保存头结点
+        Node* pre = nullptr;  // pre保存中序遍历过程中的上一个节点
+        inOrder(root, head, pre);
+        head->left = pre;     //最后pre指向最后一个节点
+        pre->right = head;
+        return head;
+    }
+    void inOrder(Node* root, Node*& head, Node*& pre) { // 注意是指针的引用
+        if(root == NULL) {
+            return;
+        }
+
+        inOrder(root->left, head, pre);
+        if (pre == nullptr) { //说明当前是第一个节点，作为头结点 
+            head = root;
+        } else {
+            root->left  = pre;
+            pre->right = root;
+        }
+        pre = root;
+        inOrder(root->right, head, pre);
+    }
+};
+
+
+剑指 Offer 31. 栈的压入、弹出序列
+class Solution {
+public:
+    bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
+        stack<int> s;
+        int index = 0;
+        // 每个数 入栈
+        for(int i = 0; i < pushed.size(); ++i) {
+            s.push(pushed[i]);
+            // 找到能出栈的数字 出栈
+            while(!s.empty() && index < popped.size() && popped[index] == s.top()) {
+                s.pop();
+                ++index;
+            }
+        }
+        return s.empty();
+    }
+};
+
+
+剑指 Offer 32 - I. 从上到下打印二叉树
+class Solution {
+public:
+    vector<int> levelOrder(TreeNode* root) {
+        vector<int> res;
+        if (root == nullptr) {
+            return res;
+        }
+        // BFS
+        queue<TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            TreeNode* node = q.front();
+            q.pop();
+            res.push_back(node->val);
+            if (node->left) { q.push(node->left); }
+            if (node->right) { q.push(node->right); }
+        }
+        return res;
+    }
+};
+
+
+剑指 Offer 32 - II. 从上到下打印二叉树 II
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        preOrder(root, 0, res); // 前序遍历 递归
+        return res;
+    }
+
+private:
+    void preOrder(TreeNode* root, int level, vector<vector<int>>& res) {
+        if (root == nullptr) {
+            return;
+        }
+        if (level >= res.size()) {
+            res.push_back( vector<int>() );
+        }
+        res[level].push_back(root->val);
+        preOrder(root->left, level+1, res);
+        preOrder(root->right, level+1, res);
+    }
+};
+
+
+
+
+剑指 Offer 44. 数字序列中某一位的数字
+/* 数字范围    数量num  位数    占多少位
+    1-9        9        1       9
+    10-99      90       2       180
+    100-999    900      3       2700
+    1000-9999  9000     4       36000  ...
+    例如 2901 = 9 + 180 + 2700 + 12 即一定是4位数,第12位   n = 12;
+    数据为 1000 + 12/4 -1  = 1000 + 2 = 1002   如果有余数则是1003
+    根据余数 定位1002或1003中的位置
+*/
+// 按照数的位数模拟计算就好了
+class Solution {
+public:
+    int findNthDigit(int n) {
+        if (n == 0) {
+            return 0;
+        }
+        long wei = 1;
+        long num = 9;
+        while (n > wei * num) {
+            n = n - wei * num;
+            wei++;
+            num *= 10;
+        }
+        //cout << n << ", wei=" << wei << endl; // 以2901举例  此时n=12  wei=4
+        int shang = n / wei; // 商是3 表示在第三个四位数中1000  1001  【1002】  1003
+        int shu = (int)pow(10, wei-1) + shang - 1; // 1002
+        //cout << shu << endl;
+        int yu = n % wei; // 余数是0  表示答案正好在1002的最后一位  否则就在1003中
+        if(yu == 0) { // 余数为0  恰好就是这个数的最后一位
+            return shu % 10;
+        }
+        // 余数不为0  则是下一个数的yu-1位
+        shu++;
+        string str = to_string(shu);
+        return str[yu-1]-'0';
+    }
+};
+
+
+剑指 Offer 33. 二叉搜索树的后序遍历序列
+class Solution {
+public:
+    bool verifyPostorder(vector<int>& postorder) {
+        if (postorder.empty()) {
+            return true;
+        }
+        return verifyPostorder(postorder, 0, postorder.size()-1);
+    }
+private:
+    // 验证[start, end]区间是否符合后序
+    bool verifyPostorder(vector<int>& postorder, int start, int end) {
+        if (start >= end) {
+            return true;
+        }
+        // 根节点   后序遍历 最后一个是根节点
+        int root = postorder[end];
+        // 找左子树的节点: 小于等于根
+        int mid = start;
+        while (mid < end) {
+            if (postorder[mid] > root) {
+                break;
+            }
+            mid++;
+        }
+        // 左子树[start, mid-1]都小于等于根   所以右子树[mid, end-1]都要大于根！
+        for (int i = mid; i < end; ++i) {
+            if (postorder[i] <= root) {
+                return false;
+            }
+        }
+        // 继续验证左右子树
+        return verifyPostorder(postorder, start, mid-1) && verifyPostorder(postorder, mid, end-1);
+    }
+};
+
+
+
+面试题34. 二叉树中和为某一值的路径    113. 路径总和 II
+class Solution {
+public:
+    vector<vector<int>> pathSum(TreeNode* root, int target) {
+        vector<vector<int>> res;
+        preOrder(root, target, {}, res);
+        return res;
+    }
+
+private:
+    void preOrder(TreeNode* root, int target, vector<int> tmp, vector<vector<int>>& res) {
+        if (root == nullptr) {
+            return;
+        }
+        // 到了叶节点 更新target
+        tmp.push_back(root->val);
+        target -= root->val;
+        // 判断是否符合条件
+        if (root->left == nullptr && root->right == nullptr && target == 0) {
+            res.push_back(tmp);
+            return;
+        }
+        // 向下递归子树
+        preOrder(root->left,  target, tmp, res);
+        preOrder(root->right, target, tmp, res);
+    }
+};
+
+
+
+剑指 Offer 56 - I. 数组中数字出现的次数
+/*
+相同的数异或为0，不同的异或为1。0和任何数异或等于这个数本身。
+所以，数组里面所有数异或 = 目标两个数异或 。 由于这两个数不同，所以异或结果必然不为0。
+
+假设数组异或的二进制结果为10010，那么说明这两个数从右向左数第2位是不同的
+那么可以根据数组里面所有数的第二位为0或者1将数组划分为2个。
+这样做可以将目标数必然分散在不同的数组中，而且相同的数必然落在同一个数组中。
+这两个数组里面的数各自进行异或，得到的结果就是答案
+*/
+class Solution {
+public:
+    vector<int> singleNumbers(vector<int>& nums) {
+        int num = 0; // 所有数的异或结果
+        for (int n : nums) {
+            num ^= n;
+        }
+        // 从右向左找第一个比特1，也就是第idx位 从而将所有的数字分为两组
+        int idx = 0;
+        while (num) {
+            if (num & 0x1) {
+                break;
+            }
+            idx++;
+            num >>= 1;
+        }
+        // 根据idx位的比特1  将所有数据分为两组
+        int res1 = 0;
+        int res2 = 0;
+        for (int n : nums) {
+            if ((n >> idx) & 0x1) {
+                res1 ^= n;
+            } else {
+                res2 ^= n;
+            }
+        }
+        return {res1, res2};
+    }
+};
+
+
+剑指 Offer 56 - II. 数组中数字出现的次数 II
+/*
+如果一个数字出现3次，它的二进制每一位也出现的3次。
+如果把所有的出现三次的数字的二进制表示的每一位都分别加起来，那么每一位都能被3整除。
+我们把数组中所有的数字的二进制表示的每一位都加起来。
+    如果某一位能被3整除，那么这一位对只出现一次的那个数的这一肯定为0。
+    如果某一位不能被3整除，那么只出现一次的那个数字的该位置一定为1.
+*/
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        vector<int> m(32, 0); // int是32位的  所有数字中每个比特位1 出现的总次数
+        for (int num : nums) {
+            for (int i = 0; i < 32; ++i) {
+                m[i] += ((num>>i) & 0x1); // 统计次数
+            }
+        }
+        int res = 0;
+        for (int i= 0; i < m.size(); ++i) {
+            res |= ((1<<i) * (m[i]%3)); // 还原数字
+        }
+        return res;
+    }
+};
+
+
+
+剑指 Offer 51. 数组中的逆序对
+class Solution {
+public:
+    int reversePairs(vector<int>& nums) {
+        int n = nums.size();
+        if (n < 2) {
+            return 0;
+        } 
+        vector<int> temp(nums);
+        return mergeSort(nums, temp, 0, n-1);
+    }
+
+private:
+    int mergeSort(vector<int> &nums, vector<int> &temp, int l, int r) {
+        if(l >= r) {
+            return 0;
+        }
+        int mid = l + (r - l)/ 2;
+        // res = nums[l...mid] 范围的逆序数 + nums[mid+1...r] 范围的逆序数 + 跨越两个子区间的逆序对数
+        int res =  mergeSort(nums, temp, l, mid)
+                 + mergeSort(nums, temp, mid+1, r)
+                 + merge(nums, temp, l, mid, r);
+        return res;
+    }
+
+    // merge函数求出在nums[l...mid]和nums[mid+1...r]有序的基础上, nums[l...r]的逆序数对个数
+    int merge(vector<int> &nums, vector<int> &temp, int l, int mid, int r) {
+        int cnt = 0;    //逆序对个数
+        int i = l;      // i是左半部分的索引，初始值为L
+        int j = mid + 1; // j右半部分的索引，初始值为R
+        int pos = l;    // 待归并数组的起始位置 = L
+        while(i <= mid && j <= r) { //左右两个子区间都还没遍历完
+            if(nums[i] <= nums[j]) { //这儿必须得是“<=”，如是“<”，则归并排序是不稳定的
+                temp[pos++] = nums[i++];
+            } else {                      // 此时, 左边的nums[i] > 右边的nums[j]
+                temp[pos++] = nums[j++];
+                // nums[j]和左半部分的所有未处理的元素（nums[i]及其后面的所有元素）都构成了逆序数对   左半部分此时未处理的元素个数为 mid-j+1
+                cnt += (mid - i + 1);
+            }
+        }
+        while(i <= mid) {  // 如果左半部分元素有剩余
+            temp[pos++] = nums[i++];
+        }
+        while(j <= r) {    // 如果右半部分元素有剩余
+            temp[pos++] = nums[j++];
+        }
+        //这道题的思路是边排序边统计逆序数的对数，排序要用到辅助数组temp，排完序再赋值回nums
+        while(l <= r) {
+            nums[l] = temp[l];
+            l++;
+        }
+        return cnt;     
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
