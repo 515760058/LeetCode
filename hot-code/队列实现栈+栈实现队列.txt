@@ -1,3 +1,25 @@
+剑指 Offer 31. 栈的压入、弹出序列
+class Solution {
+public:
+    bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
+        stack<int> s;
+        int index = 0;
+        // 每个数 入栈
+        for(int i = 0; i < pushed.size(); ++i) {
+            s.push(pushed[i]);
+            // 找到能出栈的数字 出栈
+            while(!s.empty() && index < popped.size() && popped[index] == s.top()) {
+                s.pop();
+                ++index;
+            }
+        }
+        return s.empty();
+    }
+};
+
+
+
+
 225. 用队列实现栈
 class MyStack {
 private:
@@ -86,4 +108,49 @@ public:
         return stIn.empty() && stOut.empty();
     }
 };
+
+
+
+
+剑指 Offer 59 - II. 队列的最大值
+class MaxQueue {
+private:
+    queue<int> que; // 队列 用于保存数据
+    deque<int> deq; // 双端队列 递减的 保存最大值
+
+public:
+    MaxQueue() { }
+
+    int max_value() {
+        if (deq.empty()) {
+            return -1;
+        }
+        return deq.front();
+    }
+
+    void push_back(int value) {
+        que.push(value);
+        // 保持deq中的递减性
+        while(!deq.empty() && deq.back() < value) {
+            deq.pop_back();
+        }
+        deq.push_back(value);
+    }
+
+    int pop_front() {
+        if (que.empty()) {
+            return -1;
+        }
+        int val = que.front();
+        que.pop();
+        // 弹出的元素 是否是最大值？
+        if(val == deq.front()) {
+            deq.pop_front();
+        }
+        return val;
+    }
+};
+
+
+
 

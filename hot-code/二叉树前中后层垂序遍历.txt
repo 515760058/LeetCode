@@ -88,6 +88,44 @@ public:
 
 
 
+剑指 Offer 33. 二叉搜索树的后序遍历序列
+给定一个序列 判断该序列是否可能是BST的后序遍历结果。
+class Solution {
+public:
+    bool verifyPostorder(vector<int>& postorder) {
+        if (postorder.empty()) {
+            return true;
+        }
+        return verifyPostorder(postorder, 0, postorder.size()-1);
+    }
+private:
+    // 验证[start, end]区间是否符合后序
+    bool verifyPostorder(vector<int>& postorder, int start, int end) {
+        if (start >= end) {
+            return true;
+        }
+        // 根节点   后序遍历 最后一个是根节点
+        int root = postorder[end];
+        // 找左子树的节点: 小于等于根
+        int mid = start;
+        while (mid < end) {
+            if (postorder[mid] > root) {
+                break;
+            }
+            mid++;
+        }
+        // 左子树[start, mid-1]都小于等于根   所以右子树[mid, end-1]都要大于根！
+        for (int i = mid; i < end; ++i) {
+            if (postorder[i] <= root) {
+                return false;
+            }
+        }
+        // 继续验证左右子树
+        return verifyPostorder(postorder, start, mid-1) && verifyPostorder(postorder, mid, end-1);
+    }
+};
+
+
 
 102. 二叉树的层序遍历
 // 递归版
@@ -147,6 +185,55 @@ public:
             res.push_back(tmp);
         }
         return res;
+    }
+};
+
+
+
+
+剑指 Offer 32 - I. 从上到下打印二叉树
+class Solution {
+public:
+    vector<int> levelOrder(TreeNode* root) {
+        vector<int> res;
+        if (root == nullptr) {
+            return res;
+        }
+        // BFS
+        queue<TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            TreeNode* node = q.front();
+            q.pop();
+            res.push_back(node->val);
+            if (node->left) { q.push(node->left); }
+            if (node->right) { q.push(node->right); }
+        }
+        return res;
+    }
+};
+
+
+剑指 Offer 32 - II. 从上到下打印二叉树 II
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        preOrder(root, 0, res); // 前序遍历 递归
+        return res;
+    }
+
+private:
+    void preOrder(TreeNode* root, int level, vector<vector<int>>& res) {
+        if (root == nullptr) {
+            return;
+        }
+        if (level >= res.size()) {
+            res.push_back( vector<int>() );
+        }
+        res[level].push_back(root->val);
+        preOrder(root->left, level+1, res);
+        preOrder(root->right, level+1, res);
     }
 };
 

@@ -1,3 +1,25 @@
+剑指 Offer 18. 删除链表的节点
+class Solution {
+public:
+    ListNode* deleteNode(ListNode* head, int val) {
+        ListNode* dummy = new ListNode(1);
+        dummy->next = head;
+        ListNode* cur = dummy;
+        while(cur && cur->next) {
+            if(cur->next->val == val) {
+                cur->next = cur->next->next;
+                break;
+            }
+            cur=cur->next;
+        }
+        head = dummy->next;
+        delete dummy;
+        return head;
+    }
+};
+
+
+
 141. 环形链表 判断链表是否有环
 class Solution {
 public:
@@ -72,28 +94,28 @@ public:
 
 
 
-剑指 Offer 24. 反转链表 （全部节点）
+剑指 Offer 52. 两个链表的第一个公共节点
+输入两个链表，找出它们的第一个公共节点。
 class Solution {
 public:
-    ListNode* reverseList(ListNode* head) {
-        //借助栈
-        stack<int> s;
-        ListNode* p = head;
-        while (p != nullptr) {
-            s.push(p->val);
-            p = p->next;
+    // 设交集链表长c,链表1除交集的长度为a，链表2除交集的长度为b，有
+    // a + c + b = b + c + a
+
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode* t1 = headA;
+        ListNode* t2 = headB;
+        while (t1 != t2) {
+            t1 = ( t1 == nullptr ? headB : t1->next ); // t1先走了a+c  再走b
+            t2 = ( t2 == nullptr ? headA : t2->next ); // t2先走了b+c  再走a
+            // 最终 t1和t2都走了 a+b+c的长度，相聚于第一个公共节点
         }
-        p = head;
-        while (p != nullptr) {
-            p->val = s.top();
-            s.pop();
-            p = p->next;
-        }
-        return head;
+        return t1;
     }
 };
 
-// 迭代
+
+
+剑指 Offer 24. 反转链表 （全部节点）
 class Solution {
 public:
     ListNode* reverseList(ListNode* head) {
@@ -244,28 +266,6 @@ public:
     }
 };
 
-// 递归版本
-class Solution {
-public:
-    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
-        if (l1 == nullptr){
-            return l2;
-        }
-        if (l2 == nullptr){
-            return l1;
-        }
-
-        if (l1->val > l2->val){
-            l2->next = mergeTwoLists(l1, l2->next);
-            return l2;
-        } else {
-            l1->next = mergeTwoLists(l1->next, l2);
-            return l1;
-        }
-    }
-};
-
-
 
 
 
@@ -362,6 +362,35 @@ private:
         return pre;
     }
 };
+
+
+
+138. 复制带随机指针的链表      剑指 Offer 35. 复杂链表的复制
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        map<Node*, Node*> m;
+        m[nullptr] = nullptr;
+        // 第一遍 创建节点保存对应地址
+        Node* curr = head;
+        while (curr) {
+            m[curr] = new Node(curr->val); // 创建对应节点 存到map中
+            // 下一个节点
+            curr = curr->next;
+        }
+        // 修改新节点的指针
+        curr = head;
+        while (curr) {
+            Node* newNode = m[curr]; // 对应的新节点
+            newNode->next = m[curr->next];
+            newNode->random = m[curr->random];
+            // 下一个节点
+            curr = curr->next;
+        }
+        return m[head];
+    }
+};
+
 
 
 

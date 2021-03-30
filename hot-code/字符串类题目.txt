@@ -1,4 +1,4 @@
-8. 字符串转换整数 (atoi)
+8. 字符串转换整数 (atoi)   剑指 Offer 67. 把字符串转换成整数
 class Solution {
 public:
     int myAtoi(string str) {
@@ -10,26 +10,31 @@ public:
             return 0;
         }
 
-        int bol = 1; // 记录正负符号
+        int flag = 1; // 记录正负符号
         if (str[i] == '-') { // 负号
-            bol = -1;
+            flag = -1;
             ++i;
         }else if (str[i] == '+') { // 正号
-            bol = 1;
+            flag = 1;
             ++i;
         }
-        
-        long long res = 0; //输出结果
-        while (i < str.size() && str[i] >= '0' && str[i] <= '9') {
-            res = res * 10 + str[i] - '0';
-            ++i;
-            if (res >= 2147483648) { // 溢出
-                return bol == 1 ? INT_MAX : INT_MIN;
+        // 处理数字部分
+        long res = 0;
+        for (; i < str.size() && isdigit(str[i]); ++i) { // isdigit(str[i]) '0' ~ '9'
+            res = res * 10 + (str[i] - '0'); // 数字部分
+            if (flag == 1 && res >= INT_MAX) { // 数字部分 超过正数的上限
+                return INT_MAX;
             }
-        }
-        return res * bol;
+            if (flag == -1 && res > INT_MAX) { // 数字部分 达到负数的上限
+                return INT_MIN;
+            }
+        } 
+        return flag * res;
     }
 };
+
+
+
 
 
 

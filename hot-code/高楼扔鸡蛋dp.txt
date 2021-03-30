@@ -31,6 +31,5 @@ private:
     string toString(int k, int n) {
         return to_string(k) + "+" + to_string(n);
     }
-
 };
 
