@@ -1,0 +1,472 @@
+
+剑指 Offer 45. 把数组排成最小的数
+输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+class Solution {
+public:
+    string minNumber(vector<int>& nums) {
+        // 把每个数字转成字符串
+        vector<string> strs(nums.size());
+        for (int i = 0; i < nums.size(); ++i) {
+            strs[i] = to_string(nums[i]);
+        }
+        // 对字符串排序
+        sort(strs.begin(), strs.end(),
+             [](string& a, string& b){
+                 return a+b < b+a;
+            });
+        // 转成结果
+        string res;
+        for (string& str : strs) {
+            res += str;
+        }
+        return res;
+    }
+};
+
+
+剑指 Offer 57 - II. 和为s的连续正数序列
+输入一个正整数 target ，输出所有和为 target 的连续正整数序列（至少含有两个数）。
+序列内的数字由小到大排列，不同序列按照首个数字从小到大排列。
+class Solution {
+public:
+    // 双指针 滑动窗口
+    vector<vector<int>> findContinuousSequence(int target) {
+        int left = 1;
+        int right = 1;
+        int sum = 0;
+        vector<vector<int>> res;
+        for (int right = 0; right < target; ++right) {
+            sum += right;
+            while (sum > target) {
+                sum -= left;
+                ++left;
+            }
+            // 保存结果
+            if (sum == target) {
+                vector<int> tmp;
+                for (int i = left; i <= right; ++i) {
+                    tmp.push_back(i);
+                }
+                res.push_back(tmp);
+            }
+        }
+        return res;
+    }
+};
+
+
+
+剑指 Offer 46. 把数字翻译成字符串
+给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。
+请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
+class Solution {
+public:
+    int translateNum(int num) {
+        int res = 0;
+        string numStr = to_string(num);
+        translateNum(numStr, 0, res);
+        return res;
+    }
+private:
+    // 递归 回溯？
+    void translateNum(string& num, int start, int& res) {
+        if (start == num.size()){//结束条件
+            res++;
+            return;
+        }
+        // 分支1  一位数字时
+        translateNum(num, start+1, res); 
+        // 分支2  两位数字时
+        string str = num.substr(start, 2);
+        int n = stoi(str);
+        if (10 <= n && n <= 25) { //剪枝操作
+            translateNum(num, start+2, res);
+        }
+    }
+};
+
+
+
+
+
+剑指 Offer 52. 两个链表的第一个公共节点
+输入两个链表，找出它们的第一个公共节点。
+class Solution {
+public:
+    // 设交集链表长c,链表1除交集的长度为a，链表2除交集的长度为b，有
+    // a + c + b = b + c + a
+
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode* t1 = headA;
+        ListNode* t2 = headB;
+        while (t1 != t2) {
+            t1 = ( t1 == nullptr ? headB : t1->next ); // t1先走了a+c  再走b
+            t2 = ( t2 == nullptr ? headA : t2->next ); // t2先走了b+c  再走a
+            // 最终 t1和t2都走了 a+b+c的长度，相聚于第一个公共节点
+        }
+        return t1;
+    }
+};
+
+
+
+剑指 Offer 58 - I. 翻转单词顺序
+输入一个英文句子，翻转句子中单词的顺序，但单词内字符的顺序不变。为简单起见，标点符号和普通字母一样处理。例如输入字符串"I am a student. "，则输出"student. a am I"。
+class Solution {
+public:
+    string reverseWords(string s) {
+        // 流和栈
+        string tmp;
+        stack<string> stk;
+        stringstream ss(s);
+        while (ss >> tmp) {
+            stk.push(tmp);
+        }
+        tmp = "";
+        while (!stk.empty()) {
+            tmp += (stk.top() + " ");
+            stk.pop();
+        }
+        tmp.pop_back(); // 弹出最后的空格
+        return tmp;
+    }
+};
+
+
+
+
+剑指 Offer 47. 礼物的最大价值
+在一个 m*n 的棋盘的每一格都放有一个礼物，每个礼物都有一定的价值（价值大于 0）。你可以从棋盘的左上角开始拿格子里的礼物，并每次向右或者向下移动一格、直到到达棋盘的右下角。
+class Solution {
+public:
+    int maxValue(vector<vector<int>>& grid) {
+        if (grid.empty()) {
+            return 0;
+        }
+        int rows = grid.size();
+        int cols = grid[0].size();
+        // 考虑边缘的第一行：就是不断累加的结果    忽略第一个
+        for (int j = 1; j < cols; ++j) {
+            grid[0][j] += grid[0][j-1]; 
+        }
+        // 考虑边缘的第一列：就是不断累加的结果   忽略第一个
+        for (int i = 1; i < rows; ++i) {
+            grid[i][0] += grid[i-1][0]; 
+        }
+        // 从上到下，从左到右来计算
+        for (int i = 1; i < rows; ++i) {
+            for (int j = 1; j < cols; ++j) {
+                grid[i][j] += max(grid[i-1][j], grid[i][j-1]); 
+            }
+        }
+        return grid[rows-1][cols-1];
+    }
+};
+
+
+剑指 Offer 49. 丑数
+我们把只包含质因子 2、3 和 5 的数称作丑数（Ugly Number）。求按从小到大的顺序的第 n 个丑数。
+class Solution {
+public:
+    int nthUglyNumber(int n) {
+        int res = 1;
+        vector<int> nums(n, 1); // 保存n个丑数 其中第一个丑数是1
+        int idx2 = 0;
+        int idx3 = 0; 
+        int idx5 = 0;
+        for (int i = 1; i < n; ++i) {
+            // 根据以前的丑数 计算下一个丑数
+            int res = min(nums[idx2]*2, min(nums[idx3]*3, nums[idx5]*5));
+            nums[i] = res; // 保存丑数
+            if (res == nums[idx2]*2) { idx2++; }
+            if (res == nums[idx3]*3) { idx3++; }
+            if (res == nums[idx5]*5) { idx5++; }
+        }
+        return nums[n-1];
+    }
+};
+
+
+剑指 Offer 53 - II. 0～n-1中缺失的数字
+一个长度为n-1的递增排序数组中的所有数字都是唯一的，并且每个数字都在范围0～n-1之内。在范围0～n-1内的n个数字中有且只有一个数字不在该数组中，请找出这个数字。
+class Solution {
+public:
+    int missingNumber(vector<int>& nums) {
+        int res = nums.size();
+        for (int i = 0; i < nums.size(); ++i) {
+            res ^= nums[i];
+            res ^= i;
+        }
+        return res;
+    }
+};
+// 有序 使用二分法也可以
+
+
+剑指 Offer 48. 最长不含重复字符的子字符串
+请从字符串中找出一个最长的不包含重复字符的子字符串，计算该最长子字符串的长度。
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        set<char> window;
+        int length = 0;
+        int idx = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            if (window.count(s[i])) {
+                // 弹出上一个重复的字符 及其前面的字符
+                while (s[idx] != s[i]) {
+                    window.erase(s[idx++]); // 前面的字符
+                }
+                window.erase(s[idx++]); // 上一个重复的字符
+            }
+            // 插入当前字符 更新滑窗大小
+            window.insert(s[i]);
+            length = max(length, (int)window.size());
+        }
+        return length;
+    }
+};
+
+
+
+剑指 Offer 59 - II. 队列的最大值
+class MaxQueue {
+private:
+    queue<int> que; // 队列 用于保存数据
+    deque<int> deq; // 双端队列 递减的 保存最大值
+
+public:
+    MaxQueue() { }
+
+    int max_value() {
+        if (deq.empty()) {
+            return -1;
+        }
+        return deq.front();
+    }
+
+    void push_back(int value) {
+        que.push(value);
+        // 保持deq中的递减性
+        while(!deq.empty() && deq.back() < value) {
+            deq.pop_back();
+        }
+        deq.push_back(value);
+    }
+
+    int pop_front() {
+        if (que.empty()) {
+            return -1;
+        }
+        int val = que.front();
+        que.pop();
+        // 弹出的元素 是否是最大值？
+        if(val == deq.front()) {
+            deq.pop_front();
+        }
+        return val;
+    }
+};
+
+
+
+剑指 Offer 65. 不用加减乘除做加法
+// 两个整数做异或运算，得到不进位加法的运算结果
+// 两个整数做与运算，然后左移一位，得到进位的运算结果
+// 将上面得到的两个结果相加，即重复上述步骤直到进位的结果为0
+class Solution {
+public:
+    int add(int a, int b) {
+        while (b) {
+            int carry = (unsigned int)(a & b) << 1;    // 与运算然后左移一位 得到a+b的进位
+            a ^= b; // 异或运算，得到a+b 不老考虑进位时的运算结果
+            b = carry;
+        }
+        return a;
+    }
+};
+
+
+
+
+剑指 Offer 66. 构建乘积数组
+class Solution {
+public:
+    vector<int> constructArr(vector<int>& a) {
+        int len = a.size();
+        vector<int> b(len, 1);
+        int product = 1;
+        for (int i = 0; i < len; ++i) { // 从左往右累乘
+            b[i] *= product;
+            product *= a[i];
+        }
+        product = 1;
+        for (int i = len-1; i >= 0; --i) { // 从右向左累乘
+            b[i] *= product;
+            product *= a[i];
+        }
+        return b;
+    }
+};
+
+
+
+剑指 Offer 67. 把字符串转换成整数
+class Solution {
+public:
+    int strToInt(string str) {
+        // 跳过开头的空格
+        int i = 0;
+        while (str[i] == ' ' && i < str.size()) {
+            i++;
+        }
+        // 处理符号
+        int flag = 1; //默认flag = 1，正数
+        if (str[i] == '-') {  // 是否是负数 并跳过正负号
+            flag = -1;
+        }
+        if (str[i] == '-' || str[i] == '+') {
+            i++;
+        }
+        // 处理数字部分
+        long res = 0;
+        for (; i < str.size() && isdigit(str[i]); ++i) {
+            res = res * 10 + (str[i] - '0'); // 数字部分
+            if (flag == 1 && res >= INT_MAX) { // 数字部分 超过正数的上限
+                return INT_MAX;
+            }
+            if (flag == -1 && res > INT_MAX) { // 数字部分 达到负数的上限
+                return INT_MIN;
+            }
+        } 
+        return flag * res;
+    }
+};
+
+
+剑指 Offer 62. 圆圈中最后剩下的数字
+// 链接：https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/solution/javajie-jue-yue-se-fu-huan-wen-ti-gao-su-ni-wei-sh/
+/*
+最后剩下的 3 的下标是0
+第四轮反推，补上m个位置，然后模上当时的数组大小2，位置是(0 + 3) % 2 = 1。
+第三轮反推，补上m个位置，然后模上当时的数组大小3，位置是(1 + 3) % 3 = 1。
+第二轮反推，补上m个位置，然后模上当时的数组大小4，位置是(1 + 3) % 4 = 0。
+第一轮反推，补上m个位置，然后模上当时的数组大小5，位置是(0 + 3) % 5 = 3。
+所以最终剩下的数字的下标就是3。因为数组是从0开始的，所以最终的答案就是3。
+    总结一下反推的过程，就是 (当前index + m) % 上一轮剩余数字的个数。
+*/
+class Solution {
+public:
+    int lastRemaining(int n, int m) {
+        int ans = 0; // 最后剩下的那个人 肯定是在下标0处
+        // 最后一轮剩下2个人  所以从2开始反推
+        for (int i = 2; i <= n; i++) {
+            ans = (ans + m) % i; // 计算这个人在上一轮的位置(下标)
+        }
+        return ans;
+    }
+};
+
+
+
+剑指 Offer 55 - II. 平衡二叉树
+class Solution {
+public:
+    bool isBalanced(TreeNode* root) {
+        bool balance = true;
+        checkDepth(root, balance);
+        return balance;
+    }
+
+private:
+    int checkDepth(TreeNode* root, bool& balance) {
+        if (root == nullptr) {
+            return 0;
+        }
+        int leftDepth = checkDepth(root->left, balance);
+        int rightDepth = checkDepth(root->right, balance);
+        if (abs(leftDepth - rightDepth) > 1) {
+            balance = false;
+        }
+        return max(leftDepth, rightDepth) + 1;
+    }
+};
+
+
+
+
+剑指 Offer 68 - I. 二叉搜索树的最近公共祖先
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        // p,q都小于root，都在root的左子树上
+        if (p->val < root->val && q->val < root->val) {
+            return lowestCommonAncestor(root->left, p, q);
+        }
+        // p,q都大于root，都在root的右子树上
+        if (p->val > root->val && q->val > root->val) {
+            return lowestCommonAncestor(root->right, p, q);
+        }
+        // p,q等于root  或者 一个大于root一个小于root  此时root就是公共祖先
+        return root;
+    }
+};
+
+
+
+剑指 Offer 68 - II. 二叉树的最近公共祖先
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        // 当前节点就是p或q
+        if (root == p || root == q) {
+            return root;
+        }
+        TreeNode* left = lowestCommonAncestor(root->left, p, q);
+        TreeNode* right = lowestCommonAncestor(root->right, p, q);
+        // p,q 一个在左子树 一个在右子树  当前节点就是公共祖先
+        if (left != nullptr && right != nullptr) {
+            return root;
+        }
+        // p,q 都在左子树
+        if (left != nullptr) {
+            return left;
+        }
+        // p,q 都在右子树
+        if (right != nullptr) {
+            return right;
+        }
+        return nullptr;
+    }
+};
+
+
+剑指 Offer 61. 扑克牌中的顺子
+从扑克牌中随机抽5张牌，判断是不是一个顺子，即这5张牌是不是连续的。2～10为数字本身，A为1，J为11，Q为12，K为13，而大、小王为 0 ，可以看成任意数字。A 不能视为 14。
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        int zeroCnt = 0; // 万能牌的数量
+        int diff = 0; // 缺了多少张牌
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i] == 0) { // 0是万能牌
+                zeroCnt++;
+            } else {
+                if (i+1 < nums.size()) { // 下一张牌的下标 是有效的
+                    if (nums[i] == nums[i+1]) { // 当前牌==下一张牌   出现了对子 那肯定不是顺子
+                        return false;
+                    }
+                    diff += nums[i+1] - nums[i] - 1; // 当前牌和下一张牌 差了多少张牌
+                }
+            }
+        }
+        return zeroCnt >= diff; // 万能牌 能否补齐缺的牌？
+    }
+};
