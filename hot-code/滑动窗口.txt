@@ -58,17 +58,68 @@ public:
                     window.erase(c);
                 }
             }
-            // debug
-            //for (auto w : window) {
-            //    cout << w.first << w.second << "; ";
-            //}
-            //cout << endl;
             // 判断相等
             if (window == target) {
                 result.push_back(left);
             }
         }
         return result;
+    }
+};
+
+
+
+76. 最小覆盖子串
+给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+注意：如果 s 中存在这样的子串，我们保证它是唯一的答案。
+输入：s = "ADOBECODEBANC", t = "ABC"    输出："BANC"
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        // 统计t中每个字符的数量
+        unordered_map<char,int> need;        
+        for(char c : t){
+            need[c]++;
+        }
+        //start,len记录最小子串的起始索引和长度
+        int start = 0;
+        int len = INT_MAX;
+        //left,right维护滑动窗口window的大小
+        unordered_map<char,int> window;
+        int left = 0;
+        int right = 0;
+        int valid = 0;
+        while (right < s.size()) {
+            // 窗口win向右扩大  插入右边的字符c    
+            char c = s[right++];
+            if (need.count(c)) {
+                window[c]++;
+                if (window[c] == need[c]) { // 有一种字符数量相等了
+                    valid++;
+                }
+            }
+            // 有valid种字符数量相等了: win已经覆盖了need
+            while(valid == need.size()) {
+                // 更新一个更短的结果
+                if (right - left < len) {
+                    start = left;
+                    len = right - left;
+                }
+                // 窗口win从左边收缩  删除左边的字符f
+                char f = s[left++];
+                if (need.count(f)) {
+                    if(window[f] == need[f]) { // 破坏了一种字符的数量相等
+                        valid--;
+                    } 
+                    window[f]--;   
+                } 
+            }
+        }
+        // 返回
+        if (len == INT_MAX) {
+            return "";
+        }
+        return s.substr(start,len);
     }
 };
 
