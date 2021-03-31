@@ -1,3 +1,56 @@
+剑指 Offer 68 - I. 二叉搜索树的最近公共祖先
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        // p,q都小于root，都在root的左子树上
+        if (p->val < root->val && q->val < root->val) {
+            return lowestCommonAncestor(root->left, p, q);
+        }
+        // p,q都大于root，都在root的右子树上
+        if (p->val > root->val && q->val > root->val) {
+            return lowestCommonAncestor(root->right, p, q);
+        }
+        // p,q等于root  或者 一个大于root一个小于root  此时root就是公共祖先
+        return root;
+    }
+};
 
+
+
+
+
+剑指 Offer 36. 二叉搜索树与双向链表
+class Solution {
+public:
+    Node* treeToDoublyList(Node* root) {
+        if (root == nullptr) {
+            return NULL;
+        }   
+        Node* head = nullptr; // head保存头结点
+        Node* pre = nullptr;  // pre保存中序遍历过程中的上一个节点
+        inOrder(root, head, pre);
+        head->left = pre;     //最后pre指向最后一个节点
+        pre->right = head;
+        return head;
+    }
+    void inOrder(Node* root, Node*& head, Node*& pre) { // 注意是指针的引用
+        if(root == NULL) {
+            return;
+        }
+
+        inOrder(root->left, head, pre);
+        if (pre == nullptr) { //说明当前是第一个节点，作为头结点 
+            head = root;
+        } else {
+            root->left  = pre;
+            pre->right = root;
+        }
+        pre = root;
+        inOrder(root->right, head, pre);
+    }
+};
 
 
