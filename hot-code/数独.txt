@@ -1,0 +1,95 @@
+36. 有效的数独
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char>>& board) {
+        // 记录某行，某位数字是否已经出现过
+        vector<vector<bool>> row(9, vector<bool>(10, false)); 
+        // 记录某列，某位数字是否已经出现过
+        vector<vector<bool>> col(9, vector<bool>(10, false)); 
+        // 记录某3x3宫格内，某位数字是否已经出现过
+        vector<vector<bool>> box(9, vector<bool>(10, false)); 
+
+        for (int i = 0; i < 9; i++){
+            for (int j = 0; j < 9; j++){
+                if (board[i][j] == '.'){
+                    continue;
+                }
+                //当前[i, j]位置对应的数字num
+                int num = board[i][j] - '0';
+                if(row[i][num]) { // 第i行已经出现过num
+                    return false; 
+                }
+                if(col[j][num]) { // 第j列已经出现过num了
+                    return false; 
+                }
+                if (box[(i/3)*3+j/3][num]) { // 这个区域已经出现过num了
+                    return false; 
+                }
+                //cout << i << ", " << j << endl;
+                // 标记出现过
+                row[i][num] = true;
+                col[j][num] = true;
+                box[(i/3)*3+j/3][num] = true;
+            }
+        }
+        return true;
+    }
+};
+
+
+37. 解数独
+class Solution {
+public:
+    void solveSudoku(vector<vector<char>>& board) {
+        if (board.empty()) {
+            return;
+        }
+        vector<char> nums = {'1','2','3','4','5','6','7','8','9'}; // 可放元素
+        dfs(board, 0, 0, nums);
+    }
+
+private:
+    bool dfs(vector<vector<char>>& board, int x, int y, vector<char>& nums){
+        if (y >= board[0].size()) { //一行找完了，找下一行
+            return dfs(board, x+1, 0, nums);
+        }
+        if (x >= board.size()) { //行列都找完了，结束
+            return true;
+        }
+        if (board[x][y] != '.') { //当前格式是数字，直接找下一个格子
+            return dfs(board, x, y+1, nums);
+        }
+        // 当前格子是'.'  依次遍历每个元素
+        for (char num : nums) {
+            if (check(board, x, y, num)) { //如果当前格子可以防止num
+                board[x][y] = num; //填入
+                if (dfs(board, x, y+1, nums)) { //下一个可填，也就是从最后一个格子依次返回的都是true
+                    return true;
+                } else { // 撤销填入
+                    board[x][y] = '.';
+                }
+            }
+        }
+        return false;
+    }
+
+    // 判断当前位置[x,y] 是否可以放置字符c
+    bool check(vector<vector<char>>& board, int x, int y, char c) {
+        // 横竖 是否出现过c
+        for (int i = 0; i < board.size(); i++) { 
+            if (board[x][i] == c || board[i][y] == c) {
+                return false;
+            }
+        }
+        //找到九宫格左上元素 依次遍历 是否出现过c
+        for (int i = x/3*3; i < x/3*3+3; i++) {
+            for(int j = y/3*3;j < y/3*3+3; j++){
+                if(board[i][j] == c) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+};
+
