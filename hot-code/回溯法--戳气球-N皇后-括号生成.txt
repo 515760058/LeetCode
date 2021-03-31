@@ -1,0 +1,122 @@
+// 312. 戳气球  回溯法 暴力超时
+class Solution {
+public:
+    int maxCoins(vector<int>& nums) {
+        int maxScore = 0;
+        // 使用hash 便于搜索和删除  
+        unordered_map<int, int> data; // idx  num
+        data[-1] = 1;
+        data[nums.size()] = 1;
+        for (int i = 0; i < nums.size(); ++i) {
+            data[i] = nums[i];
+        }
+        // 回溯
+        backtrace(data, nums.size(), 0, maxScore);
+        return maxScore;
+    }
+
+private:
+    void backtrace(unordered_map<int, int>& data, int n, int score, int& maxScore) {
+        if (data.size() == 2) {
+            maxScore = max(maxScore, score);
+            return;
+        }
+
+        for (int i = 0; i < n; ++i) {
+            if (!data.count(i)) {
+                continue;
+            }
+            // 戳破这个气球
+            int num = data[i];
+            data.erase(i);
+            // 计算前后气球的下标和得分
+            int prevIdx = i - 1;
+            while (!data.count(prevIdx)) {
+                --prevIdx;
+            }
+            int nextIdx = i + 1;
+            while (!data.count(nextIdx)) {
+                ++nextIdx;
+            }
+            int temp = score + data[prevIdx]*num*data[nextIdx];
+            // 回溯
+            backtrace(data, n, temp, maxScore);
+            // 放回气球i
+            data[i] = num;
+        }
+    }
+};
+
+
+
+
+51. N 皇后
+给你一个整数 n ，返回所有不同的 n 皇后问题 的解决方案。
+// 回溯法
+class Solution {
+public:
+    vector<vector<string>> solveNQueens(int n) {
+            vector<vector<string>> res;
+            // 回溯法
+            vector<string> board(n, string(n, '.'));  // 模拟n*n的棋盘  首先全部初始化为.   放置皇后Q
+            backtracking(board, 0, res); // 从棋盘的第一行开始摆放皇后
+            return res;
+    }
+
+private:
+    // 在棋盘board的第idx行尝试摆放皇后  结果保存在res中
+    void backtracking(vector<string>& board, int idx, vector<vector<string>>& res) {
+        if (idx == board.size()) { // 一个有效的结果
+            res.push_back(board);
+            return;
+        }
+        for (int i = 0; i < board.size(); i++) { //对当前idx行的每一列i 检查是否能放一个皇后
+            if (isValid(board, idx, i) == false) {
+                continue; //不能放，继续下一列
+            }
+            // 当前idx行的i列可以放置一个皇后Q
+            board[idx][i]='Q';  // 放置Q
+            backtracking(board, idx+1, res); // 在idx行i列放置Q的情况下 向idx+1行递归
+            board[idx][i]='.'; // 撤销放置Q  尝试下一列
+        }
+    }
+    // 在不冲突的情况下  能否在board的row行col列放置Q
+    bool isValid(vector<string>& board, int row, int col) {
+        // 检查board[row][col]的正上方位置有没有Q
+        for(int i = 0; i < row; i++){
+            if(board[i][col] == 'Q'){
+                return false;
+            }
+        }
+        // 检查board[row][col]的右上对角线位置[i, j]有没有Q
+        int i = row - 1;
+        int j = col + 1;
+        while (i >= 0 && j < board.size()){
+            if (board[i][j] == 'Q'){
+                return false;
+            }
+            i--;
+            j++;
+        }
+        // 检查board[row][col]的右上对角线位置[i, j]有没有Q
+        i = row - 1;
+        j = col - 1;
+        while (i >= 0 && j >= 0){
+            if (board[i][j] == 'Q'){
+                return false;
+            }
+            i--;
+            j--;
+        }
+        // board[row][col]可以放置Q
+        return true;
+    }
+};
+
+
+
+
+
+
+
+
