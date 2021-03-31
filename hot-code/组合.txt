@@ -166,14 +166,14 @@ public:
     int combinationSum4(vector<int>& nums, int target) {
         set<vector<int>> res;
         vector<int> temp;
-        helper(target, temp, nums, res);
+        backtrace(target, temp, nums, res);
         return res.size();
     }
 
 private:
     //idx：在candicates数组的起始下标（不存在重复的数字）
     //target：当前的目标和    temp：当前的组合
-    void helper(int target, vector<int>& temp, vector<int>& candicates, set<vector<int>>& res){
+    void backtrace(int target, vector<int>& temp, vector<int>& candicates, set<vector<int>>& res){
         if (target < 0) {
             return;
         }
@@ -183,7 +183,7 @@ private:
         }
         for(int i = 0; i < candicates.size(); ++i){
             temp.push_back(candicates[i]); // 选择该元素 
-            helper(target-candicates[i], temp, candicates, res);
+            backtrace(target-candicates[i], temp, candicates, res);
             temp.pop_back();               // 撤销选择该元素
         }
     }

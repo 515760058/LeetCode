@@ -1,0 +1,140 @@
+139. 单词拆分
+给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
+输入: s = "leetcode", wordDict = ["leet", "code"]    输出: true     解释: 返回 true 因为 "leetcode" 可以被拆分成 "leet code"。
+输入: s = "applepenapple", wordDict = ["apple", "pen"]   输出: true   解释: 返回 true 因为 "applepenapple" 可以被拆分成 "apple pen apple"。  注意你可以重复使用字典中的单词。
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        unordered_set<string> m(wordDict.begin(), wordDict.end());
+        // dp[i] 表示字符串s的前i个字符能否拆分成wordDict
+        vector<bool> dp(s.size()+1, false);
+        dp[0] = true;
+        for (int i = 1; i <= s.size(); ++i){
+            for (int j = 0; j < i; ++j) {
+                // 前j个字符可以拆分 && 子串[j~i]也在字典中可以拆分
+                if (dp[j] && m.count(s.substr(j, i-j))){
+                    dp[i] = true; // 前i个字符可以拆分
+                    break;
+                }
+            }
+        }
+        return dp[s.size()];
+    }
+};
+// 进一步优化：不需要每次都从j=0开始搜索，可以遍历字典中的单词从而决定每次的位置j
+
+
+
+127. 单词接龙
+字典 wordList 中从单词 beginWord 和 endWord 的 转换序列 是一个按下述规格形成的序列：
+    序列中第一个单词是 beginWord  序列中最后一个单词是 endWord
+    每次转换只能改变一个字母。 转换过程中的中间单词必须是字典 wordList 中的单词。
+给你两个单词 beginWord 和 endWord 和一个字典 wordList ，找到从 beginWord 到 endWord 的 最短转换序列 中的 单词数目 。如果不存在这样的转换序列，返回 0。
+
+输入：beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]     输出：5
+解释：一个最短转换序列是 "hit" -> "hot" -> "dot" -> "dog" -> "cog", 返回它的长度 5。
+
+// BFS  下一题：面试题17.22单词转换
+class Solution {
+public:
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        unordered_set<string> s(wordList.begin(), wordList.end()); // 转为集合 便于判断
+        // endWord不在字典中 所以无法进行转换
+        if (s.count(endWord) == 0) {
+            return 0;
+        }
+        // BFS
+        queue<string> que;
+        que.push(beginWord);
+        set<string> visited = { {beginWord} }; // 去重
+        int cnt = 0;
+        while(!que.empty()){
+            ++cnt;
+            int size = que.size();
+            for (int idx = 0; idx < size; ++idx) {
+                string word = que.front();
+                que.pop();
+                //新单词就是endWord
+                if(word == endWord) {
+                    return cnt;
+                }
+                // 以该单词为基础 修改一个字母(遍历改成a-z) 得出所有的合法新单词
+                for(int i = 0; i < word.size(); ++i){
+                    string newWord = word;
+                    for(char ch = 'a'; ch <= 'z'; ++ch) {
+                        newWord[i] = ch;
+                        // 判断新单词的合法性
+                        if (s.count(newWord) == 0) {
+                            continue;
+                        }
+                        // 已经出现过这个单词
+                        if(visited.count(newWord)) {
+                            continue;
+                        }
+                        // 新单词加到queue 并记录
+                        que.push(newWord);
+                        visited.insert(newWord);
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+};
+
+
+
+
+79. 单词搜索
+给定一个二维网格和一个单词，找出该单词是否存在于网格中。
+// 回溯  剑指Offer12 矩阵中的路径
+class Solution {
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        if (word.empty()) {
+            return true;
+        }
+
+        for (int i = 0; i < board.size(); ++i) {
+            for (int j = 0; j < board[0].size(); ++j) {
+                if (board[i][j] == word[0]) {
+                    vector<vector<bool>> visited(board.size(), vector<bool>(board[0].size(), false));
+                    bool found = false;
+                    backTrace(board, i, j, visited, word, 0, found);
+                    if (found) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+private:
+    void backTrace(vector<vector<char>>& board, int i, int j, vector<vector<bool>>& visited, string& word, int idx, bool& found) {
+        // 找到了
+        if (idx == word.size() || found) {
+            found = true;
+            return;
+        }
+        // 下标不合法
+        if (i < 0 || i >= board.size() || j < 0 || j >= board[0].size()) {
+            return;
+        }
+        // 已使用了当前字符 || 当前字符不匹配
+        if (visited[i][j] || board[i][j] != word[idx]) {
+            return;
+        }
+        // 回溯下一个
+        visited[i][j] = true;
+        backTrace(board, i-1, j, visited, word, idx+1, found);
+        backTrace(board, i+1, j, visited, word, idx+1, found);
+        backTrace(board, i, j-1, visited, word, idx+1, found);
+        backTrace(board, i, j+1, visited, word, idx+1, found);
+        visited[i][j] = false;
+    }
+};
+
+
+
+

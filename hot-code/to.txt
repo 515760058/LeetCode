@@ -6,15 +6,15 @@
 github
 我在大神整理的基础上，又做了细分的整理。分为三类。
 1、组合问题：
-377. 组合总和 Ⅳ
-494. 目标和
-518. 零钱兑换 II
+	377. 组合总和 Ⅳ
+	494. 目标和
+	518. 零钱兑换 II
 2、True、False问题：
-139. 单词拆分
-416. 分割等和子集
+	139. 单词拆分
+	416. 分割等和子集
 3、最大最小问题：
-474. 一和零
-322. 零钱兑换
+	474. 一和零
+	322. 零钱兑换
 
 作者：Jackie1995
 链接：https://leetcode-cn.com/problems/combination-sum-iv/solution/xi-wang-yong-yi-chong-gui-lu-gao-ding-bei-bao-wen-/
