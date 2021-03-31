@@ -1,0 +1,140 @@
+93. 复原 IP 地址
+输入：s = "25525511135"   输出：["255.255.11.135","255.255.111.35"]
+输入：s = "1111"    输出：["1.1.1.1"]
+输入：s = "010010"    输出：["0.10.0.10","0.100.1.0"]
+class Solution { 
+public:
+    vector<string> restoreIpAddresses(string s) {
+        vector<string> res;
+        int len = s.length();
+        if(len > 12 || len < 4){//ip地址字符串的长度最小是4 最大是12
+            return res;
+        }
+        for(int i = 1; i < len; ++i) { // i 第一个点的位置
+            for(int j = i + 1; j < len; ++j) { // j 第二个点的位置
+                for(int k = j + 1; k < len; ++k) { // k 第三个点的位置
+                    string str = isIP(s, i, j, k); // 上述三个点 划分ip地址是否成功
+                    if(!str.empty()){
+                        res.push_back(str);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+private:
+    // 往字符串s中插入三个点，三个点的位置分别是i,j,k  判断是否可以成功划分成一个ip地址
+    string isIP(string& s, int i, int j, int k){
+        //截取每个字段
+        string str1 = s.substr(0, i);
+        string str2 = s.substr(i, j-i);
+        string str3 = s.substr(j, k-j);
+        string str4 = s.substr(k);
+        //每个字段，转成数字
+        long a = atoi( str1.c_str() );
+        long b = atoi( str2.c_str() );
+        long c = atoi( str3.c_str() );
+        long d = atoi( str4.c_str() );
+        //检验数字是否在[0, 255]，  注意0开头的数字是不合法的。
+        if(0 <= a && a <= 255 &&
+           0 <= b && b <= 255 &&
+           0 <= c && c <= 255 &&
+           0 <= d && d <= 255)
+          {
+            string newip = to_string(a) + to_string(b)+ to_string(c)+ to_string(d);
+            // ip地址中每个数字都是有效的：转变成整数，再转变回去，长度应该相等
+            if (newip.size() == s.size()) {
+                return str1 + "." + str2 + "." + str3 + "." + str4;
+            }
+        }
+        return "";
+    }
+};
+
+
+
+468. 验证IP地址
+编写一个函数来验证输入的字符串是否是有效的 IPv4 或 IPv6 地址。
+    如果是有效的 IPv4 地址，返回 "IPv4" ；
+    如果是有效的 IPv6 地址，返回 "IPv6" ；
+    如果不是上述类型的 IP 地址，返回 "Neither" 。
+class Solution {
+public:
+    string validIPAddress(string IP) {
+        if (isIPv4(IP)) { return "IPv4"; }
+        if (isIPv6(IP)) { return "IPv6"; }
+        return "Neither";
+    }
+private:
+    bool isIPv4(string IP){
+        //找到所有的点
+        vector<int> pointIdx;
+        for(int i = 0; i < IP.size(); ++i){
+            if(IP[i] == '.'){
+                pointIdx.push_back(i);
+            }
+        }
+        //判断IP是否由3个点分隔的四个数字
+        if(pointIdx.size() != 3){
+            return false;
+        }
+        //验证每个数字是否有效
+        string str1 = IP.substr(0, pointIdx[0]);
+        string str2 = IP.substr(pointIdx[0]+1, pointIdx[1]-pointIdx[0]-1);
+        string str3 = IP.substr(pointIdx[1]+1, pointIdx[2]-pointIdx[1]-1);
+        string str4 = IP.substr(pointIdx[2]+1);
+        long a = atoi( str1.c_str() );
+        long b = atoi( str2.c_str() );
+        long c = atoi( str3.c_str() );
+        long d = atoi( str4.c_str() );
+        //ip地址中每个数字都是有效的：转变成整数应在[0,255]。再转变回字符串，长度应该相等（非0开头的正数）。
+        if(0<=a && a<=255 && 0<=b && b<=255 && 0<=c && c<=255 && 0<=d && d<=255 &&
+            str1==to_string(a) && str2==to_string(b) && str3==to_string(c) && str4==to_string(d))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    bool isIPv6(string IP){
+        //找到所有的冒号
+        vector<int> pointIdx;
+        for(int i = 0; i < IP.size(); ++i){
+            if(IP[i] == ':'){
+                pointIdx.push_back(i);
+            }
+        }
+        //判断IP是否由7个冒号分隔的八个数字
+        if(pointIdx.size() != 7){
+            return false;
+        }
+        //取八个字符串
+        vector<string> strs;
+        strs.push_back( IP.substr(0, pointIdx[0]) );
+        for(int i = 0; i < 6; ++i ){
+            strs.push_back( IP.substr(pointIdx[i]+1, pointIdx[i+1]-pointIdx[i]-1) );
+        }
+        strs.push_back( IP.substr(pointIdx[6]+1) );
+        //每个字符串非空, 长度<=4, 字符是0-9和a-f A-F
+        for(string& str : strs){
+            if(str.empty() || str.size() > 4 || !isHex(str)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool isHex(string str){
+        for(char c : str){
+            if(('0'<=c && c<='9') || ('a'<=c && c<='f') || ('A'<=c && c<='F')){
+                //do nothing.
+            }else{
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+
