@@ -1,52 +1,31 @@
-// 312. 戳气球  回溯法 暴力超时
+22. 括号生成
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+输入：n = 3   输出：["((()))","(()())","(())()","()(())","()()()"]
 class Solution {
 public:
-    int maxCoins(vector<int>& nums) {
-        int maxScore = 0;
-        // 使用hash 便于搜索和删除  
-        unordered_map<int, int> data; // idx  num
-        data[-1] = 1;
-        data[nums.size()] = 1;
-        for (int i = 0; i < nums.size(); ++i) {
-            data[i] = nums[i];
-        }
-        // 回溯
-        backtrace(data, nums.size(), 0, maxScore);
-        return maxScore;
+    vector<string> generateParenthesis(int n) {
+        vector<string> res;
+        backTrace("", 0, 0, n, res);
+        return res;
     }
 
 private:
-    void backtrace(unordered_map<int, int>& data, int n, int score, int& maxScore) {
-        if (data.size() == 2) {
-            maxScore = max(maxScore, score);
+    // left和right表示tmp中左右括号的数量
+    void backTrace(string tmp, int left, int right, int n, vector<string>& res) {
+        if (tmp.size() == 2*n) {
+            if (left == n && right == n) {
+                res.push_back(tmp);
+            }
             return;
         }
-
-        for (int i = 0; i < n; ++i) {
-            if (!data.count(i)) {
-                continue;
-            }
-            // 戳破这个气球
-            int num = data[i];
-            data.erase(i);
-            // 计算前后气球的下标和得分
-            int prevIdx = i - 1;
-            while (!data.count(prevIdx)) {
-                --prevIdx;
-            }
-            int nextIdx = i + 1;
-            while (!data.count(nextIdx)) {
-                ++nextIdx;
-            }
-            int temp = score + data[prevIdx]*num*data[nextIdx];
-            // 回溯
-            backtrace(data, n, temp, maxScore);
-            // 放回气球i
-            data[i] = num;
+        // 先放个左括号
+        backTrace(tmp+"(", left+1, right, n, res);
+        // 左括号多于右括号 才可以放右括号
+        if (left > right) {
+            backTrace(tmp+")", left, right+1, n, res);
         }
     }
 };
-
 
 
 
@@ -115,8 +94,52 @@ private:
 
 
 
+// 312. 戳气球  回溯法 暴力超时
+class Solution {
+public:
+    int maxCoins(vector<int>& nums) {
+        int maxScore = 0;
+        // 使用hash 便于搜索和删除  
+        unordered_map<int, int> data; // idx  num
+        data[-1] = 1;
+        data[nums.size()] = 1;
+        for (int i = 0; i < nums.size(); ++i) {
+            data[i] = nums[i];
+        }
+        // 回溯
+        backtrace(data, nums.size(), 0, maxScore);
+        return maxScore;
+    }
 
+private:
+    void backtrace(unordered_map<int, int>& data, int n, int score, int& maxScore) {
+        if (data.size() == 2) {
+            maxScore = max(maxScore, score);
+            return;
+        }
 
-
-
+        for (int i = 0; i < n; ++i) {
+            if (!data.count(i)) {
+                continue;
+            }
+            // 戳破这个气球
+            int num = data[i];
+            data.erase(i);
+            // 计算前后气球的下标和得分
+            int prevIdx = i - 1;
+            while (!data.count(prevIdx)) {
+                --prevIdx;
+            }
+            int nextIdx = i + 1;
+            while (!data.count(nextIdx)) {
+                ++nextIdx;
+            }
+            int temp = score + data[prevIdx]*num*data[nextIdx];
+            // 回溯
+            backtrace(data, n, temp, maxScore);
+            // 放回气球i
+            data[i] = num;
+        }
+    }
+};
 
