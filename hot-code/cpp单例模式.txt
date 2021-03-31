@@ -1,0 +1,76 @@
+静态变量的单例模式
+class Singleton {
+private:
+    Singleton() {};
+
+public:
+    static Singleton* getInstance() {
+        static Singleton  instance; // 此变量存在静态区，C++11自带两段检查锁机制来确保static变量实例化一次
+        return &instance; 
+    }
+}；
+
+
+// 双重判断的单例
+class Singleton { //实现单例模式的类  
+private:  
+    Singleton() {}  //私有的构造函数
+    virtual ~Singleton() {}; // 析构
+    Singleton(const Singleton&) {}; // 拷贝构造
+    Singleton& operator=(const Singleton&) {};  // 拷贝赋值
+
+    static Singleton* instance;
+    static std::mutex m;
+
+    // CGarbo类 在程序退出后 释放new出来的单例对象
+    // class CGarbo {
+    // public:
+    //     ~CGarbo() {  // 析构函数中释放单例对象
+    //         delete Singleton::instance;
+    //         Singleton::instance = nullptr;
+    //     }
+    // };
+
+    
+public:  
+    static Singleton* GetInstance() {
+        if (instance == nullptr) { // 第一重判断  
+            m.lock();  //加锁
+            if (instance == nullptr) { // 第一重判断
+                instance = new singleton();
+            }
+            // static CGarbo Garbo; // 这个静态对象 用于释放new的单例对象
+            m.unLock(); //解锁  
+        }
+        return instance;
+    }
+};
+
+
+
+// 单例的父类
+template <class T>
+class Singleton {
+private:
+    static T* m_Instance;
+protected:
+    Singleton(){};
+    Singleton(const Singleton &);
+    Singleton &operator=(const Singleton &);
+
+public:
+    static T* getInstance();
+    static void Free_Instance();
+}
+
+
+class test: public Singleton<test> {
+    friend class Singleton<test>;
+private:
+    test(){}
+public:
+    //do
+}
+
+
+
