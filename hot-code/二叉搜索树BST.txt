@@ -220,4 +220,55 @@ public:
 
 
 
+701. 向二叉搜索树中插入节点
+class Solution {
+public:
+    TreeNode* insertIntoBST(TreeNode* root, int val) {
+        if (root == nullptr) { // 当前就是插入点
+            return new TreeNode(val);
+        }
+        if (val < root->val) { // 插入到左子树
+            root->left = insertIntoBST(root->left, val);
+        } else if (val > root->val) { // 插入到右子树
+            root->right = insertIntoBST(root->right, val);
+        }
+        return root;
+    }
+};
+
+
+450. 删除二叉搜索树中的节点
+class Solution {
+public:
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        if (key < root->val) { // 待删除节点在左子树中
+            root->left = deleteNode(root->left, key);
+        } else if (key > root->val) { // 待删除节点在右子树中
+            root->right = deleteNode(root->right, key);
+        } else { // key == root.val   root就是待删除节点
+            // root只有一个子树  返回另一个子树作为新的根
+            if (root->left == nullptr) {  return root->right; }
+            if (root->right == nullptr) { return root->left; }
+            // root的左右子树都存在， 把（右子树的最左叶子）作为新的根
+            TreeNode* minNode = getMin(root->right);
+            root->val = minNode->val;
+            // 在右子树中 删除新的根
+            root->right = deleteNode(root->right, minNode->val);
+        }
+        return root;
+    }
+
+private:
+    // BST最左边的节点 就是最小的
+    TreeNode* getMin(TreeNode* node) {
+        while (node->left != nullptr) {
+            node = node->left;
+        }
+        return node;
+    }
+};
+
 
