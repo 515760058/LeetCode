@@ -1,4 +1,10 @@
 207. 课程表
+你这个学期必须选修 numCourses 门课程，记为 0 到 numCourses - 1 。
+在选修某些课程之前需要一些先修课程。 先修课程按数组 prerequisites 给出，其中 prerequisites[i] = [ai, bi] ，表示如果要学习课程 ai 则 必须 先学习课程  bi 。
+
+例如，先修课程对 [0, 1] 表示：想要学习课程 0 ，你需要先完成课程 1 。
+请你判断是否可能完成所有课程的学习？如果可以，返回 true ；否则，返回 false 。
+
 class Solution {
 public:
     bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
@@ -41,6 +47,11 @@ public:
 
 
 210. 课程表 II
+现在你总共有 n 门课需要选，记为 0 到 n-1。
+在选修某些课程之前需要一些先修课程。 例如，想要学习课程 0 ，你需要先完成课程 1 ，我们用一个匹配来表示他们: [0,1]
+给定课程总量以及它们的先决条件，返回你为了学完所有课程所安排的学习顺序。
+可能会有多个正确的顺序，你只要返回一种就可以了。如果不可能完成所有课程，返回一个空数组。
+
 class Solution {
 public:
     vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
@@ -79,5 +90,53 @@ public:
             res.clear();
         }
         return res;;
+    }
+};
+
+
+
+630. 课程表 III
+这里有 n 门不同的在线课程，他们按从 1 到 n 编号。每一门课程有一定的持续上课时间（课程时间）t 以及关闭时间第 d 天。一门课要持续学习 t 天直到第 d 天时要完成，你将会从第 1 天开始。
+给出 n 个在线课程用 (t, d) 对表示。你的任务是找出最多可以修几门课。
+
+ 
+
+
+
+
+
+1462. 课程表 IV
+你总共需要上 n 门课，课程编号依次为 0 到 n-1 。
+有的课会有直接的先修课程，比如如果想上课程 0 ，你必须先上课程 1 ，那么会以 [1,0] 数对的形式给出先修课程数对。
+给你课程总数 n 和一个直接先修课程数对列表 prerequisite 和一个查询对列表 queries 。
+对于每个查询对 queries[i] ，请判断 queries[i][0] 是否是 queries[i][1] 的先修课程。
+请返回一个布尔值列表，列表中每个元素依次分别对应 queries 每个查询对的判断结果。
+
+// 原问题可以转化为求任意两点之间，有向图是否有通路的问题。
+class Solution {
+public:
+    vector<bool> checkIfPrerequisite(int n, vector<vector<int>>& prerequisites, vector<vector<int>>& queries) {
+        vector<vector<bool>> g(n, vector<bool>(n, false));
+        for(auto& p : prerequisites){
+            g[p[0]][p[1]] = true;
+        }
+        //将最外层k作为跳板(中间点)，判断i,j之间是否能够通过k连通：
+        //    如果i能连到k,k又能连到j,那么i就能连到j;(当然还有一种情况是i,j之间本来就相连，这个在上面的for循环判断过了)
+        //flord最短路径，也是将最外层k作为中间点来判断 e[i][k]+e[k][j]是否比e[i][j]要小即可。e[i][j]表示的是从i号顶点到j号顶点之间的路程.
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for(int j = 0; j < n; j++){
+                    if (g[i][k] && g[k][j]) {
+                        g[i][j] = true;
+                    }
+                }
+            }
+        }
+        // 确定每个结果
+        vector<bool>res;
+        for (auto& q : queries) {
+            res.push_back( g[q[0]][q[1]] );
+        }
+        return res;
     }
 };
