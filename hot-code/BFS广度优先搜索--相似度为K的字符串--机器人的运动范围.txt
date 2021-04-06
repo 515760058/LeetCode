@@ -1,0 +1,108 @@
+854. 相似度为 K 的字符串
+class Solution {
+public:
+    int kSimilarity(string s1, string s2) {
+        if (s1 == s2) {
+            return 0;
+        }
+        queue<string> q;
+        q.push(s1);
+        set<string> s;
+        s.insert(s1);
+        int step = 0; // 交换的操作次数
+        while (!q.empty()) {
+            step++;
+            // 依次取出该层的x个字符串
+            for (int x = q.size(); x > 0; x--) {
+                string tmp = q.front();
+                q.pop();
+                // 交换操作需要两个字符  现在找str和s2第一个不相等的字符的下标i
+                int i = 0;
+                while (tmp[i] == s2[i]) {
+                    i++;
+                }
+                // 找第二个字符的下标j
+                for (int j = i+1; j < tmp.length(); j++) {
+                    // 对应相等的字符不能交换  找到的第二个字符要等于对应的s2[j]
+                    if (tmp[j] == s2[j] || tmp[j] != s2[i]) {
+                        continue;
+                    }
+                    // 交换
+                    string nextStr = tmp;
+                    swap(nextStr[i], nextStr[j]);
+                    // 交换过后 正好是结果
+                    if (nextStr == s2) {
+                        return step;
+                    }
+                    // 检查是否出现过  并保存到队列中
+                    if (s.count(nextStr) == 0) {
+                        s.insert(nextStr);
+                        q.push(nextStr);
+                    }
+                }
+            }
+        }
+        return step;
+    }
+};
+
+
+
+剑指 Offer 13. 机器人的运动范围
+class Solution {
+private:
+    struct Position {
+        int x; 
+        int y;
+        Position(int _x, int _y) : x(_x), y(_y) {}
+        string toString() {
+            return to_string(x) + " " + to_string(y);
+        }
+    };
+    // 向上走一步 向右走一步
+    int dx[2] = {0, 1};
+    int dy[2] = {1, 0};
+
+    // x和y的数位之和
+    int digitalSum(int x, int y) {
+        int sum = 0;
+        while (x || y) {
+            sum += x % 10;
+            sum += y % 10;
+            x /= 10;
+            y /= 10;
+        }
+        return sum;
+    }
+
+public:
+    // BFS
+    int movingCount(int m, int n, int k) {
+        int cnt = 0;
+        queue<Position> q;
+        q.push(Position(0, 0));
+        set<string> visited;
+        visited.insert(Position(0, 0).toString());
+        while (!q.empty()) {
+            cnt++;
+            Position p = q.front();
+            q.pop();
+            for (int i = 0; i < 2; ++i) {
+                int nextX = p.x + dx[i];
+                int nextY = p.y + dy[i];
+                // 校验坐标
+                if (nextX >= m || nextY >= n || digitalSum(nextX, nextY) > k) {
+                    continue;
+                }
+                // 保存下一个(未访问过的)位置
+                Position nextP(nextX, nextY);
+                if (!visited.count(nextP.toString())) {
+                    q.push(nextP);
+                    visited.insert(nextP.toString());
+                }
+            }
+        }
+        return cnt;
+    }
+};
+

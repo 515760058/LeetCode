@@ -1,0 +1,201 @@
+752. 打开转盘锁
+class Solution {
+public:
+    int openLock(vector<string>& deadends, string target) {
+        // visited去重 同时记录其前一个节点
+        map<string, string> visited;
+        for (string& dead : deadends) {
+            visited[dead] = "";
+        }
+        string start = "0000";
+        if (visited.count(start)) {
+            return -1;
+        }
+        // 开始BFS
+        queue<string> q;
+        q.push(start);
+        visited[start] = "";
+        while(!q.empty()) {
+            string str = q.front();
+            q.pop();
+            // 到达目标点
+            if (str == target) {
+                break;
+            }
+            // 遍历str的每个字符 旋转一下 得出下一个数字
+            for(int i = 0; i < str.size(); ++i) {
+                string temp1 = plusOne(str, i);
+                if (visited.count(temp1) == 0) {
+                    q.push(temp1);
+                    visited[temp1] = str;
+                }
+                string temp2 = minusOne(str, i);
+                if (visited.count(temp2) == 0) {
+                    q.push(temp2);
+                    visited[temp2] = str;
+                }
+            }
+        }
+        // 恢复序列
+        // 不能到达target点
+        if (visited.count(target) == 0) {
+            return -1;
+        }
+        // 可以到达target点
+        vector<string> res;
+        while (target != "") {
+            res.push_back(target);
+            target = visited[target];
+        }
+        reverse(res.begin(), res.end());
+        //for (auto r : res) {
+        //    cout << r << "-->";
+        //}
+        return res.size() - 1; //不包含起始点"0000"
+    }
+
+private:
+    string plusOne(string s, int i) {
+        (s[i] == '9') ? s[i] = '0' : ++s[i];
+        return s;
+    }
+    string minusOne(string s, int i) {
+        (s[i] == '0') ? s[i] = '9' : --s[i];
+        return s;
+    }
+};
+
+
+
+
+127. 单词接龙     求最短转换序列的长度
+class Solution {
+public:
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        unordered_set<string> s(wordList.begin(), wordList.end()); // 转为集合 便于判断
+        // 如果endWord不在字典中 就不可能进行转换
+        if (s.count(endWord) == 0) {
+            return 0;
+        }
+        // 使用队列的BFS
+        queue<string> que;
+        que.push(beginWord); // 起始单词
+        // visited去重 同时记录上一个节点
+        map<string, string> visited;
+        visited[beginWord] = "";
+
+        while(!que.empty()){
+            string word = que.front();
+            que.pop();
+            //新单词就是endWord
+            if(word == endWord) {
+                break;
+            }
+            // 以该单词为基础 修改一个字母(遍历改成a-z) 得出所有的合法新单词
+            for(int i = 0; i < word.size(); ++i){
+                string newWord = word;
+                for(char ch = 'a'; ch <= 'z'; ++ch) {
+                    newWord[i] = ch;
+                    // 判断新单词的合法性
+                    if (s.count(newWord) == 0) {
+                        continue;
+                    }
+                    // 已经出现过这个单词
+                    if(visited.count(newWord)) {
+                        continue;
+                    }
+                    // 新单词加到queue 并记录其上一个节点
+                    que.push(newWord);
+                    visited[newWord] = word;
+                }
+            }
+        }
+        // 永远没有访问到endWord (不能转换到endword)
+        if (visited.count(endWord) == 0) {
+            return 0;
+        }
+        // 恢复最短序列
+        vector<string> res;
+        while (endWord != "") {
+            res.push_back(endWord);
+            endWord = visited[endWord];
+        }
+        reverse(res.begin(), res.end());
+        // 最短序列的长度
+        return res.size();
+    }
+};
+
+
+
+126. 单词接龙 II （求所有的转换序列：太难了）
+
+
+
+773. 滑动谜题
+class Solution {
+private:
+    struct State {
+        State(string& _str, int _idx, int _step) {
+            str = _str;
+            idx = _idx;
+            step = _step;
+        }
+        string str; //谜板状态
+        int idx;    //当前状态‘0’的下标
+        int step;   //当前状态的移动步数
+    };
+
+    /*  定义2x3数组的位置:
+        0 | 1 | 2
+        3 | 4 | 5   */
+    vector<vector<int>> next = {
+        {1, 3},    //当‘0’在位置0时，可以往位置1或3移动
+        {0, 2, 4}, //当‘0’在位置1时，可以往位置0或2或4移动
+        {1, 5},    //......
+        {0, 4}, 
+        {1, 3, 5}, 
+        {2, 4},
+    };
+
+public:
+    int slidingPuzzle(vector<vector<int>>& board) {
+        string dest = "123450";
+        // 使用字符串 表示棋盘状态
+        string start = "";
+        for (int i = 0; i < 2; i++){
+            for (int j = 0; j < 3; j++){
+                start += to_string(board[i][j]);
+            }
+        }
+        if(start == dest){
+            return 0;
+        }
+        // 开始BFS
+        queue<State> q;
+        q.push( State(start, start.find("0"), 0) );//起始状态
+        set<string> record {start}; //set去重 记录出现过的谜板状态
+        while(!q.empty()){
+            State state = q.front();
+            q.pop();
+            string& str = state.str;
+            // 把当前的'0' 交换到下一个可能的状态
+            for(int nextIdx : next[state.idx]){
+                string temp = str;
+                swap(temp[nextIdx], temp[state.idx]);
+                // 如果交换后的temp 正好是答案
+                if(temp == dest){
+                    return state.step + 1;
+                }
+                // 校验以前是否出现过该状态，并push到队列
+                if(record.count(temp) == 0){
+                    record.insert(temp);
+                    q.push( State(temp, nextIdx, state.step+1) );
+                }
+            }
+        }
+        return -1;
+   }
+};
+
+

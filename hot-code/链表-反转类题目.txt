@@ -1,0 +1,165 @@
+剑指 Offer 24. 反转链表 （全部节点）
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode* pre = nullptr; // 前一个节点
+        ListNode* cur = head;    // 当前节点
+        ListNode* temp = nullptr;
+
+        while (cur != nullptr) {
+            temp = cur->next; // 临时保存下一个节点
+            cur->next = pre; // 当前节点 指向 前一个节点
+            // 向后移动
+            pre = cur;
+            cur = temp;
+        }
+        return pre;
+    }
+};
+
+
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        return reverseBetween(head, nullptr);
+    }
+private:
+    // 反转链表的[head, tail)区间
+    ListNode* reverseBetween(ListNode* head, ListNode* tail) {
+        ListNode* pre = nullptr; // 前一个节点
+        ListNode* cur = head;    // 当前节点
+        ListNode* temp = nullptr;
+        
+        while (cur != tail) {
+            temp = cur->next; // 临时保存下一个节点
+            cur->next = pre; // 当前节点 指向 前一个节点
+            // 向后移动
+            pre = cur;
+            cur = temp;
+        }
+        return pre;
+    }
+};
+
+
+92. 反转链表 II   （反转从位置 m 到 n 的链表） 一趟扫描
+输入: 1->2->3->4->5->NULL, m = 2, n = 4     1 ≤ m ≤ n ≤ 链表长度。
+输出: 1->4->3->2->5->NULL
+class Solution {
+public:
+    ListNode* reverseBetween(ListNode* head, int left, int right) {
+        // 创建一个虚拟节点 放在链表头部
+        ListNode* dummy = new ListNode(-1);
+        dummy->next = head;
+        // 走过前面的节点
+        ListNode* pre = dummy;
+        for (int i = 1; i < left; ++i) {
+            pre = pre->next;
+        }
+
+        head = pre->next;
+        for (int i = left; i < right; ++i) {
+            ListNode* temp = head->next; // 临时保存下一个节点
+            head->next = temp->next;
+            temp->next = pre->next;
+            pre->next = temp;
+        }
+        // 返回头结点
+        head = dummy->next;
+        delete dummy;
+        return head;
+    }
+};
+方法二：
+class Solution {
+public:
+    ListNode* reverseBetween(ListNode* head, int left, int right) {
+        // 创建一个虚拟节点 放在链表头部
+        ListNode* dummy = new ListNode(-1);
+        dummy->next = head;
+        ListNode* preHead = dummy;
+        for (int i = 1; i < left; ++i) {
+            preHead = preHead->next;
+        }
+        ListNode* tmpHead = preHead->next;
+        ListNode* tmpTail = tmpHead;
+        for (int i = left; i <= right; ++i) {
+            tmpTail = tmpTail->next;
+        }
+        // 反转后 接到前面
+        preHead->next = reverseBetween(tmpHead, tmpTail);
+        // 后面的接上
+        tmpHead->next = tmpTail;
+        // 返回头结点
+        head = dummy->next;
+        delete dummy;
+        return head;
+    }
+private:
+    // 借助上一题的函数
+    // 反转链表的[head, tail)区间
+    ListNode* reverseBetween(ListNode* head, ListNode* tail) {
+        ListNode* pre = nullptr; // 前一个节点
+        ListNode* cur = head;    // 当前节点
+        ListNode* temp = nullptr;
+        
+        while (cur != tail) {
+            temp = cur->next; // 临时保存下一个节点
+            cur->next = pre; // 当前节点 指向 前一个节点
+            // 向后移动
+            pre = cur;
+            cur = temp;
+        }
+        return pre;
+    }
+};
+
+
+
+
+
+
+25. K 个一组翻转链表
+class Solution {
+public:
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        if (head == nullptr) {
+            return head;
+        }
+        // 区间[a, b)包含K个待反转的节点
+        ListNode* a = head;
+        ListNode* b = head;
+        for (int i = 0; i < k; ++i) {
+            // 不足k个元素，不用反转
+            if (b == nullptr) {
+                return head;
+            }
+            b = b->next;
+        }
+        // 反转这k个节点
+        ListNode* tmpHead = reverseBetween(a, b);
+        // 此时a是尾节点了  指向后面的元素
+        // 而b就后面元素的头结点  递归下去
+        a->next = reverseKGroup(b, k);
+        // 返回头结点
+        return tmpHead;
+    }
+
+private:
+    // 借助上一题的函数
+    // 反转链表的[head, tail)区间
+    ListNode* reverseBetween(ListNode* head, ListNode* tail) {
+        ListNode* pre = nullptr; // 前一个节点
+        ListNode* cur = head;    // 当前节点
+        ListNode* temp = nullptr;
+        
+        while (cur != tail) {
+            temp = cur->next; // 临时保存下一个节点
+            cur->next = pre; // 当前节点 指向 前一个节点
+            // 向后移动
+            pre = cur;
+            cur = temp;
+        }
+        return pre;
+    }
+};

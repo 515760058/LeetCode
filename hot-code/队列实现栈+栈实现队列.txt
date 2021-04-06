@@ -46,7 +46,7 @@ public:
         // 剩下的一个 要弹出的数据
         int value = q.front();
         q.pop();
-        // 交换
+        // 交换q和临时数据qTemp
         swap(q, qTemp);
         return value;
     }

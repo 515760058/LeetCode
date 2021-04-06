@@ -1,0 +1,87 @@
+剑指 Offer 18. 删除链表的节点
+class Solution {
+public:
+    ListNode* deleteNode(ListNode* head, int val) {
+        ListNode* dummy = new ListNode(1);
+        dummy->next = head;
+        ListNode* cur = dummy;
+        while(cur && cur->next) {
+            if(cur->next->val == val) {
+                cur->next = cur->next->next; // 直接不要cur->next这个节点了
+                break;
+            }
+            cur=cur->next;
+        }
+        head = dummy->next;
+        delete dummy;
+        return head;
+    }
+};
+
+
+
+83. 删除排序链表中的重复元素
+给定一个排序链表，删除所有重复的元素，使得每个元素只出现一次。
+class Solution {
+public:
+    // 和 leetcode26删除有序数组中的重复项 原理相同
+    ListNode* deleteDuplicates(ListNode* head) {
+        if (head == nullptr) {
+            return head;
+        }
+        ListNode* myhead = head;
+        ListNode* idx = head; //作为下标使用
+        while (myhead->next) {
+            if (idx->val != myhead->next->val) {
+                idx = idx->next; //下标加1的操作
+                idx->val = myhead->next->val;
+            }
+            myhead = myhead->next;
+        }
+        idx->next = NULL; // 断开后续节点
+        return head;
+    }
+};
+
+
+
+82. 删除排序链表中的重复元素 II
+class Solution {
+public:
+    ListNode* deleteDuplicates(ListNode* head) {
+        if (head == nullptr) {
+            return nullptr;
+        }
+        ListNode* dummy = new ListNode(0);
+        dummy->next = head;
+        // 两个指针prev和cur
+        ListNode* prev = dummy;
+        ListNode* cur = head;
+        while (cur) {
+            bool duplicated = false;
+            while (cur->next && cur->val == cur->next->val) { // cur的值和cur->next值相等
+                duplicated = true;
+                // 删除当前节点cur
+                ListNode* tmp = cur;
+                cur = cur->next;
+                delete tmp;
+            }
+            if (duplicated) { // 删除重复的最后一个元素
+                ListNode* tmp = cur;
+                cur = cur->next;
+            } else {
+                // 连上
+                prev->next = cur;
+                // 向后走一个节点
+                prev= prev->next;
+                cur = cur->next;
+            }
+        }
+        prev->next = nullptr;
+        // 返回
+        head = dummy->next;
+        delete dummy;
+        return head;
+    }
+};
+

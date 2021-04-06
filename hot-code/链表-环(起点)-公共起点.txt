@@ -1,0 +1,92 @@
+141. 环形链表 判断链表是否有环
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        ListNode* fast = head;
+        ListNode* slow = head;
+        while (fast && fast->next) {
+            fast = fast->next->next; // 快指针每次走两步
+            slow = slow->next;       // 慢指针每次走一步
+            if (fast == slow) {      // 快慢指针相遇，就是有环
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        unordered_set<ListNode*> s; // 保存节点的地址
+        while (head != nullptr) {
+            if (s.count(head)) {   // 发现以前的节点
+                return true;
+            }
+            s.insert(head);
+            head = head->next;
+        }
+        return false;
+    }
+};
+
+
+
+142. 环形链表 II    寻找环形链表的第一个节点
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        ListNode* fast = head;
+        ListNode* slow = head;
+        while (fast && fast->next) {
+            fast = fast->next->next; // 快指针每次走两步
+            slow = slow->next;       // 慢指针每次走一步
+            if (fast == slow) {      // 快慢指针相遇 存在环
+                // 一定会在环的入口点相遇
+                ListNode* slow2 = head; // 再定义一个慢指针 两个慢指针每次走一步 必定会在入口点相遇
+                while (slow2 != slow) {
+                    slow2 = slow2->next;
+                    slow = slow->next;
+                }
+                return slow2;
+            }
+        }
+        return nullptr;
+    }
+};
+
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        unordered_set<ListNode*> s; // 保存节点的地址
+        while (head != nullptr) {
+            if (s.count(head)) {   // 第一次发现以前的节点 就是入口节点
+                return head;
+            }
+            s.insert(head);
+            head = head->next;
+        }
+        return nullptr;
+    }
+};
+
+
+
+剑指 Offer 52. 两个链表的第一个公共节点
+输入两个链表，找出它们的第一个公共节点。
+class Solution {
+public:
+    // 设交集链表长c,链表1除交集的长度为a，链表2除交集的长度为b，有
+    // a + c + b = b + c + a
+
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode* t1 = headA;
+        ListNode* t2 = headB;
+        while (t1 != t2) {
+            t1 = ( t1 == nullptr ? headB : t1->next ); // t1先走了a+c  再走b
+            t2 = ( t2 == nullptr ? headA : t2->next ); // t2先走了b+c  再走a
+            // 最终 t1和t2都走了 a+b+c的长度，相聚于第一个公共节点
+        }
+        return t1;
+    }
+};
