@@ -138,3 +138,26 @@ private:
 
 
 
+147. 对链表进行插入排序
+class Solution {
+public:
+    ListNode* insertionSortList(ListNode* head) {
+        ListNode* dummy = new ListNode(-1);
+        while (head) {
+            ListNode* p = dummy;
+            while(p->next && p->next->val < head->val) {
+                p = p->next;
+            }
+            ListNode* q = head;
+            head = head->next;
+
+            q->next = p->next;
+            p->next = q;
+        }
+        // 返回头结点
+        head = dummy->next;
+        delete dummy;
+        return head;
+    }
+};
+
