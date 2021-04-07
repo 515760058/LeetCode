@@ -1,2 +1,42 @@
+12. 整数转罗马数字
+class Solution {
+public:
+    string intToRoman(int num) {
+        vector<int>    value = {1000, 900, 500, 400, 100, 90, 50,  40, 10,  9,   5,  4,   1 };
+        vector<string> Roman = {"M", "CM", "D", "CD","C","XC","L","XL","X","IX","V","IV","I"};
 
+        string res = "";
+        for (int i = 0; i < value.size() ; i++) {
+            while (num >= value[i]){
+                num -= value[i];
+                res += Roman[i];
+            }
+        }
+        return res;
+    }
+};
+
+13. 罗马数字转整数
+//对字符串从左到右来，如果当前字符代表的值大于等于其右边，就加上该值；否则就减去该值。
+//以此类推到最左边的数，最终得到的结果即是答案
+class Solution {
+private:
+    unordered_map<char, int> m {
+        {'I', 1}, {'V', 5}, {'X', 10},
+        {'L', 50},{'C', 100},{'D', 500},
+        {'M', 1000} 
+    };
+public:
+    int romanToInt(string s) {
+        int res = 0;
+        for(int i = 0; i < s.size(); ++i) {
+            if (i < s.size()-1 && m[s[i]] < m[s[i+1]]) {
+                res -= m[s[i]]; 
+            } else {
+                res += m[s[i]];
+            }
+        }
+        return res;
+    }
+};
 
