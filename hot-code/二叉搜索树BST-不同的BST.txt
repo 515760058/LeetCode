@@ -1,0 +1,67 @@
+96. 不同的二叉搜索树
+给定一个整数 n，求以 1 ... n 为节点组成的二叉搜索树有多少种？
+/*
+动态规划
+    假设n个节点存在二叉排序树的个数是G(n)，令f(i)为以i为根的二叉搜索树的个数
+        即有:G(n) = f(1) + f(2) + f(3) + f(4) + ... + f(n)
+    当i为根节点时，其左子树节点个数为[1,2,3,...,i-1]，右子树节点个数为[i+1,i+2,...n]，
+        所以当i为根节点时，其左子树节点个数为i-1个，右子树节点为n-i，即f(i) = G(i-1)*G(n-i),
+    上面两式可得:G(n) = G(0)*G(n-1) + G(1)*(n-2) + ... + G(n-1)*G(0)
+*/
+class Solution {
+public:
+    int numTrees(int n) {
+        vector<int> dp(n+1, 0);
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; ++i) {
+            // 计算dp[i] 也就是G(i)
+            for (int j = 0; j < i; ++j) {
+                dp[i] += dp[j] * dp[i-j-1];
+            }
+        }
+        return dp[n];
+    }
+};
+
+
+95. 不同的二叉搜索树 II
+给定一个整数 n，生成所有由 1 ... n 为节点所组成的 二叉搜索树 。
+class Solution {
+public:
+    vector<TreeNode*> generateTrees(int n) {
+        if (n == 0) {
+            return {};
+        }
+        return generate(1, n);
+    }
+
+private:
+/*
+对于连续整数序列[left, right]中的一点i，若要生成以i为根节点的BST，则有如下规律：
+    i左边的序列可以作为左子树结点，且左儿子可能有多个，所以有vector<TreeNode*> leftTrees = generate(left, i-1);；
+    i右边的序列可以作为右子树结点，同上所以有vector<TreeNode *> rightTrees = generate(i+1, right);； 
+    产生的以当前i为根结点的BST（子）树有leftTrees.size() * rightTrees.size()个，遍历每种情况，即可生成以i为根节点的BST序列；
+    然后以for循环使得[left, right]中每个结点都能生成子树序列。
+*/
+    vector<TreeNode*> generate(int left, int right) {
+        vector<TreeNode*> ans;
+        if (left > right) {
+            ans.push_back(nullptr);
+            return ans;
+        }
+        for (int i = left; i <= right; i++) {
+            vector<TreeNode*> leftTrees = generate(left, i-1);
+            vector<TreeNode*> rightTrees = generate(i+1, right);
+            for (TreeNode* leftTree : leftTrees) {
+                for (TreeNode* rightTree : rightTrees) {
+                    TreeNode* node = new TreeNode(i);
+                    node->left = leftTree;
+                    node->right = rightTree;
+                    ans.push_back(node);
+                }
+            }
+        }
+        return ans;
+    }
+};
