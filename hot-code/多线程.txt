@@ -1,0 +1,112 @@
+1115. 交替打印FooBar
+交替打印foo和bar。共计打印n次
+// 两个互斥锁的写法
+class FooBar {
+private:
+    int n;
+    mutex m1;
+    mutex m2;
+
+public:
+    FooBar(int n) {
+        this->n = n;
+        m2.lock();
+    }
+
+    void foo(function<void()> printFoo) {
+        for (int i = 0; i < n; i++) {
+            m1.lock();
+            printFoo();
+            m2.unlock();
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        for (int i = 0; i < n; i++) {
+            m2.lock();
+            printBar();
+            m1.unlock();
+        }
+    }
+};
+
+
+// 原子操作的写法
+class FooBar {
+private:
+    int n;
+    atomic<bool> flag;
+
+public:
+    FooBar(int n) {
+        this->n = n;
+        flag = true;
+    }
+
+    void foo(function<void()> printFoo) {
+        for (int i = 0; i < n; i++) {
+            while (!flag) {
+                this_thread::yield(); // 切换线程
+            }
+            printFoo();
+            flag = false;
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        for (int i = 0; i < n; i++) {
+            while (flag) {
+                this_thread::yield(); // 切换线程
+            }
+            printBar();
+            flag = true;
+        }
+    }
+};
+
+
+
+
+
+1116. 打印零与奇偶数
+class ZeroEvenOdd {
+private:
+    int n;
+    mutex mZero;
+    mutex mEven;
+    mutex mOdd;
+
+public:
+    ZeroEvenOdd(int n) {
+        this->n = n;
+        mEven.lock();
+        mOdd.lock();
+    }
+
+    // printNumber(x) outputs "x", where x is an integer.
+    void zero(function<void(int)> printNumber) {
+        for (int i = 0; i < n; ++i) {
+            mZero.lock();
+            printNumber(0);
+            // 下一个解锁奇数或偶数
+            (i & 0x1) ? mEven.unlock() : mOdd.unlock();
+        }
+    }
+
+    void even(function<void(int)> printNumber) {
+        for (int i = 2; i <= n; i += 2) {
+            mEven.lock();
+            printNumber(i);
+            mZero.unlock();
+        }
+    }
+
+    void odd(function<void(int)> printNumber) {
+        for (int i = 1; i <= n; i += 2) {
+            mOdd.lock();
+            printNumber(i);
+            mZero.unlock();
+        }
+    }
+};
+
