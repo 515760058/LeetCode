@@ -1,0 +1,61 @@
+
+
+650. 只有两个键的键盘
+最初在一个记事本上只有一个字符 'A'。你每次可以对这个记事本进行两种操作：
+    Copy All (复制全部) : 你可以复制这个记事本中的所有字符(部分的复制是不允许的)。
+    Paste (粘贴) : 你可以粘贴你上一次复制的字符。
+给定一个数字 n 。你需要使用最少的操作次数，在记事本中打印出恰好 n 个 'A'。输出能够打印出 n 个 'A' 的最少操作次数。
+
+/*
+动态规划
+    1、如果n为一个质数，那么结果就是n,因为只能一个个粘贴。
+    2、如果n为一个合数，那么他的结果就是分解因式的结果之和，
+  比如n 为8 ，
+    那么dp[8] = dp[4] + dp[2]; 因为 8 = 4*2
+    dp[4] = dp[2]+dp[2]; 因为4 = 2*2
+    由于因为2是一个质数，dp[2] = 2;
+    于是dp[8] = 6就是我们要求的结果。
+*/
+class Solution {
+public:
+    int minSteps(int n) {
+        vector<int> dp(n+1, 0);
+        // dp[0] = dp[1] = 0;
+        for (int i = 2; i <= n; i++) {
+            dp[i] = i;
+            // 如果i是合数 找到i的因子j和i/j  那么dp[i]就是因子dp[j]+因子dp[i/j]
+            for (int j = 2; j <= sqrt(i); j++) {
+                if (i % j == 0) {
+                    dp[i] = dp[j] + dp[i/j];
+                    break;
+                }
+            }
+        }
+        return dp[n];
+    }
+};
+
+
+
+n次按键 最多可以有多少个A？
+可以按A  或 全选  或 复制  或 粘贴
+class ManyA {
+private:
+    // 当前剩余次数n   当前A的数量num  当前剪切板中A的数量copy
+    int dfs(int n, int num, int copy) {
+        if (n <= 0) {
+            return num;
+        }
+        int try1 = dfs(n-1, num+1, copy); // 操作一次 输入一个A
+        int try2 = dfs(n-1, num+copy, copy); // 操作一次 粘贴
+        int try3 = dfs(n-2, num, num); // 操作两次 全选+复制
+        return max(try1, max(try2, try3));
+    }
+
+public:
+    // n次按键机会  返回最多有多少个A
+    int maxA(int n) {
+        return dfs(n, 0, 0); // 还有n次  当前0个A 剪切板中0个A
+    } 
+};
+
