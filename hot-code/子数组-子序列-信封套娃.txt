@@ -45,6 +45,28 @@ public:
 
 
 
+392. 判断子序列
+给定字符串s和t，判断s是否为t的子序列。
+class Solution {
+public:
+    bool isSubsequence(string s, string t) {
+        int i = 0; // 对应t的下标
+        int j = 0; // 对应s的下标
+        while (i < t.size()){
+            if (j == s.size()) {
+                return true;
+            } else if (t[i] == s[j]) { // 字母相同
+                i++;
+                j++;
+            } else{
+                i++;
+            }   
+        }
+        return j == s.size();
+    }
+};
+
+
 
 300. 最长递增子序列
 给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
