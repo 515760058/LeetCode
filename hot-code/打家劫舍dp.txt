@@ -3,9 +3,10 @@ class Solution {
 public:
     int rob(vector<int>& nums) {
         vector<int> dp(nums.size()+2, 0);
-        for (int i = nums.size()-1; i >= 0; --i) {
-            //当前dp[i]的最大值有两个来源：  抢了这一家 只能选后后一家      不抢这一家 选后一家
-            dp[i] = max(dp[i+2] + nums[i], dp[i+1]);  
+        for (int i = nums.size()-1; i >= 0; --i) { // 从后往前抢
+            //当前dp[i]的最大值有两个来源：
+            //  抢了这一家 只能选后后一家   或者   不抢这一家 选后一家
+            dp[i] = max(dp[i+2] + nums[i], dp[i+1]);
         }
         return dp[0];
     }
@@ -13,7 +14,7 @@ public:
 
 
 
-//  213 打家劫舍 II
+//  213 打家劫舍 II    环形的
 class Solution {
 public:
     int rob(vector<int>& nums) {
@@ -31,8 +32,9 @@ private:
     int rob198(vector<int>& nums) {
         vector<int> dp(nums.size()+2, 0);
         for (int i = nums.size()-1; i >= 0; --i) {
-            //当前dp[i]的最大值有两个来源：  抢了这一家 只能选后后一家      不抢这一家 选后一家
-            dp[i] = max(dp[i+2] + nums[i], dp[i+1]);  
+            //当前dp[i]的最大值有两个来源：
+            //  抢了这一家 只能选后后一家      不抢这一家 选后一家
+            dp[i] = max(dp[i+2] + nums[i], dp[i+1]);
         }
         return dp[0];
     }
@@ -40,16 +42,7 @@ private:
 
 
 
-//  337 打家劫舍 III
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
- * };
- */
+//  337 打家劫舍 III   二叉树
 class Solution {
 public:
     int rob(TreeNode* root) {
@@ -71,7 +64,7 @@ private:
             (root->right == nullptr ? 0 : (helper(root->right->left, mem) + helper(root->right->right, mem)));
         // 不抢这个节点 递归到它的子层
         int not_do = helper(root->left, mem) + helper(root->right, mem);
-        // 最大值 保存在备忘录中
+        // 最大值 并保存在备忘录中
         int res = max(do_it, not_do);
         mem[root] = res;
         return res;

@@ -6,9 +6,9 @@ private:
         int value;
     };
 
-    map<int, list<Node>::iterator> m;
-    list<Node> mylist;
-    int capacity;
+    map<int, list<Node>::iterator> m; // key 对应数据的迭代器(本质应该是个指针)  可以O(1)找到数据
+    list<Node> mylist; // 模拟lru缓存 存储数据    链表插入和删除数据很方便
+    int capacity; // 缓存容量
 
 public:
     LRUCache(int capacity) {
@@ -24,7 +24,7 @@ public:
         int value = (m[key])->value;
         // 更新这个数据在lru中的位置
         mylist.erase(m[key]);
-        mylist.push_front( Node{key, value} );
+        mylist.push_front( Node{key, value} ); // 链表头部是最新最近访问的数据
         m[key] = mylist.begin();
         return value;
     }
@@ -39,11 +39,11 @@ public:
         }
         
         // 缓存里面没有这个key：增加key (注意缓存的容量是否已满)
-        if (mylist.size() >= capacity) { // 缓存已满，删除一个最老的数据
-            m.erase(mylist.back().key);
+        if (mylist.size() >= capacity) { // 缓存已满，删除一个最老的数据(链表尾部)
+            m.erase(mylist.back().key); // 别忘了删除m中的key
             mylist.pop_back();
         }
-        // 增加新数据
+        // 在链表头部 增加新数据
         mylist.push_front( Node{key, value} );
         m[key] = mylist.begin();
     }
@@ -67,8 +67,8 @@ private:
 
 private:
     int capacity; // 缓存容量
-    unordered_map<int, list<Node>::iterator> keyTable; // key:缓存的key value:在链表中的迭代器
-    unordered_map<int, list<Node>> freqTable;  // key:频率 value:对应的节点链表
+    unordered_map<int, list<Node>::iterator> keyTable; // key  链表中的迭代器   从而可以O(1)找到对应数据
+    unordered_map<int, list<Node>> freqTable;  // key:频率   value:相同频率的数据节点
 
 public:
     LFUCache(int _capacity) {

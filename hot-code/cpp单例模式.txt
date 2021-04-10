@@ -2,13 +2,14 @@
 class Singleton {
 private:
     Singleton() {};
+    ~Singleton() {};
 
 public:
     static Singleton* getInstance() {
         static Singleton  instance; // 此变量存在静态区，C++11自带两段检查锁机制来确保static变量实例化一次
         return &instance; 
     }
-}；
+};
 
 
 // 双重判断的单例
@@ -40,7 +41,7 @@ public:  
                 instance = new singleton();
             }
             // static CGarbo Garbo; // 这个静态对象 用于释放new的单例对象
-            m.unLock(); //解锁  
+            m.unlock(); //解锁  
         }
         return instance;
     }
