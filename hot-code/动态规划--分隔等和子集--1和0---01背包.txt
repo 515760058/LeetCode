@@ -9,20 +9,20 @@ public:
         }
         sum /= 2; // 表示背包的容量
         int N = nums.size(); // 表示可选择的物品数量
-
+        // dp[n][sum]表示 只使用前n个物品 恰好装满容量sum，是否可以？
         vector<vector<bool>> dp(N+1, vector<bool>(sum+1, false));
         // 初始情况
         for (int i = 0; i <= N; ++i) {
-            dp[i][0] = true; // 背包容量为0时，全都不选。是成立的。
+            dp[i][0] = true; // 背包容量为0时，物品全都不选。是成立的。
         }
         // 开始dp
-        for (int i = 1; i <= N; ++i) {
-            for (int w = 1; w <= sum; ++w) {
+        for (int i = 1; i <= N; ++i) { // 只使用前i个物品
+            for (int w = 1; w <= sum; ++w) { // 当前的背包容量w
                 if (w < nums[i-1]) { // 当前的背包容量仅有w 不能装下物品i-1
                     dp[i][w] = dp[i-1][w];
                 } else { // 当前的背包容量w  可以装下物品i-1
                          //    不装物品i-1 ||  装物品i-1(要给物品i-1预留出容量)
-                    dp[i][w] = dp[i-1][w] | dp[i-1][w-nums[i-1]];
+                    dp[i][w] = dp[i-1][w] || dp[i-1][w-nums[i-1]];
                 }
             }
         }
@@ -49,7 +49,7 @@ public:
     int findMaxForm(vector<string>& strs, int m, int n) {
         // dp[m][n] 表示 有m个0和n个1 的最大子集数量
         vector<vector<int>> dp(m+1, vector<int>(n+1, 0));
-        for(string& str : strs){
+        for (string& str : strs) { // 截止到str为止的数组，最多有多少个
             // 统计str中 0和1个数
             int t0 = 0;
             int t1 = 0;
@@ -57,7 +57,7 @@ public:
                 if(c == '0') { t0++; }
                 else { t1++; }
             }
-            // 对每个字符串str  都要更新一遍dp数组 
+            // 对每个新字符串str  都要更新一遍dp数组 
             //  遍历背包容量且从后向前遍历   计算m,n不同情况下的解
             for (int i = m; i >= 0; i--) {
                 for (int j = n; j >= 0; j--) {

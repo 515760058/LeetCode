@@ -77,7 +77,7 @@ class Solution {
 public:
     string minWindow(string s, string t) {
         // 统计t中每个字符的数量
-        unordered_map<char,int> need;        
+        unordered_map<char,int> need;
         for(char c : t){
             need[c]++;
         }
@@ -90,7 +90,7 @@ public:
         int right = 0;
         int valid = 0;
         while (right < s.size()) {
-            // 窗口win向右扩大  插入右边的字符c    
+            // 窗口win向右扩大  插入右边的字符c
             char c = s[right++];
             if (need.count(c)) {
                 window[c]++;
