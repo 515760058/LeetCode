@@ -1,0 +1,106 @@
+// cpp内存池  每次分配/回收 固定大小的内存区 比如1k。避免频繁的申请和释放造成性能问题和碎片化内存。
+class MemoryPool {
+private:
+    void* base; // 大buf的地址
+    const int SIZE = 10M; // 申请一个10M的大buf
+    const int REGION = 1K; // 每个内存区大小是1k
+
+    unordered_map<int> busyId; // 分配给外面使用的内存区编号
+    unordered_map<int> freeId; // 空闲的的内存区编号
+
+private:
+    // 根据base和id 计算出虚拟地址
+    void* idToVirtualAddress(int id) {
+        // 0 <= id < SIZE/REGION
+        return base + REGION*id;
+    }
+    // 根据虚拟地址 推算出编号id
+    int virtualAddressToId(void* ptr) {
+        return (ptr - base) / REGION;
+    }
+
+public:
+    // 多线程时可以考虑把MemoryPool做成单例类，多线程共同使用同一个实例对象。
+    // 构造函数， 申请一个大buf   并划分编号
+    MemoryPool() : base(nullptr) {
+        base = new(); // 申请SIZE的大空间
+        // 把大内存空间  划分为0 1 2 3 ... SIZE/REGION 个内存区  使用编号id表示
+        for (int i = 0; i < SIZE/REGION; ++i) {
+            freeId.push(i);
+        }
+    }
+
+    // 析构函数
+    ~MemoryPool() {
+        // 是否还要考虑所有的内存区都是free的了？ 如果某些内存区还在被上层使用...
+        delete base;
+        base = nullptr;
+    }
+
+    // 如果是多线程使用这个内存池，在申请和释放的时候需要保证线程安全：加锁互斥。
+    // 分配出一个内存区   O(1)操作
+    void* allocate() {
+        int id = freeId中移出一个id;
+        busyId.push(id);
+        return idToVirtualAddress(id);
+    }
+
+    // 回收一个内存区ptr   O(1)操作
+    void deallocate(void* ptr) {
+        int id = virtualAddressToId(ptr);
+        busyId.remove(id);
+        freeId.push(id);
+    }
+};
+
+
+
+
+
+
+
+// 虚指针  虚表  虚函数地址
+// https://blog.csdn.net/haoel/article/details/1948051/
+
+#include <iostream>
+#include <stdio.h>
+
+using namespace std;
+
+class Base {
+public:
+    virtual void f() { cout << "Base::f" << endl; }
+    virtual void g() { cout << "Base::g" << endl; }
+    virtual void h() { cout << "Base::h" << endl; }
+};
+
+using ulong = unsigned long; // 64位使用ulong  32位可以使用uint
+typedef void(*Fun)(void);  // 函数指针
+
+int main () {
+    Base b;
+    ulong* ptr = (ulong*) &b; // 指向虚指针
+    cout << "对象的首地址：" << ptr << endl;
+    cout << "虚指针的内容(虚表的首地址)：" <<  *ptr << endl;
+    ulong* tbl = (ulong*) (*ptr); // tbl指针 指向虚表
+    cout << "虚表地址(虚表首项)" << *tbl << endl;
+
+    // 指向虚函数
+    Fun pFun = nullptr;
+    
+    pFun = (Fun) (*tbl);     // 指向函数f
+    pFun();
+
+    pFun = (Fun) (*(tbl+1)); // 指向函数g
+      pFun();
+
+    pFun = (Fun) (*(tbl+2)); // 指向函数h
+      pFun();
+
+    return 0;
+}
+
+// linux64位下编译   g++  vf.cpp
+// 运行             ./a.out
+
+
