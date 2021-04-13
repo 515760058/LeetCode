@@ -1,5 +1,12 @@
 208. 实现 Trie (前缀树)
 class Trie {
+private:
+    static const int LETTER_NUM = 26;
+
+    string word = "";
+    int is_string = 0;  // 该单词出现的次数
+    Trie* data[LETTER_NUM] = {nullptr}; // 保存下一层的LETTER_NUM个Trie*指针
+
 public:
     /* 析构函数 删除字典树中的所有节点 */
     ~Trie() {
@@ -102,37 +109,8 @@ public:
         }
         return "";
     }
-
-private:
-    static const int LETTER_NUM = 26;
-
-    string word = "";
-    int is_string = 0;  // 该单词出现的次数
-    Trie* data[LETTER_NUM] = {nullptr}; // 保存下一层的LETTER_NUM个Trie*指针
 };
 
-
-
-
-
-211. 添加与搜索单词 - 数据结构设计
-class WordDictionary {
-private:
-    Trie myTrie;
-public:
-    /** Initialize your data structure here. */
-    WordDictionary() { }
-    
-    /** Adds a word into the data structure. */
-    void addWord(string word) {
-        myTrie.insert(word);
-    }
-    
-    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
-    bool search(string word) {
-        return myTrie.fuzzySearch(word);
-    }
-};
 
 
 
@@ -162,4 +140,27 @@ public:
         return res;
     }
 };
+
+
+
+
+211. 添加与搜索单词 - 数据结构设计
+class WordDictionary {
+private:
+    Trie myTrie;
+public:
+    /** Initialize your data structure here. */
+    WordDictionary() { }
+    
+    /** Adds a word into the data structure. */
+    void addWord(string word) {
+        myTrie.insert(word);
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    bool search(string word) {
+        return myTrie.fuzzySearch(word);
+    }
+};
+
 

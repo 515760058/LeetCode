@@ -1,6 +1,3 @@
-
-
-
 常见的背包问题有1、组合问题。2、True、False问题。3、最大最小问题。
 以下题目整理来自大神CyC，github地址：
 github
@@ -15,11 +12,3 @@ github
 3、最大最小问题：
 	474. 一和零
 	322. 零钱兑换
-
-作者：Jackie1995
-链接：https://leetcode-cn.com/problems/combination-sum-iv/solution/xi-wang-yong-yi-chong-gui-lu-gao-ding-bei-bao-wen-/
-来源：力扣（LeetCode）
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
-
-
-

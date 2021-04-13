@@ -9,7 +9,7 @@ public:
         }
 
         int left = 0;
-        unordered_map<char, int> window;
+        unordered_map<char, int> window; // 不仅可以记录每个key 还可以记录频数
         for (int right = 0; right < s2.size(); ++right) {
             // 插入
             window[s2[right]]++;
@@ -25,7 +25,7 @@ public:
             if (window == target) {
                 return true;
             }
-        }  
+        }
         return false;
     }
 };
@@ -85,7 +85,7 @@ public:
         int start = 0;
         int len = INT_MAX;
         //left,right维护滑动窗口window的大小
-        unordered_map<char,int> window;
+        unordered_map<char,int> window; // 记录key和出现次数
         int left = 0;
         int right = 0;
         int valid = 0;
@@ -111,7 +111,7 @@ public:
                     if(window[f] == need[f]) { // 破坏了一种字符的数量相等
                         valid--;
                     } 
-                    window[f]--;   
+                    window[f]--;
                 } 
             }
         }

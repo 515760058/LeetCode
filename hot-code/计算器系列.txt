@@ -4,10 +4,10 @@ s 由整数和算符 ('+', '-', '*', '/') 组成，中间由一些空格隔开  
 class Solution {
 public:
     int calculate(string s) {
-        istringstream iss(s);
         stack<int> st; // 使用栈保存数字(临时结果)
         char op = '+';
         int val;
+        istringstream iss(s);
         while (iss >> val) {
             if (op == '+') { // 加法 直接入栈
                 st.push(val);
@@ -49,7 +49,7 @@ public:
         int res = 0;
         int num = 0;
         int op = 1;
-        for (char ch : s) {                                   //空格可以不管，直接忽略
+        for (char ch : s) {                   //空格可以不管，直接忽略
             if (ch >= '0' && ch <= '9') {     //取出完整数值
                 num = num * 10 + (ch - '0');
                 continue;

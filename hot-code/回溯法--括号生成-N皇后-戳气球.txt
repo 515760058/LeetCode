@@ -98,31 +98,31 @@ private:
 class Solution {
 public:
     int maxCoins(vector<int>& nums) {
-        int maxScore = 0;
-        // 使用hash 便于搜索和删除  
+        // 使用hash 便于搜索和删除
         unordered_map<int, int> data; // idx  num
-        data[-1] = 1;
-        data[nums.size()] = 1;
+        data[-1] = 1;                 // 边界值
+        data[nums.size()] = 1;        // 边界值
         for (int i = 0; i < nums.size(); ++i) {
             data[i] = nums[i];
         }
         // 回溯
+        int maxScore = 0;
         backtrace(data, nums.size(), 0, maxScore);
         return maxScore;
     }
 
 private:
     void backtrace(unordered_map<int, int>& data, int n, int score, int& maxScore) {
-        if (data.size() == 2) {
+        if (data.size() == 2) { // 只剩最后两个边界值了
             maxScore = max(maxScore, score);
             return;
         }
-
+        // 选择一个气球i 戳破
         for (int i = 0; i < n; ++i) {
             if (!data.count(i)) {
                 continue;
             }
-            // 戳破这个气球
+            // 戳破气球i
             int num = data[i];
             data.erase(i);
             // 计算前后气球的下标和得分

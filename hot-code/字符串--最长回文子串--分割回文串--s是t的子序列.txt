@@ -45,7 +45,7 @@ private:
             res.push_back(tmp);
             return;
         }
-        // 尝试遍历每一个子串
+        // 尝试遍历start开始的子串
         for (int i = start; i < s.length(); i++) {
             string s1 = s.substr(start, i-start+1); // [start, i-start+1)子串
             if (!isPalindrome(s1)) {     // 子串必须是回文串
@@ -86,7 +86,7 @@ private:
 
 
 392. 判断子序列
-给定字符串 s 和 t ，判断 s 是否为 t 的子序列。
+给定字符串s和t，判断s是否为t的子序列。
 class Solution {
 public:
     bool isSubsequence(string s, string t) {

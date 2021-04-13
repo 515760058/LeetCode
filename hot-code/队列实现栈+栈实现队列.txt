@@ -112,7 +112,7 @@ public:
 
 
 
-剑指 Offer 59 - II. 队列的最大值
+剑指Offer59-II. 队列的最大值
 class MaxQueue {
 private:
     queue<int> que; // 队列 用于保存数据
@@ -154,5 +154,5 @@ public:
 
 最小值的栈
 使用两个栈：data  minData
-
+使用一个栈：每次push进两个数字（一个原数据，一个是最小值）
 
