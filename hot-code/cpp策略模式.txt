@@ -1,0 +1,87 @@
+Strategy策略模式：定义了算法家族，分别封装起来，让多种算法可以互相替换。
+    此模式让算法的变化，不会影响到使用算法的客户。
+策略模式是一种定义一系列算法的方法，从概念上来看，所有这些算法完成的都是相同的工作（具有相同的接口或函数形式），但是具体实现不同。
+          策略模式可以以相同的方式调用所有的(不同的)算法，减少了各种算法之间的耦合。
+
+策略模式的优点是简化了单元测试，因为每个算法都有自己的类，可以通过自己的接口单独测试。
+策略模式就是用来封装算法的，但在实践中，我们可以用它来封装几乎任何类型的规则：
+   在分析过程中碰到需要在不同时间使用不同的业务规则，就可以考虑使用策略模式处理这种变化。
+
+https://www.cnblogs.com/jiese/p/3181099.html
+
+
+class Strategy {
+protected:
+    // 构造与析构
+    Strategy() {}
+    virtual ~Strategy() {}
+public:
+    // 算法接口
+    virtual void algrithmInterface()=0;
+};
+
+class ConcreteStrategyA : public Strategy {
+public:
+    // 构造与析构
+    ConcreteStrategyA() {}
+    virtual ~ConcreteStrategyA() {}
+    // 策略A
+    virtual void algrithmInterface() override {
+        // do A
+        cout << "AlgrithmInterfaceA" << endl;
+    }
+};
+
+class ConcreteStrategyB : public Strategy {
+public:
+    // 构造与析构
+    ConcreteStrategyB() {}
+    virtual ~ConcreteStrategyB() {}
+    // 策略B
+    virtual void algrithmInterface() override {
+        // do B
+        cout << "AlgrithmInterfaceB" << endl;
+    }
+};
+
+/* 这个Context类是策略模式的关键，也是策略模式和Template模式(模板方法)的根本区别所在。
+ * 策略模式通过"组合(委托)"的方式实现算法（不同策略或规则）的异构，而Template模式则采取的是继承的方式
+ * 这两个模式的区别也是继承和组合两种实现接口重用的方式的区别
+ */
+class Context {
+// 可以在Context类中，设置不同的参数，用以不同的algrithmInterface参数要求？
+public:
+    Context(Strategy* _strategy) : strategy(_strategy) {}
+    virtual ~Context() {
+        delete strategy;
+        strategy = nullptr;
+    }
+    // 调用具体的策略/算法/规则
+    void doAction() { 
+        if (strategy != nullptr) {
+            strategy->algrithmInterface();
+        }
+    }
+private:
+    Strategy* strategy; // 策略指针，指向不同的子类
+};
+
+
+int main() {
+    // 策略A与策略B 可以互相替换
+    Context context1(new ConcreteStrategyA());
+    context1.doAction(); // 调用策略A的实现
+
+    Context context2(new ConcreteStrategyB());
+    context2.doAction(); // 调用策略B的实现
+
+    return 0;
+}
+
+/*
+ *  Strategy模式和Template模式实际是实现一个抽象接口的两种方式：继承和组合之间的区别。
+ *  要实现一个抽象接口，继承是一种方式：我们将抽象接口声明在基类中，将具体的实现放在具体子类中。
+ *  组合（委托）是另外一种方式：我们将接口的实现放在被组合对象中，将抽象接口放在组合类中。
+ *  这两种方式各有优缺点
+ */
+
