@@ -1,0 +1,95 @@
+
+
+// 手机产品的抽象类
+class Phone {
+public:
+    virtual ~Phone() {};
+protected:
+    Phone(string _band, int _price) : band(_band), price(_price) {} //屏蔽构造函数
+private:
+    string band;
+    int price;
+};
+
+// 高端手机产品
+class HighEndPhone : Phone {
+public:
+    HighEndPhone(string band, int price) : Phone(band, price) {
+        cout << "HighEndPhone...."<<endl;
+    }
+    virtual ~HighEndPhone() {}
+};
+
+// 中端手机产品
+class MidEndPhone : Phone {
+public:
+    MidEndPhone(string band, int price) : Phone(band, price) {
+        cout << "MidEndPhone...."<<endl; 
+    }
+    virtual ~MidEndPhone() {}
+};
+
+
+
+
+// 手机工厂的抽象类（含有两个接口函数）
+class PhoneFactory{
+public:
+    virtual ~PhoneFactory() {}
+    virtual Product* createHighEndPhone() = 0;
+    virtual Product* createMidEndPhone() = 0;
+protected:
+    PhoneFactory() {}
+};
+
+// hw手机工厂
+class HuaweiPhoneFactory : public PhoneFactory{
+public:
+    HuaweiPhoneFactory() { cout << "HuaweiPhoneFactory....." << endl; };
+    virtual ~HuaweiPhoneFactory() {}
+    // 创建对应的手机
+    Product* createHighEndPhone() {
+        return new HighEndPhone("hw", 5000);
+    }
+    Product* createMidEndPhone() {
+        return new MidEndPhone("hw", 3000);
+    }
+};
+
+// mi手机工厂
+class MiPhoneFactory : public PhoneFactory{
+public:
+    MiPhoneFactory() { cout << "MiPhoneFactory....." << endl; };
+    virtual ~MiPhoneFactory() {}
+    // 创建对应的手机
+    Product* createHighEndPhone() {
+        return new HighEndPhone("mi", 5000);
+    }
+    Product* createMidEndPhone() {
+        return new MidEndPhone("mi", 3000);
+    }
+};
+
+
+
+int main(){
+    // hw手机工厂 创建高端中端手机
+    Factory* hwFactory = new HuaweiPhoneFactory();
+    Phone* p1 = hwFactory->createHighEndPhone();
+    Phone* p2 = hwFactory->createMidEndPhone();
+    // mi手机工厂 创建高端中端手机
+    Factory* miFactory = new MiPhoneFactory();
+    Phone* p3 = miFactory->createHighEndPhone();
+    Phone* p4 = miFactory->createMidEndPhone();
+    
+    delete hwFactory;
+    delete miFactory;
+    delete p1;
+    delete p2;
+    delete p3;
+    delete p4;
+    
+    return 0;
+}
+
+
