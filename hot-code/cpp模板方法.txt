@@ -1,0 +1,72 @@
+模板方法
+http://www.weixueyuan.net/view/1268.html
+    在面向对象系统的分析与设计过程中经常会遇到这样一种情况：对于某一个业务逻辑（算法实现）在不同的对象中有不同的细节实现，但是逻辑（算法）的框架（或通用的应用算法）是相同的。
+    对于上述情况，模板方法模式提供了一个实现框架，模板方法模式采用继承的方式实现这一点：将整体的框架放在抽象基类中，并未不同的逻辑（算法）定义好接口，在子类中实现具体的细节。
+注意：策略模式和模板方法模式解决的是类似的问题，但是测试模式是将逻辑（算法）封装到一个类中，并采取组合（委托）的方式解决这个问题。
+
+
+class AppFramework{
+public:
+    // 运行框架
+    void run() {
+        operation1();
+        operation2(); // 调用的是子类中重写的函数
+        operation3();
+        operation4(); // 调用的是子类中重写的函数
+    }
+
+protected:
+    // 构造与析构
+    AppFramework() {};
+    virtual ~AppFramework() {};
+    // 业务逻辑（算法）的接口，留给子类进行不同的实现
+    virtual void operation2() = 0;
+    virtual void operation4() = 0;
+
+    // 固定操作  父类就可以确定下来了
+    void operation1() { cout << "做固定的第一步" << endl; };
+    void operation3() { cout << "做固定的第三步" << endl; };
+};
+
+
+class MusicAppFramework : public AppFramework{
+public:
+    MusicAppFramework() {}
+    virtual ~MusicAppFramework() {}
+protected:
+    // 重写父类中的两个纯虚函数(未确定的操作)，给run方法调用
+    virtual void operation2 override() { cout << "MusicAppFramework做了自己的第二步" << endl; }
+    virtual void operation4 override() { cout << "MusicAppFramework做了自己的第四步" << endl; }
+};
+
+
+class NewsAppFramework : public AppFramework{
+public:
+    NewsAppFramework() {}
+    virtual ~NewsAppFramework() {}
+protected:
+    // 重写父类中的两个纯虚函数(未确定的操作)，给run方法调用
+    virtual void operation2 override() { cout << "NewsAppFramework做了自己的第二步" << endl; }
+    virtual void operation4 override() { cout << "NewsAppFramework做了自己的第四步" << endl; }
+};
+
+
+
+int main() {
+    MusicAppFramework musicApp;
+    musicApp.run();
+
+    NewsAppFramework newsApp;
+    newsApp.run();
+
+    return 0;
+}
+
+
+在很多框架中，都有模板方法这个模式。 比如：
+    在android开发中，创建一个activity类（继承于的activity基类），需要重写override一些方法。 这些重写的方法其实就是在activity基类中被调用了。
+    在服务器开发的框架中，重写一些get/post等函数，就可以完成需求。这也是模板方式模式。
+
+
+
+
