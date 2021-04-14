@@ -1,0 +1,157 @@
+建造者模式
+【 https://www.cnblogs.com/cxjchen/p/3149897.html  讲解的比较清楚 】
+建造者模式要解决问题是：当我们要创建的对象很复杂的时候（通常是由很多其他的对象组合而成），我们要把复杂对象的创建过程和这个对象的表示（展示）分离开来。
+    这样做的好处就是通过一步步的进行复杂对象的构建，由于在每一步的构造过程中可以引入参数，使得经过相同的步骤创建最后得到的对象的展示不一样。
+
+引入：
+(1)其实多写几个构造函数，根据不同参数设置对象不同的属性，也可以达到这样的效果，只是这样就非常麻烦了，每次要增加一种表示就要添加一个构造函数，将来构造函数会多得连自己都不记得了，这违背了开放-封闭的原则。
+(2)要不就只能设计几个set函数，每次属性不一样了，我就构造一个对象，然后用set函数改变对象的属性。这样也可以达到效果。只是代码就会非常冗余了，每个要用到这个对象的地方，都要写上好几句语句，一旦对象有点什么变化，还得到处都改一遍，这样就很容易出错，以后别人看着这种神逻辑和神代码估计也会崩溃了。而且这也违背了依赖倒转的原则。
+建造者方案：
+    于是大神们就开始想了，不能加很多构造函数，也不能直接用一堆set函数。
+    然后发现，有些对象的构建是固定的几个步骤的，就像一条流水线一样，任何的产品都是通过每一个固定的步骤拼凑出来的。
+    例如说一部手机，先放主板，再放屏幕，再放电池，再放外壳，贴个膜就能卖几千了，每次推出新产品，就换个更好的主板，换个大点的屏幕，再整个大容量电池，贴个超牛B的高透膜，又能卖出个新价钱。
+    就是说，这些步骤都没有变，变的只是每个部分的东西。
+
+    这就是大神的厉害之处了，透过现象看本质，基本有变的，有不变的，那敢情好，面向对象的一个重要指导思想就是，封装隔离变化的，留出不变的。
+    于是他们就用一个Builder类把步骤中的每个部分封装起来，这个类的主要作用就是生产每个部件，再抽象一下提升高度，这样就依赖倒转了，这样每次只需要添加一个类，这个类还是这几个部分，只是内部的实现已经不一样了，这样就满足了开放-封闭的原则了。
+    但还是有一个问题，光有Builder类还不行，虽然产品的每个部分都有对应的函数，但是用起来的话，还是跟前面说的set函数一样，一用就要使用一大堆函数，也就是这变的东西是封装起来了，但这不变的东西还没留出来。
+    这时，就添加一个Director类，这个类就是专门规定组装产品的步骤的，这样只要告诉Director使用哪个Builder，就能生产出不同的产品，对于客户端来说，只看到用了Director的一个construct函数，甚是方便。
+
+
+再反过来看建造者模式的定义，构建build指的就是生产一个产品的步骤，表示就是每个产品部分的具体实现。通过Director封装步骤，通过Builder封装产品部分的实现，再把他两隔离开，就能隔离变的，留出不变的供客户端使用。
+
+
+// 要建造的产品对象
+class Product {
+public:
+    Product() {}
+    ~Product() {}
+    // 创建一个product产品  需要多个步骤（每个步骤可以使用不同的参数）
+    void setPartA(int a) { partA = a; }
+    void setPartB(int b) { partB = b; }
+    void setPartC(int c) { partC = c; }
+    void show() { cout << partA << ", " << partB << ", " << partC << endl; }
+
+private:
+    int partA;
+    int partB;
+    int partC;
+};
+
+
+// 创建一个product产品的抽象操作步骤
+// 不同的子类，就会有不同的具体参数，从而创建出不同的产品
+class AbstractBuilder {
+protected:
+    Product* curProduct; // 在子类中创建一个产品，并设置不同的参数
+public:
+    AbstractBuilder() : curProduct(nullptr) {}
+    virtual ~AbstractBuilder() {}
+    // 在子类中创建一个产品，并设置不同的参数
+    virtual void createProduct() = 0;
+    virtual void buildPartA() = 0;
+    virtual void buildPartB() = 0;
+    virtual void buildPartC() = 0;
+    // 获取构建的对象
+    Product* getProduct() { return curProduct; }
+};
+
+
+// 构建产品的步骤/流程是固定的
+// 在导演类的construct函数中,调用AbstractBuilder类的子类中的具体方法/每个步骤
+class Director {
+public:
+    Director(AbstractBuilder* _builder) : builder(_builder) {}
+    ~Director();
+    // 导演类，负责调用每个步骤，来构建产品
+    void construct() {
+        if (builder == nullptr) {
+            return;
+        }
+        builder->createProduct();
+        builder->buildPartA();
+        builder->buildPartB();
+        builder->buildPartC();
+    }
+private:
+    AbstractBuilder* builder;
+};
+
+
+
+// 创建高端产品（实现具体的操作步骤）
+class HighEndBuilder: public AbstractBuilder{
+public:
+    HighEndBuilder() :  {}
+    virtual ~HighEndBuilder() {}
+    // 创建产品，并在每个阶段设置不同的参数
+    virtual void createProduct() override {
+        cout << "创建一个高端产品空壳" << endl;
+        curProduct = new Product(); // 创建的对象，应该由外部自行释放
+    }
+    virtual void buildPartA() override {
+        cout << "正在构建高端产品的A部分" << endl;
+        curProduct->setPartA(100);
+    }
+    virtual void buildPartB() override {
+        cout << "正在构建高端产品的B部分" << endl;
+        curProduct->setPartB(200);
+    }
+    virtual void buildPartC() override {
+        cout << "正在构建高端产品的C部分" << endl;
+        curProduct->setPartC(300);
+    }
+};
+
+
+// 创建中端产品（实现具体的操作步骤）
+class MidEndBuilder: public AbstractBuilder{
+public:
+    MidEndBuilder() :  {}
+    virtual ~MidEndBuilder() {}
+    // 创建产品，并在每个阶段设置不同的参数
+    virtual void createProduct() override {
+        cout << "创建一个中端产品空壳" << endl;
+        curProduct = new Product();
+    }
+    virtual void buildPartA() override {
+        cout << "正在构建中端产品的A部分" << endl;
+        curProduct->setPartA(1);
+    }
+    virtual void buildPartB() override {
+        cout << "正在构建中端产品的B部分" << endl;
+        curProduct->setPartB(2);
+    }
+    virtual void buildPartC() override {
+        cout << "正在构建中端产品的C部分" << endl;
+        curProduct->setPartC(3);
+    }
+};
+
+
+int main() {
+    // 构建一个高端产品（使用HighEndBuilder）
+    AbstractBuilder* highEndBuilder = new HighEndBuilder();
+    Director* director1 = new Director(highEndBuilder);
+    director1->construct();
+    Product* highEndProduct = highEndBuilder->getProduct();
+    highEndProduct->show();
+    
+    delete highEndBuilder;
+    delete director1;
+    delete highEndProduct;
+    
+    
+    // 构建一个中端产品（使用MidEndBuilder）
+    AbstractBuilder* midEndBuilder = new MidEndBuilder();
+    Director* director2 = new Director(midEndBuilder);
+    Product* midEndProduct = midEndBuilder->getProduct();
+    midEndProduct->show();
+    
+    delete midEndBuilder;
+    delete director2;
+    delete midEndProduct;
+    
+    return 0;
+}
+
