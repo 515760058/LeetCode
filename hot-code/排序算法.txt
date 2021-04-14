@@ -1,0 +1,37 @@
+
+// 快速排序  data[start, end]区间的数据
+void quickSort(vector<int> data, int start, int end) {
+    if (start >= end) {
+        return;
+    }
+    // 左右指针
+    int left = start;
+    int right = end;
+    int poivt = data[start]; // 选择第一个数 作为锚点
+    while (left < right) {
+        // 从右边找一个比锚点poivt更小的值 data[right]
+        while (left < right && data[right] >= poivt) {
+            --right;
+        }
+        // 保存data[right]
+        if (left < right) {
+            data[left] = data[right];
+            left++；
+        }
+        // 从左边找一个比锚点poivt更大的值 data[left]
+        while (left < right && data[right] <= poivt) {
+            ++left;
+        }
+        // 保存data[left]
+        if (left < right) {
+            data[right] = data[left];
+            right--；
+        }
+    }
+    // 把锚点放在最后的位置
+    arr[left] = poivt;
+    // 递归下去
+    quickSort(data, start, left-1);
+    quickSort(data, left+1, end);
+}
+
