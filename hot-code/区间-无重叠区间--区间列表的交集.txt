@@ -1,0 +1,55 @@
+435. 无重叠区间
+class Solution {
+public:
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        if (intervals.empty()) {
+            return 0;
+        }
+        // 按区间的终点升序排序
+        sort(intervals.begin(), intervals.end(),
+             [](vector<int>& l, vector<int>& r){
+                 return l[1] < r[1];
+             });
+        // 统计不重叠的区间数量
+        int cnt = 1; // 至少有一个不重叠的区间
+        int end = intervals[0][1];
+        for (int i = 1; i < intervals.size(); ++i) {
+            // 找到下一个不重叠的区间了
+            int nextStart = intervals[i][0];
+            if (nextStart >= end) {
+                ++cnt;
+                end = intervals[i][1]; // 更新到下一个区间终点
+            }
+        }
+        // 所有区间 减去 不重叠的区间 就是要移除的区间数量
+        return intervals.size() - cnt;
+    }
+};
+
+
+
+986. 区间列表的交集
+class Solution {
+public:
+    vector<vector<int>> intervalIntersection(vector<vector<int>>& A, vector<vector<int>>& B) {
+        vector<vector<int>> res;
+        // A和B中各取一个区间
+        int i= 0;
+        int j = 0;
+        while (i < A.size() && j < B.size()) {
+            int start = max(A[i][0], B[j][0]); // 两个区间左端点的大值作为起点
+            int end = min(A[i][1], B[j][1]); // 两个区间右端点的小值作为终点
+            // 满足相交的条件
+            if (start <= end) {
+                res.push_back( {start, end} );
+            }
+            // A或者B 更新至下一个区间：谁的end值小,谁就更新到下一区间
+            if (A[i][1] < B[j][1]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return res;
+    }
+};

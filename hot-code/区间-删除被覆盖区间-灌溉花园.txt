@@ -1,0 +1,69 @@
+
+1288. 删除被覆盖区间
+class Solution {
+    /*
+    对于区间覆盖问题，可以将区间按起点升序，终点降序的方式重新排列.
+    重排列后，对于第i个区间[left_i, right_i)和第j个区间[left_j, right_j)，如果i < j，则必然有left_i <= left_j。    即，重排列后，如果发生区间覆盖，一定是前面的区间覆盖后面的区间。
+    https://leetcode-cn.com/problems/remove-covered-intervals/solution/1288-shan-chu-bei-fu-gai-qu-jian-by-jue-nf0fb/
+    */
+public:
+    int removeCoveredIntervals(vector<vector<int>>& intervals) {
+        if (intervals.empty()) {
+            return 0;
+        }
+        // 排序
+        sort(intervals.begin(), intervals.end(),
+            [](vector<int>& l, vector<int>& r){
+                // 先按起点升序
+                if (l[0] != r[0]) {
+                    return l[0] < r[0];
+                }
+                // 再按终点降序
+                return l[1] > r[1];
+            });
+        //for (auto& interval : intervals) {
+        //    cout << interval[0] << ", " << interval[1] << endl;
+        //}
+        // 排序后，只有三种情况：(1)前面的区间覆盖后面的区间 (2)前面的区间和后面的区间相交 (3)前面的区间和后面的区间无关
+        int res = intervals.size();
+        int currStart = intervals[0][0];
+        int cnrrEnd = intervals[0][1];
+        for (int i = 1; i < intervals.size(); ++i) {
+            if (currStart <= intervals[i][0] && intervals[i][1] <= cnrrEnd) { // curr覆盖了intervals[i]
+                res--; // 减去这个区间
+            } else if (intervals[i][0] <= cnrrEnd && cnrrEnd <= intervals[i][1]) { // curr相交intervals[i]
+                currStart = intervals[i][0];
+                cnrrEnd = intervals[i][1];
+            } else if (cnrrEnd < intervals[i][0]) { // curr和intervals[i]不相交， 直接更新到intervals[i]
+                currStart = intervals[i][0];
+                cnrrEnd = intervals[i][1];
+            }
+        }
+        return res;
+    }
+};
+
+
+
+1326. 灌溉花园的最少水龙头数目（区间覆盖）
+// 还需要理解一下：
+class Solution {
+public:
+    int minTaps(int n, vector<int>& ranges) {
+        vector<long> dp(10100, INT_MAX);
+        dp[0] = 0;
+        for(int i = 0; i < ranges.size(); i++){
+            // 当前水龙头覆盖的范围[l, r]
+            int l = max(0, i-ranges[i]);
+            int r = min(n, i+ranges[i]);
+            // 只使用前i个水龙头 dp[j]表示最少的水龙头数量
+            for(int j = l; j <= r; j++) {
+                dp[j] = min(dp[j], dp[l]+1); 
+            }
+        }
+        if (dp[n] == INT_MAX) {
+            return -1;
+        }
+        return dp[n];
+    }
+};

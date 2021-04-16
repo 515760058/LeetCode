@@ -1,0 +1,67 @@
+228. 汇总区间 （简单）
+class Solution {
+public:
+    vector<string> summaryRanges(vector<int>& nums) {
+        vector<string> res;
+        int start = 0; // 起始下标
+        while (start < nums.size()) {
+            int end = findRange(nums, start); // 找一个结束下标
+            if (start < end) {
+                res.push_back( to_string(nums[start]) + "->" + to_string(nums[end]) );
+            } else { // start == end
+                res.push_back( to_string(nums[start]) );
+            }
+            start = end + 1;
+        }
+        return res;
+    }
+
+private:
+    // 在nums中根据start, 找到连续区间的end
+    int findRange(vector<int>& nums, int start) {
+        int end = start + 1;
+        while (end < nums.size()) {
+            if (nums[start] + 1 != nums[end]) {
+                break;
+            }
+            ++start;
+            ++end;
+        }
+        return --end;
+    }
+};
+
+
+452. 用最少数量的箭引爆气球
+class Solution {
+public:
+    int findMinArrowShots(vector<vector<int>>& points) {
+        if (points.empty()) {
+            return 0;
+        }
+        // 按区间的终点升序排序
+        sort(points.begin(), points.end(),
+             [](vector<int>& l, vector<int>& r){
+                 return l[1] < r[1];
+             });
+        // 统计不重叠的区间数量
+        int cnt = 1; // 至少有一个不重叠的区间(需要一箭)
+        int end = points[0][1];
+        for (int i = 1; i < points.size(); ++i) {
+            int nextStart = points[i][0];
+            // 找到下一个完全不重叠的区间了
+            if (nextStart > end) {
+                ++cnt;
+                end = points[i][1]; // 更新到下一个区间
+            }
+        }
+        return cnt;
+    }
+};
+
+
+
+
+327. 区间和的个数
+
+

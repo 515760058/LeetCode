@@ -1,0 +1,86 @@
+56. 合并区间
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        vector<vector<int>> res;
+        if (intervals.empty()) {
+            return res;
+        }
+        // 按区间的起始点 升序排序
+        sort(intervals.begin(), intervals.end(),
+            [](vector<int>& l, vector<int>& r) {
+                return l[0] < r[0];
+            });
+        // 开始合并区间
+        res.push_back(intervals[0]);
+        for (int i = 1; i < intervals.size(); ++i) {
+            auto& currInterval = intervals[i]; // 当前比较的区间
+            auto& last = res.back(); // 上一个结果 可能还需要更新 （如果相交的区间有更大的end 就需要更新  也就是合并）
+            if (currInterval[0] <= last[1]) { // 当前区间的start <= 上一个结果的end  因此需要合并
+                last[1] = max(last[1], currInterval[1]); // 将end 更新为两个区间最大的end (合并了)
+            } else { // 当前区间的start > 上一个结果的end  因此 两个区间不相连 是一个新的结果
+                res.push_back(currInterval); // 处理下一个待合并的区间
+            }
+        }
+        return res;
+    }
+};
+
+
+
+57. 插入区间
+class Solution {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+        // 把要插入的区间放进去 然后合并
+        intervals.push_back(newInterval);
+        return merge(intervals);
+    }
+
+private:
+    // leetcode56 合并区间的代码
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        vector<vector<int>> res;
+        if (intervals.empty()) {
+            return res;
+        }
+        // 按区间的起始点 升序排序
+        sort(intervals.begin(), intervals.end(),
+            [](vector<int>& l, vector<int>& r) {
+                return l[0] < r[0];
+            });
+        // 开始合并区间
+        res.push_back(intervals[0]);
+        for (int i = 1; i < intervals.size(); ++i) {
+            auto& currInterval = intervals[i]; // 当前比较的区间
+            auto& last = res.back(); // 上一个结果 可能还需要更新 （如果相交的区间有更大的end 就需要更新  也就是合并）
+            if (currInterval[0] <= last[1]) { // 当前区间的start <= 上一个结果的end  因此需要合并
+                last[1] = max(last[1], currInterval[1]); // 将end 更新为两个区间最大的end (合并了)
+            } else { // 当前区间的start > 上一个结果的end  因此 两个区间不相连 是一个新的结果
+                res.push_back(currInterval); // 处理下一个待合并的区间
+            }
+        }
+        return res;
+    }
+};
+
+
+
+
+1272. 删除区间
+class Solution:
+    def removeInterval(self, intervals: List[List[int]], toBeRemoved: List[int]) -> List[List[int]]:
+        res = []
+        for i, j in intervals:                              //区间[i, j]
+            if j <= toBeRemoved[0] or toBeRemoved[1] <= i:  //不相交：左边不相交 [i,j] [toBeRemoved] 或  右边不相交 [toBeRemoved] [i, j]
+                res.append([i, j])                                   // 还是把[i, j]保存在结果中
+            else:                                           // 相交的两种情况：左边相交 右边相交
+                if toBeRemoved[0] > i:                      // i  toBeRemoved[0]  j  toBeRemoved[1]
+                    res.append([i, toBeRemoved[0]])
+                if toBeRemoved[1] < j:                      // toBeRemoved[0]  i  toBeRemoved[1]  j
+                    res.append([toBeRemoved[1], j])
+        return res
+————————————————
+版权声明：本文为CSDN博主「coordinate_blog」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/qq_17550379/article/details/103342762
+
