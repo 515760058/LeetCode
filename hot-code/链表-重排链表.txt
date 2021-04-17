@@ -1,0 +1,94 @@
+143. 重排链表
+    给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
+    将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+class Solution {
+public:
+// 1.快慢指针找到中点 2.拆成两个链表 3.遍历两个链表，后面的塞到前面的“缝隙里”
+    void reorderList(ListNode* head) {
+        if (head == nullptr || head->next == nullptr) { 
+            return;
+        }
+        //快慢指针分出两段
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while (fast->next && fast->next->next) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        //后半段反转
+        ListNode* half = slow->next;
+        slow->next = nullptr;
+        half = reverseList(half);
+        //插入前端缝隙
+        ListNode* cur = head;
+        while(cur && half){
+            // 取出后半段的一个节点
+            ListNode* curSecond = half;
+            half = half->next; // 后半段 往后移一个
+            // 取出前半段的一个节点
+            ListNode* nextCur = cur->next;
+            // 串起来
+            curSecond->next = cur->next;
+            cur->next = curSecond;
+            // 重定位cur的位置
+            cur = nextCur;
+        }
+    }
+
+private:
+    // leetcode206 反转链表
+    ListNode* reverseList(ListNode* head) {
+        ListNode* pre = nullptr;
+        ListNode* curr = head;
+        ListNode* next = nullptr;
+        while (curr != nullptr) {
+            next = curr->next;//先保存当前结点的下一个地址
+            curr->next = pre;//当前结点 指向上一个结点
+            // 都前进一步
+            pre = curr;
+            curr = next;
+        }
+        return pre;
+    }
+};
+
+
+
+
+/*
+// 方法1 每次反转后续的链表  最终是O(n)
+// 1 [2 3 4 5 6]    反转2~6
+// 1 6 [5 4 3 2]    反转5~2
+// 1 6 2 [3 4 5]    反转3~5
+// 1 6 2 5 [4 3]    反转4~3
+// 1 6 2 5 3 [4]    反转4
+// 1 6 2 5 3 4
+class Solution {
+public:
+    void reorderList(ListNode* head) {
+        ListNode* tmp = head;
+        while (tmp != nullptr) {
+            tmp->next = reverseList(tmp->next);
+            tmp = tmp->next;
+        }
+    }
+
+private:
+    // leetcode206 反转链表
+    ListNode* reverseList(ListNode* head) {
+        ListNode* pre = nullptr;
+        ListNode* curr = head;
+        ListNode* next = nullptr;
+        while (curr != nullptr) {
+            next = curr->next;//先保存当前结点的下一个地址
+            curr->next = pre;//当前结点 指向上一个结点
+            // 都前进一步
+            pre = curr;
+            curr = next;
+        }
+        return pre;
+    }
+};
+*/
