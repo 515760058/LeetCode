@@ -1,0 +1,80 @@
+原型模式
+https://blog.csdn.net/sinat_21107433/article/details/102642682
+原型模式通过复制一个已有对象来获取更多相同或者相似的对象。原型模式定义如下：
+原型模式：使用原型实例指定待创建对象的类型，并且通过复制这个原型来创建新的对象。
+
+原型式的结构包含以下几个角色：
+    抽象原型类（AbstractPrototype）：声明克隆clone自身的接口
+    具体原型类（ConcretePrototype）：实现clone接口，提供了克隆自己的功能
+    客户端（Client）：客户端中声明一个抽象原型类，根据客户需求clone具体原型类对象实例
+
+关于克隆方法：浅拷贝/深拷贝
+    原型模式可以说是“复制”，即克隆，但这个复制不是代码的复制，而是将对象包含的所有属性都创建一份拷贝。
+    但不同的复制操作，可能会产生两种不同的拷贝，即浅拷贝和深拷贝。
+浅拷贝：
+    在浅拷贝中，如果原型对象的成员变量是值类型（如int、double、char等基本数据类型），将复制一份给拷贝对象；
+    如果原型对象的成员变量是引用/指针，则将引用/指针指向的地址拷贝一份给拷贝对象，即原型对象和拷贝对象中的成员变量指向同一个地址。
+深拷贝：
+    在深拷贝中，无论原型对象中的成员变量是值类型还是指针/引用类型，都将复制一份给拷贝对象。注意，深拷贝中，指针/引用对象会重新申请一块内存，拷贝给新对象。
+
+
+
+//抽象原型类 
+class AbstractPrototype {
+public:
+    virtual ~AbstractPrototype() {}
+    virtual AbstractPrototype* clone() = 0; // 声明了clone接口函数
+};
+
+
+//具体原型类   一个普通的类   实现clone接口，提供了克隆自己的功能
+class ConcretePrototype : public AbstractPrototype {
+public:
+    // 析构函数 与 构造函数
+    ConcretePrototype() {}
+    virtual ~ConcretePrototype() {}
+
+    // 重写clone接口函数，提供克隆自己的功能
+    virtual ConcretePrototype* clone() override {
+        ConcretePrototype* cp = new ConcretePrototype();
+        cp->setName(name); // 这个例子不涉及深拷贝    根据实际需要改成深拷贝
+        cp->setId(id);
+        return cp;
+    }
+ 
+    void setName(string _name){
+        name = _name;
+    }
+    void setId(int _id){
+        id = _id;
+    }
+private:
+    string name;
+    int id;
+};
+
+
+int main() {
+    ConcretePrototype* cp = new ConcretePrototype();
+    cp->setName("zhang");
+    cp->setId(123);
+
+    // 克隆一个自己
+    ConcretePrototype* newCp = cp->clone();
+
+    delete cp;
+    delete newCp;
+
+    return 0;
+}
+
+
+优点：
+    当创建新的对象实例较为复杂时，原型模式可以简化创建过程，提高创建对象的效率；
+    可扩展：模式中提供了抽象原型类，具体原型类可适当扩展；
+    创建结构简单：创建工厂即为原型对象本身
+缺点：
+    深克隆代码较为复杂；
+    每一个类都得配备一个clone方法，且该方法位于类的内部，修改时违背开闭原则；
+
+
