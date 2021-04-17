@@ -1,0 +1,113 @@
+组合模式
+https://blog.csdn.net/sinat_21107433/article/details/102712738
+
+组合模式关注包含叶子节点和容器节点的结构以及他们构成的组织形式。
+这样的组织形式的特点在于：叶子节点不再包含成员对象，而容器节点可以包含成员对象，这些对象可以是叶子节点，也可以是容器节点。
+这些节点通过不同的递归组合形成一个树形结构。
+
+组合模式为叶子节点和容器节点提供了公共的抽象构建类，客户端无需关心所操作的对象是叶子节点还是容器节点，只需针对抽象构建类编程处理即可。
+组合模式定义：组合多个对象形成树形结构以表示具有部分-整体关系的层次结构。组合模式让客户端可以统一对待单个对象和组合对象。
+
+结合引言及组合模式UML图可知组合模式有如下角色：
+    Component（抽象构件）：Component是一个抽象类，定义了构件的一些公共接口，这些接口是管理或者访问它的子构件的方法（如果有子构件），具体的实现在叶子构件和容器构件中进行。
+    Leaf（叶子构件）：它代表树形结构中的叶子节点对象，叶子构件没有子节点，它实现了在抽象构件中定义的行为。对于抽象构件定义的管理子构件的方法，叶子构件可以通过抛出异常、提示错误等方式进行处理。
+    Composite（容器构件） ：容器构件一方面具体实现公共接口，另一方面通过聚合关系包含子构件，子构件可以是容器构件，也可以是叶子构件。
+
+组合模式分为透明组合模式和安全组合模式。
+    (1)在透明组合模式中，抽象构件Component声明了add、remove、getChild等所有管理和访问子构件的方法，不论是叶子构件还容器构件都具有相同的接口。客户端在使用时可以一致地对待所有对象，即具体是叶子构件还是容器构件，对客户端而言是透明的，因为它们都暴露相同的接口。
+        但是，叶子构件是没有子构件的，所有就没有add、remove和getChild方法的，所以必须在叶子构件的实现中提供相应的错误处理代码，否则代码会出错。
+    (2)在安全组合模式中，抽象构件Component没有声明任何管理和访问子构件的方法，在具体的实现类中才去定义这些行为。之所以叫“安全”，是因为叶子构件没有子构件，也就不必定义管理访问子构件的方法，对客户端而言，当它处理子构件时，不可能调用到类似透明组合模式中的子构件的add、remove等方法，因此也就不会出错。
+
+
+//抽象构件
+class Component {
+public:
+    Component(string _name) : name(_name) { }
+    virtual ~Component() {}
+    
+    virtual void add(Component* c) = 0;  // 增加一个构件节点的函数接口
+    virtual void remove(Component* c) = 0; // 删除一个构件节点的函数接口
+    virtual Component* getChild(int i) = 0; // 获取子构件的函数接口
+    virtual void operation() = 0;  //对所有构建的操作
+
+protected:
+    string name;
+};
+
+// 叶子构件
+class Leaf : public Component {
+public:
+    Leaf(string name) : Component(name) { }
+    virtual ~Leaf() { }
+
+    // 叶子构件  不含子构件 因此不支持这三个操作
+    virtual void add(Component* c) override  { cout << "not support! << endl; }
+    virtual void remove(Component* c) override { cout << "not support! << endl; }
+    virtual Component* getChild(int i) override { 
+        cout << "not support! << endl; }
+        return nullptr;
+    }
+    // 叶子构件 支持的操作：
+    virtual void operation() override { 
+        cout << "叶子节点"  << name << endl;
+    }
+};
+
+//容器构件SubComponent
+class SubComponent :public Component {
+private:
+    list<Component*> componentList; //子构件链表，链表元素中可以是 叶子构件，也可以是容器构件
+public:
+    SubComponent(string _name) : Component(name) { }
+    virtual ~SubComponent() {}
+
+    // 容器类构件 支持的操作
+    virtual void add(Component* c) override  { componentList.push_front(c);  }
+    virtual void remove(Component* c) override {  componentList.erase(c);  }
+    virtual Component* getChild(int i) override {  retutn componentList[i];  } // 示意操作
+    // 操作
+    virtual void operation() override {
+        cout << "容器节点"  << name << endl;
+        // 调用每个子构件的操作
+        for (Component*  c : componentList) {
+            c->operation();
+        }
+    }
+};
+
+
+int main() {
+    Component* head = new SubComponent("head");
+    Component* node1 = new SubComponent("node1");
+    Component* leaf1 = new Leaf("leaf1");
+    Component* leaf2 = new Leaf("leaf2");
+
+    head->add(node1);
+    head->add(leaf1);
+    node1->add(leaf2);
+
+    // 可以操作所有的构件
+    head->operation();
+    
+    delete head;
+    delete node1;
+    delete leaf1;
+    delete leaf2;
+
+    return 0;
+}
+
+
+优点：
+    清楚地定义分层次的复杂对象，表示出复杂对象的层次结构，让客户端忽略层次的差异；
+    客户端可以一致地使用层次结构中各个层次的对象，而不必关心其具体构件的行为如何实现；
+    在组合模式中增加新的叶子构件和容器构件非常方便，易于扩展，符合开闭原则；
+    为树形结构的案例提供了解决方案。
+缺点：
+    子构件或容器构件的行为受限制，因为它们来自相同的抽象层。如果要定义某个容器或者某个叶子节点特有的方法，那么要求在运行时判断对象类型，增加了代码的复杂度。
+适用场景：
+    系统中需要用到树形结构；
+    系统中能够分离出容器节点和叶子节点；
+    具有整体和部门的层次结构中，能够通过某种方式忽略层次差异，使得客户端可以一致对待。
+
+
