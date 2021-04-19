@@ -1,0 +1,135 @@
+
+/*
+装饰模式
+https://blog.csdn.net/sinat_21107433/article/details/102733023
+
+简介：装饰模式可以在不改变一个对象本身功能的基础上给对象增加额外的新行为
+    比如手机，为防止摔坏，可以给手机贴膜或者带上保护套；为美观，可以在保护套上贴卡通贴纸；为便于携带可以增加挂绳
+装饰模式：动态地给一个对象增加一些额外的职责。就扩展功能而言，装饰模式提供了一种比使用子类更加灵活的替代方案。
+
+装饰模式是一种用于替代继承的技术。通过一种无须定义子类的方式给对象动态增加职责，使用对象之间的关联关系取代类之间的继承关系。
+装饰模式中引入了装饰类，在装饰类中既可以调用待装饰的原有对象的方法，还可以增加新的方法，以扩充原有类的功能。
+
+装饰模式中有如下角色：
+    Component（抽象构件）：是具体构件类和装饰类的共同基类，声明了在具体构件中定义的方法，客户端可以一致的对待使用装饰前后的对象；
+    ConcreteComponent（具体构件）：具体构件定义了构件具体的方法，装饰类可以给它增加更多的功能；
+    Decorator（抽象装饰类）：用于给具体构件增加职责，但具体职责在其子类中实现。
+         抽象装饰类通过聚合关系定义一个抽象构件的对象，通过该对象可以调用装饰之前构件的方法，并通过其子类扩展该方法，达到装饰的目的；
+    ConcreteDecorator（具体装饰类）： 向构件增加新的功能。
+以上面提到的手机为例，手机就是一个具体构件，而手机壳、手机贴纸和手机挂绳，都是具体的装饰类。
+*/
+
+// 以给手机带上手机壳、贴上手机贴纸、系上手机挂绳为例，展示装饰模式的代码。
+
+//抽象构件
+class Component {
+public:
+    virtual ~Component() {}
+    virtual void operation() = 0;
+};
+
+//具体构件类
+class Phone : public Component {
+public:
+    virtual ~Phone() {}
+    virtual void operation() override { cout << "手机" << endl; }
+};
+
+// 抽象装饰类 
+//【这个类最大的特点就是，既继承了Component类含有operation方法（override的方法），
+//                                     又含有一个Component*类型的成员变量component，而component中也有operation方法 】
+class Decorator : public Component {
+private:
+    Component* component; // 指向具体构件，可以是手机类对象，也可以是具体的装饰类对象
+
+public:
+    Decorator(Component* c) : component(c) { }
+    virtual ~Decorator(){}
+    // 重写了operation方法，同时也调用了component->operation();
+    virtual void operation() override = 0;
+protected:
+    // 在子类中获取component 用以操作
+    Component* getComponent() { return component; }
+};
+
+// 具体装饰类：手机壳
+class ShellDecorator : public Decorator {
+public:
+    ShellDecorator(Component* c) : Decorator(c) { }
+    virtual ~ShellDecorator (){}
+    // 对父类中的操作，增加一个行为
+    virtual void operation() override {
+        newBehavior(); //
+        getComponent()->operation();
+    }
+private:
+    // 新的行为（装饰）
+    void newBehavior() { cout << "装了手机壳的 "; }
+};
+
+// 具体装饰类：手机贴纸
+class StickerDecorator : public Decorator {
+public:
+    StickerDecorator (Component *c) : Decorator(c) { }
+    virtual ~StickerDecorator  (){}
+    // 对父类中的操作，增加一个行为
+    virtual void operation() override {
+        newBehavior(); //
+        getComponent()->operation();
+    }
+private:
+    // 新的行为（装饰）
+    void newBehavior() { cout << "贴了贴纸的 "; }
+};
+
+// 具体装饰类：手机挂绳
+class RopeDecorator : public Decorator {
+public:
+    RopeDecorator (Component *c) : Decorator(c) { }
+    virtual ~RopeDecorator (){}
+    // 对父类中的操作，增加一个行为
+    virtual void operation() override {
+        newBehavior();
+        getComponent()->operation();
+    }
+private:
+    // 新的行为（装饰）
+    void newBehavior() { cout << "系了挂绳的  "; }
+};
+
+
+int main() {
+    // 一个基础的手机
+    Component* phone = new Phone();
+    phone->operation();
+    // 装上手机壳（加了一层装饰）
+    Component* shellPhone = new ShellDecorator(phone);
+    shellPhone->operation();
+    // 贴上贴纸（加了一层装饰）
+    Component* stickerShellPhone = new StickerDecorator(shellPhone);
+    stickerShellPhone->operation();
+    // 又系上挂绳（加了一层装饰）
+    Component* ropeStickerShellPhone = new RopeDecorator(stickerShellPhone);
+    ropeStickerShellPhone->operation();
+
+    delete ropeStickerShellPhone;
+    delete stickerShellPhone;
+    delete shellPhone;
+    delete phone;
+
+    return 0;
+}
+
+
+
+优点：
+    对于扩展一个类的新功能，装饰模式比继承更加灵活；
+    动态扩展一个对象的功能；
+    可以对一个对象进行多次装饰（如上述例子第二个手机和第三个手机）；
+    具体构件类和具体装饰类可以独立变化和扩展，符合开闭原则。
+缺点：
+    装饰模式中会增加很多小的对象，对象的区别主要在于各种装饰的连接方式不同，而并不是职责不同，大量小对象的产生会占用较多的系统资源；
+    装饰模式比继承模式更灵活，但也更容易出错，更难于排错。
+适用场景：
+    在不影响其他对象的情况下，给单个对象动态扩展职责；
+    不适宜采用继承的方式进行扩展的时候，可以考虑使用装饰模式。
