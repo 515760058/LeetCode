@@ -1,0 +1,143 @@
+
+享元模式
+https://blog.csdn.net/sinat_21107433/article/details/102763849
+    如果一个系统在运行时创建太多相同或者相似的对象，会占用大量内存和资源，降低系统性能。
+    享元模式通过共享技术实现相同或相似的细粒度对象的复用，提供一个享元池存储已经创建好的对象，并通过享元工厂类将享元对象提供给客户端使用。
+
+享元模式：运用共享技术有效地支持大量细粒度对象的复用。
+    享元模式要求被共享的对象必须是细粒度对象。
+    如上面提到的输入英文段落的例子，26个字母可能随时被客户重复使用。尽管每个字母可能出现的位置不一样，但在物理上它们共享同一个对象（同一个实例）。
+        利用享元模式，可以创建一个存储26个字母对象的享元池，需要时从享元池中取出。
+
+享元对象能够做到共享的关键在于区分了内部状态和外部状态：
+    内部状态：存储在享元对象内部，不会随着环境的改变而改变的，内部状态可以共享。
+        比如围棋中棋子的形状、大小，不会随着外部变化而变化；比如字母A，无论谁使用，都是A，不会变化；
+    外部状态：随环境变化而变化、不可以共享的状态，如棋子的位置、颜色，如每个字母的位置。
+        外部状态一般由客户端保存，在使用时再传入到享元对象内部。
+        不同的外部状态之间是相互独立的，棋子A和棋子B的位置可以不同，并且不会相互影响。
+
+
+
+
+元模式常常结合工厂模式一起使用，其结构包含抽象享元类、具体享元类、非共享具体享元类和享元工厂类：
+    Flyweight（抽象享元类）：是一个抽象类，声明了具体享元类公共的方法，这些方法可以向外部提供享元对象的内部状态数据，也可以通过这些方法设置外部状态；
+    ConcreteFlyweight（具体享元类）：具体实现抽象享元类声明的方法，具体享元类中为内部状态提供存储空间。
+        具体享元类常常结合单例模式来设计实现，保证每个享元类对象只被创建一次，为每个具体享元类提供唯一的享元对象。
+    UnsharedConcreteFlyweight（非共享具体享元类）：并不是所有抽象享元类的子类都需要被共享，可以将这些类设计为非共享具体享元类；
+    FlyweightFactory（享元工厂类）：用于创建并管理享元对象，针对抽象享元类编程，将各种具体享元类对象存储在一个享元池中。
+        享元池一般设计为一个存储键值对的集合（或者其他类型的集合），可结合工厂模式设计。
+        客户需要某个享元对象时，如果享元池中已有该对象实例，则返回该实例，否则创建一个新的实例，新实例保存在享元池中，然后返回给客户。
+
+
+
+#include <iostream>
+#include <mutex>
+#include <unordered_map>
+
+using namespace std;
+    
+// 抽象享元类
+class NetDevice {
+public:
+    virtual ~NetDevice(){}
+    virtual string getName() = 0;
+
+    void showName(){
+        cout << "NetDevice :" << getName() << endl;
+    }
+};
+
+// 具体享元类:集线器
+class Hub :public NetDevice {
+public:
+    string getName(){ return "集线器"; }
+};
+ 
+// 具体享元类:交换机
+class Switch :public NetDevice {
+public:
+    string getName(){ return "交换机"; }
+};
+
+// 享元工厂类采用了单例模式，保证工厂实例的唯一性。采用一个vector作为共享池。
+class NetDeviceFactory {
+private:
+    // 单例模式
+    NetDeviceFactory() {}
+    virtual ~NetDeviceFactory() { /* 删除共享池中的所有对象 */ }
+    static NetDeviceFactory* instance;
+    static std::mutex m_mutex;
+    // 共享池  多线程共同使用getNetDevice操作共享池 应该也要加锁保护
+    // 或者再构造函数里面把所有的对象都事先创建好，getNetDevice函数只做读操作，那就不用加锁了。
+    unordered_map<char, NetDevice*> devicePool;
+public:
+    NetDevice* getNetDevice(char ch) {
+        // 共享池中不存在对应的对象
+        if (!devicePool.count(ch)) {
+            // 先创建对应的对象
+            NetDevice* tmp = nullptr;
+            if (ch == 'H') { tmp = new Hub(); }
+            else if (ch == 'S') { tmp = new Switch(); }
+            else { cout << "参数错误" << endl; }
+            // 保存到池中
+            devicePool[ch] = tmp;
+        }
+        // 从共享池中获取对象
+        return devicePool[ch];
+    }
+ 
+    // 单例模式：返回享元工厂类的唯一实例  具体的单例请参考"单例模式"
+    static NetDeviceFactory* getFactory(){
+        if (instance == NULL){
+            m_mutex.lock();
+            if (instance == NULL){
+                instance = new NetDeviceFactory();
+            }
+            m_mutex.unlock();
+        }
+        return instance;
+    }
+};
+ 
+NetDeviceFactory* NetDeviceFactory::instance = NULL;
+std::mutex NetDeviceFactory::m_mutex;
+
+
+// 客户端代码示例
+int main() {
+    // 享元工厂对象（单例）
+    NetDeviceFactory* factory = NetDeviceFactory::getFactory();
+    // 客户端1获取一个hub
+    NetDevice* device1 = factory->getNetDevice('H');
+    device1->showName();
+    // 客户端2获取一个hub
+    NetDevice* device2 = factory->getNetDevice('H');
+    device2->showName();
+    // 判断两个hub是否是同一个
+    if (device1 == device2) {
+        cout << "device12是同一个" << endl;
+    }
+
+    // 客户端3获取一个switch
+    NetDevice* device3 = factory->getNetDevice('S');
+    device3->showName();
+    // 客户端4获取一个switch
+    NetDevice* device4 = factory->getNetDevice('S');
+    device4->showName();
+    if (device3 == device4) {
+        cout << "device34是同一个" << endl;
+    }
+
+    return 0;
+}
+
+
+优点：
+    享元模式通过享元池存储已经创建好的享元对象，实现相同或相似的细粒度对象的复用，大大减少了系统中的对象数量，节约了内存空间，提升了系统性能；
+    享元模式通过内部状态和外部状态的区分，外部状态相互独立，客户端可以根据需求任意使用。
+缺点：
+    享元模式需要增加逻辑来取分出内部状态和外部状态，增加了编程的复杂度；
+适用环境：
+    当一个系统中有大量重复使用的相同或相似对象时，使用享元模式可以节约系统资源；
+    对象的大部分状态都可以外部化，可以将这些状态传入对象中。
+
