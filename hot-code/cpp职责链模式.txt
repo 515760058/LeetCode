@@ -1,0 +1,147 @@
+职责链模式简介
+https://blog.csdn.net/sinat_21107433/article/details/102790445
+职责链模式又叫责任链模式。很多情况下，可以处理某个请求的对象可能不止一个，请求可以沿着某一条对象之间形成的关系一级一级由下家传递到上家，形成一条链——职责链。
+职责链可以是直线，也可以是环或树形结构。常见的职责链形式是直线。
+链上的每一个对象都是请求的处理者，客户端要做的仅仅是发送请求，不需要关心请求的处理细节过程。由此，职责链模式将请求者和请求的接收者解耦。
+
+
+职责链模式：避免将一个请求的发送者和接收者耦合在一起，让多个对象都有机会处理请求。
+将接收请求的对象连接成一条链，并且沿着这条链传递请求，直到有一个对象能够处理它为止。
+
+
+职责链模式中一共包含两个角色:
+    Handler（抽象处理者）：抽象处理者一般为抽象类，声明了一个处理请求的接口handleRequest()，通过该接口可以形成一条责任链。
+    ConcreteHandler（具体处理者）： 是抽象处理者的子类，实现了handleRequest接口用以处理请求。
+        在具体的实现中，如果该处理者能够处理该请求，就处理它。否则将请求转发给后继者。具体处理者可以访问下一个对象。
+由上述可知，在职责链模式中每个对象中引用/含有一个后继的指针，从而连接起来形成一条链条，请求在这个链条上逐级传递，直到某一级处理着能够处理这个请求。
+客户端不知道也不必知道是哪一级处理者处理了请求，因为每个处理者都有相同的接口handleRequest()。
+
+
+接下来通过一个审批账单的例子来进一步认识职责链模式。
+#include <iostream>
+#include <string>
+using namespace std;
+
+// 账单类
+struct Bill {
+    Bill(string _name, int _money) : name(_name), money(_money) {}
+    string name; // 报销人姓名
+    int money; // 报销金额 万元
+};
+
+// 抽象处理者
+class Handler {
+protected:
+    Handler* succeedor; // 下一个节点的指针
+public:
+    // 构造与析构
+    Handler(Handler* succeed) : succeedor(succeed) {}
+    virtual ~Handler() {}
+    // 处理请求的接口
+    virtual void handleRequest(Bill* bill) = 0;
+};
+
+// 具体处理者 老板，可以审批一切账单
+class BossHandler : public Handler {
+public:
+    // 构造与析构 初始化父类成员
+    BossHandler(Handler* succeedor) : Handler(succeedor) {}
+    virtual ~BossHandler() {}
+    // 实现接口 处理请求
+    virtual void handleRequest(Bill* bill) override {
+        // 当前可以处理该请求
+        if (true) {
+            cout << "老板处理了该票据，票据信息:" << bill->name << ", " << bill->money << endl;
+            return;
+        }
+        // 当前不可以处理该请求，转交给后继节点处理
+        if (succeedor != nullptr) {
+            cout << "老板无权处理该票据， 转交上级..." << endl;
+            succeedor->handleRequest(bill);
+        }
+    }
+};
+
+// 具体处理者 经理，可以审批10w以内的账单
+class ManagerHandler : public Handler {
+public:
+    // 构造与析构 初始化父类成员
+    ManagerHandler(Handler* succeedor) : Handler(succeedor) {}
+    virtual ~ManagerHandler() {}
+    // 实现接口 处理请求
+    virtual void handleRequest(Bill* bill) override {
+        // 当前可以处理该请求
+        if (bill->money <= 10) {
+            cout << "经理处理了该票据，票据信息:" << bill->name << ", " << bill->money << endl;
+            return;
+        }
+        // 当前不可以处理该请求，转交给后继节点处理
+        if (succeedor != nullptr) {
+            cout << "经理无权处理该票据， 转交上级..." << endl;
+            succeedor->handleRequest(bill);
+        }
+    }
+};
+
+// 具体处理者 组长，可以审批5w以内的账单
+class GroupLeaderHandler : public Handler {
+public:
+    // 构造与析构 初始化父类成员
+    GroupLeaderHandler(Handler* succeedor) : Handler(succeedor) {}
+    virtual ~GroupLeaderHandler() {}
+    // 实现接口 处理请求
+    virtual void handleRequest(Bill* bill) override {
+        // 当前可以处理该请求
+        if (bill->money <= 5) {
+            cout << "组长处理了该票据，票据信息:" << bill->name << ", " << bill->money << endl;
+            return;
+        }
+        // 当前不可以处理该请求，转交给后继节点处理
+        if (succeedor != nullptr) {
+            cout << "组长无权处理该票据， 转交上级..." << endl;
+            succeedor->handleRequest(bill);
+        }
+    }
+};
+
+
+// 客户端代码示例
+int main() {
+    // 构建职责链  类似于一个单链表  groupLeader  ->  manager  ->  boss  -> nullptr
+    BossHandler* boss = new BossHandler(nullptr);
+    ManagerHandler* manager = new ManagerHandler(boss);
+    GroupLeaderHandler* groupLeader = new GroupLeaderHandler(manager);
+
+    Bill bill1("zhang1", 3);
+    groupLeader->handleRequest(&bill1);
+    cout << endl << endl;
+
+    Bill bill2("zhang2", 7);
+    groupLeader->handleRequest(&bill2);
+    cout << endl << endl;
+
+    Bill bill3("zhang3", 15);
+    groupLeader->handleRequest(&bill3);
+
+    return 0;
+}
+
+
+
+其他的例子：
+    比如说制定了一些过滤规则，可以使用职责连默认来把每一个类作为一条规则的处理者。
+
+    
+优点：
+    将请求的接收者和处理者解耦，客户端无需知道具体处理者，只针对抽象处理者编程，简化了客户端编程过程，降低系统耦合度；
+    在系统中增加一个新的处理者时，只需要继承抽象处理者，重新实现handleRequest()接口，无需改动原有代码，符合开闭原则；
+    给对象分配职责时，职责链模式赋予系统更多灵活性。
+缺点：
+    请求没有一个明确的接收者，有可能遇到请求无法响应的问题；
+    比较长的职责链，其处理过程会很长。
+    建立职责链的工作是在客户端进行，如果建立不当，可能导致循环调用或者调用失败。
+适用环境：
+    有多个对象处理同一个请求，具体由谁来处理是在运行时决定，客户端只需发出请求到职责链上，而无需关心具体是谁来处理；
+    可动态指定一组对象处理请求，客户端可以动态创建职责链来处理请求，还可以改变职责链中各个处理者之间的上下级关系。
+
+
