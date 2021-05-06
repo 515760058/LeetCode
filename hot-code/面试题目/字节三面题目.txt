@@ -1,0 +1,51 @@
+通过先序和中序数组生成后序数组
+限定语言：Python、C++、Java、Go、C、Javascript、Python 3
+给出一棵二叉树的先序和中序数组，通过这两个数组直接生成正确的后序数组。
+示例1
+输入
+[1,2,3],[2,1,3]
+输出
+[2,3,1]
+
+class Solution {
+public:
+    /**
+     * 
+     * @param preOrder int整型vector the array1
+     * @param inOrder int整型vector the array2
+     * @return int整型vector
+     */
+    vector<int> findOrder(vector<int>& preOrder, vector<int>& inOrder) {
+        vector<int> res;
+        findOrderCore(preOrder, inOrder, res);
+        reverse(res.begin(), res.end());
+        return res;
+    }
+
+private:
+    void findOrderCore(vector<int>& preOrder, vector<int>& inOrder, vector<int> &res) {
+        if (preOrder.empty() || inOrder.empty()) {
+            return;
+        }
+        // 根节点
+        int root = preOrder.front();
+        res.push_back(root); // 放在前面 最后翻转
+        // 根节点在中序对应的下标 
+        int i = 0;
+        for (; i < inOrder.size(); ++i) {
+            if (inOrder[i] == root) {
+                break;
+            }
+        }
+        // 中序的左子树和右子树范围
+        vector<int> inOrderLeft(inOrder.begin(), inOrder.begin()+i);
+        vector<int> inOrderRight(inOrder.begin()+i+1, inOrder.end());
+        // 前序的左子树和右子树范围
+        vector<int> preOrderLeft(preOrder.begin()+1, preOrder.begin()+i+1);
+        vector<int> preOrderRight(preOrder.begin()+i+1, preOrder.end());
+        // 递归
+        findOrderCore(preOrderRight, inOrderRight, res);
+        findOrderCore(preOrderLeft, inOrderLeft, res);
+    }
+
+};
